@@ -1,0 +1,9 @@
+asset_id,asset_type,title,source_uri_or_file,owner,version,published_on,effective_until,applicable_scope,status,reviewer,reviewed_on,fastgpt_upload_eligible,notes
+SRC-DEMO-JOB-001,synthetic_dataset,职途智航模拟岗位数据集,docs/data-governance/mock-job-postings.csv,项目组,v1.0,2026-07-21,2026-12-31,本地演示岗位匹配,demo_approved,项目负责人,2026-07-21,false,所有企业名称和岗位均为模拟信息
+SRC-NCSS-001,public_service_reference,国家大学生就业服务平台,https://www.ncss.cn/,待确认,网页服务参考,2026-07-21,待核验,后续岗位与就业服务资料来源,pending_review,待指定,待审核,false,未下载或上传内容前不得作为知识库依据
+SRC-SCHOOL-POLICY-001,school_policy,成都信息工程大学就业政策资料,待学校就业中心提供,待确认,待核验,待核验,待核验,学生就业政策咨询,pending_source,待指定,待审核,false,需取得使用授权和版本信息
+SRC-CAREER-GUIDE-001,career_guidance,职业发展与求职准备资料,待学校就业中心或课程教师提供,待确认,待核验,待核验,待核验,行动计划与就业咨询,pending_source,待指定,待审核,false,不得使用无来源转载资料
+SRC-NCSS-CG-001,career_guidance,求职简历准备指南（项目组整理）,docs/knowledge-base/upload-ready/01-求职简历准备指南.docx,项目组,v1.0,2026-08-03,2027-08-03,成都信息工程大学学生简历准备,pending_review,待指定,待审核,false,依据人社部 2026-04-22 公开指导整理；原始链接见文档首页
+SRC-NCSS-CG-002,career_guidance,校招网申与笔试准备指南（项目组整理）,docs/knowledge-base/upload-ready/02-校招网申与笔试准备指南.docx,项目组,v1.0,2026-08-03,2027-08-03,成都信息工程大学学生网申与笔试准备,pending_review,待指定,待审核,false,依据国家大学生就业服务平台 2026-07-07 公开资料整理；原始链接见文档首页
+SRC-NCSS-CG-003,career_guidance,面试准备与求职风险防范指南（项目组整理）,docs/knowledge-base/upload-ready/03-面试准备与求职风险防范指南.docx,项目组,v1.0,2026-08-03,2027-08-03,成都信息工程大学学生面试与求职风险防范,pending_review,待指定,待审核,false,依据人社部 2026-03-26 面试指导及 2026-05-20 多部门风险提示整理；原始链接见文档首页
+SRC-NCSS-PUBLIC-JOBS-20260805,public_job_snapshot,国家大学生就业服务平台公开技术岗位快照,docs/data-governance/public-job-postings.csv,项目组,v2026-08-05,2026-08-05,2026-08-12,公开技术类岗位推荐,approved,项目组,2026-08-05,false,20 条岗位均来自国家大学生就业服务平台公开详情页；有效期为项目数据复核日期，不代表招聘方报名截止日期

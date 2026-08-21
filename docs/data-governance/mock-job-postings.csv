@@ -1,0 +1,11 @@
+job_id,title,employer_alias,city,employment_type,required_skills,preferred_majors,project_signals,source_asset_id,published_on,valid_until,status,demo_only,notes
+DEMO-JOB-001,后端开发实习生,星云数据实验室（模拟）,成都,实习,Python;SQL;Git;REST API,软件工程;计算机科学,接口设计或数据服务项目,SRC-DEMO-JOB-001,2026-07-21,2026-12-31,published,true,仅用于演示匹配
+DEMO-JOB-002,数据分析实习生,西岭洞察工作室（模拟）,成都,实习,Python;SQL;Pandas;数据可视化,数据科学;统计学;计算机科学,数据清洗或分析报告,SRC-DEMO-JOB-001,2026-07-21,2026-12-31,published,true,仅用于演示匹配
+DEMO-JOB-003,前端开发实习生,远川交互科技（模拟）,成都,实习,JavaScript;TypeScript;React;Git,软件工程;计算机科学,响应式网页或组件项目,SRC-DEMO-JOB-001,2026-07-21,2026-12-31,published,true,仅用于演示匹配
+DEMO-JOB-004,云平台运维助理,天府云联服务社（模拟）,成都,全职,Linux;Docker;网络基础;Shell,网络工程;计算机科学;软件工程,部署或自动化脚本项目,SRC-DEMO-JOB-001,2026-07-21,2026-12-31,published,true,仅用于演示匹配
+DEMO-JOB-005,网络安全助理工程师,澄明安全研究所（模拟）,成都,全职,网络基础;Linux;Python;安全基础,网络空间安全;网络工程;计算机科学,安全实验或漏洞分析报告,SRC-DEMO-JOB-001,2026-07-21,2026-12-31,published,true,仅用于演示匹配
+DEMO-JOB-006,嵌入式软件实习生,芯途物联实验室（模拟）,绵阳,实习,C;C++;Linux;串口通信,电子信息工程;自动化;计算机科学,单片机或传感器项目,SRC-DEMO-JOB-001,2026-07-21,2026-12-31,published,true,仅用于演示匹配
+DEMO-JOB-007,产品运营助理,知行教育服务社（模拟）,成都,全职,用户调研;数据分析;文档写作;沟通协作,管理科学;信息管理;不限,调研报告或活动运营项目,SRC-DEMO-JOB-001,2026-07-21,2026-12-31,published,true,仅用于演示匹配
+DEMO-JOB-008,测试开发实习生,云图质量工程组（模拟）,重庆,实习,Python;测试用例;SQL;Git,软件工程;计算机科学,自动化测试或接口测试项目,SRC-DEMO-JOB-001,2026-07-21,2026-12-31,published,true,仅用于演示匹配
+DEMO-JOB-009,机器学习工程实习生,算知智能研究社（模拟）,成都,实习,Python;机器学习;数据处理;Git,人工智能;数据科学;计算机科学,模型训练或数据建模项目,SRC-DEMO-JOB-001,2026-07-21,2026-12-31,published,true,仅用于演示匹配
+DEMO-JOB-010,地理信息数据助理,山河时空技术组（模拟）,成都,全职,Python;GIS基础;SQL;数据处理,地理信息科学;测绘工程;计算机科学,空间数据或地图可视化项目,SRC-DEMO-JOB-001,2026-07-21,2026-12-31,published,true,仅用于演示匹配
