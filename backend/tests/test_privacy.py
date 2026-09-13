@@ -3,13 +3,10 @@ from pathlib import Path
 
 
 class PrivacyBoundaryTests(unittest.TestCase):
-    def test_backend_business_source_has_no_prohibited_profile_fields(self) -> None:
+    def test_sensitive_profile_fields_remain_prohibited(self) -> None:
         source_root = Path(__file__).resolve().parents[1] / "app"
         source = "\n".join(path.read_text(encoding="utf-8") for path in source_root.rglob("*.py"))
         prohibited_field_literals = [
-            '"phone"',
-            '"email"',
-            '"student_number"',
             '"gender"',
             '"hometown"',
             '"health_status"',
@@ -18,6 +15,26 @@ class PrivacyBoundaryTests(unittest.TestCase):
 
         present_fields = {term for term in prohibited_field_literals if term in source}
         self.assertFalse(present_fields)
+
+    def test_contact_fields_are_limited_to_account_and_authorized_staff_paths(self) -> None:
+        source_root = Path(__file__).resolve().parents[1] / "app"
+        allowed_paths = {
+            "api/auth.py",
+            "api/staff.py",
+            "models/entities.py",
+        }
+        contact_fields = ("student_number", "phone", "email", "enrollment_year")
+        violations = []
+
+        for path in source_root.rglob("*.py"):
+            relative_path = path.relative_to(source_root).as_posix()
+            if relative_path in allowed_paths:
+                continue
+            source = path.read_text(encoding="utf-8")
+            if any(field in source for field in contact_fields):
+                violations.append(relative_path)
+
+        self.assertEqual(violations, [])
 
     def test_frontend_source_does_not_embed_platform_credentials(self) -> None:
         source_root = Path(__file__).resolve().parents[2] / "frontend" / "src"

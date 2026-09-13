@@ -37,6 +37,8 @@ class MatchingServiceTests(unittest.TestCase):
             {"skills": 50, "major": 20, "projects": 15, "city": 5, "target_role": 10},
         )
         self.assertEqual(result[0].gaps, [])
+        self.assertTrue(result[0].reasons)
+        self.assertIn("技能匹配得分 50/50", result[0].reasons[0])
         self.assertEqual(result[0].source.title, "Approved demo source")
         self.assertTrue(result[0].source.demo_only)
 

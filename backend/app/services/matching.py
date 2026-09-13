@@ -32,6 +32,7 @@ class ScoredJobMatch:
     score: int
     score_breakdown: dict[str, int]
     gaps: list[str]
+    reasons: list[str]
     source: MatchSource
 
 
@@ -86,6 +87,12 @@ class MatchingService:
             score=sum(breakdown.values()),
             score_breakdown=breakdown,
             gaps=gaps,
+            reasons=_build_match_reasons(
+                profile=profile,
+                job=job,
+                breakdown=breakdown,
+                gaps=gaps,
+            ),
             source=MatchSource(
                 title=job.source_title,
                 url=job.source_url,
@@ -142,3 +149,31 @@ def _matches_project_signal(signal: str, projects: list[str]) -> bool:
     normalized_projects = [_normalize(project) for project in projects]
     terms = [_normalize(term) for term in re.split(r"[;；、,/|]|或", signal)]
     return any(term and any(term in project for project in normalized_projects) for term in terms)
+
+
+def _build_match_reasons(
+    *,
+    profile: CareerProfile,
+    job: JobPosting,
+    breakdown: dict[str, int],
+    gaps: list[str],
+) -> list[str]:
+    reasons = [
+        (
+            f"技能匹配得分 {breakdown['skills']}/{SKILL_WEIGHT}，"
+            + ("当前技能已覆盖岗位主要要求。" if not gaps else f"待补强：{'、'.join(gaps)}。")
+        ),
+        (
+            f"目标城市{'与岗位城市一致' if breakdown['city'] else '与岗位城市不一致'}，"
+            f"岗位地点为{job.city}。"
+        ),
+        (
+            f"目标岗位{'与岗位名称相关' if breakdown['target_role'] else '与岗位名称存在差异'}，"
+            f"当前意向为{'、'.join(profile.target_roles)}。"
+        ),
+    ]
+    if breakdown["major"] == MAJOR_WEIGHT:
+        reasons.append("专业背景满足岗位偏好要求。")
+    if breakdown["projects"] > 0:
+        reasons.append("脱敏项目摘要包含岗位相关的项目实践信号。")
+    return reasons

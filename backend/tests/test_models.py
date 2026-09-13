@@ -8,6 +8,7 @@ class ModelMetadataTests(unittest.TestCase):
     def test_required_tables_are_registered_without_prohibited_columns(self) -> None:
         expected_tables = {
             "users",
+            "password_reset_tokens",
             "career_profiles",
             "counselor_student_access",
             "job_postings",
@@ -21,9 +22,6 @@ class ModelMetadataTests(unittest.TestCase):
             "hometown",
             "health_status",
             "political_status",
-            "phone",
-            "email",
-            "student_number",
         }
 
         self.assertEqual(set(Base.metadata.tables), expected_tables)
@@ -47,6 +45,28 @@ class ModelMetadataTests(unittest.TestCase):
 
         self.assertEqual(user_role_values, ["student", "counselor", "admin"])
         self.assertEqual(job_stage_values, ["exploring", "preparing", "applying"])
+
+    def test_authentication_columns_and_reset_token_constraints_are_present(self) -> None:
+        users = Base.metadata.tables["users"]
+        reset_tokens = Base.metadata.tables["password_reset_tokens"]
+
+        self.assertTrue(users.columns["username"].unique)
+        self.assertFalse(users.columns["password_hash"].nullable)
+        self.assertFalse(users.columns["must_change_password"].nullable)
+        self.assertIn("user_id", reset_tokens.c)
+        self.assertIn("created_by", reset_tokens.c)
+        self.assertTrue(reset_tokens.columns["token_hash"].unique)
+
+    def test_student_account_profile_columns_and_number_constraint_are_present(self) -> None:
+        users = Base.metadata.tables["users"]
+        constraints = {constraint.name for constraint in users.constraints}
+
+        self.assertTrue(users.columns["student_number"].unique)
+        self.assertEqual(users.columns["student_number"].type.length, 10)
+        self.assertIn("phone", users.c)
+        self.assertIn("email", users.c)
+        self.assertIn("enrollment_year", users.c)
+        self.assertIn("ck_users_student_number_format", constraints)
 
 
 if __name__ == "__main__":

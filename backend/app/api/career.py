@@ -8,7 +8,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.auth.demo import (
+from app.auth.session import (
     DbSession,
     SessionPrincipal,
     get_current_principal,
@@ -16,7 +16,14 @@ from app.auth.demo import (
 )
 from app.clients.fastgpt import AssistantRoute
 from app.config import get_settings
-from app.models.entities import CareerProfile, JobStage, UserRole
+from app.models.entities import (
+    ActionPlan,
+    CareerProfile,
+    JobPosting,
+    JobStage,
+    MatchResult,
+    UserRole,
+)
 from app.services.assistant import create_assistant_service
 from app.services.audit import record_audit_event
 from app.services.career import (
@@ -29,7 +36,7 @@ from app.services.career import (
 
 router = APIRouter(prefix="/api/v1", tags=["career"])
 StudentPrincipal = Annotated[SessionPrincipal, Depends(require_roles(UserRole.STUDENT))]
-AnyDemoPrincipal = Annotated[SessionPrincipal, Depends(get_current_principal)]
+AnyAccountPrincipal = Annotated[SessionPrincipal, Depends(get_current_principal)]
 
 
 class CareerProfilePayload(BaseModel):
@@ -85,6 +92,7 @@ class MatchResponse(BaseModel):
     score: int
     score_breakdown: dict[str, int]
     gaps: list[str]
+    reasons: list[str]
     source: SourceResponse
 
 
@@ -105,6 +113,10 @@ class ActionPlanResponse(BaseModel):
     match_id: UUID
     status: str
     items: list[dict[str, str]]
+    job_title: str
+    company_name: str
+    created_at: str
+    advice_count: int = 0
 
 
 class AssistantQueryRequest(BaseModel):
@@ -201,6 +213,9 @@ def generate_action_plan(
     if match is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Match result not found")
     plan = create_action_plan(session, student_id=principal.user_id, match=match)
+    job = session.get(JobPosting, match.job_id)
+    if job is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Job posting not found")
     record_audit_event(
         session,
         actor_id=principal.user_id,
@@ -215,13 +230,44 @@ def generate_action_plan(
         match_id=plan.match_id,
         status=plan.status.value,
         items=plan.items,
+        job_title=job.title,
+        company_name=job.company_name,
+        created_at=plan.created_at.isoformat(),
+    )
+
+
+@router.get("/action-plans/latest", response_model=ActionPlanResponse)
+def read_latest_action_plan(
+    principal: StudentPrincipal, session: DbSession
+) -> ActionPlanResponse:
+    plan = session.scalar(
+        select(ActionPlan)
+        .where(ActionPlan.student_id == principal.user_id)
+        .order_by(ActionPlan.created_at.desc())
+    )
+    if plan is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Action plan not found")
+    match = session.get(MatchResult, plan.match_id)
+    if match is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Match result not found")
+    job = session.get(JobPosting, match.job_id)
+    if job is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Job posting not found")
+    return ActionPlanResponse(
+        id=plan.id,
+        match_id=plan.match_id,
+        status=plan.status.value,
+        items=plan.items,
+        job_title=job.title,
+        company_name=job.company_name,
+        created_at=plan.created_at.isoformat(),
     )
 
 
 @router.post("/assistant/query", response_model=AssistantQueryResponse)
 async def query_assistant(
     payload: AssistantQueryRequest,
-    principal: AnyDemoPrincipal,
+    principal: AnyAccountPrincipal,
     session: DbSession,
 ) -> AssistantQueryResponse:
     context = _assistant_context(session, principal)
@@ -304,6 +350,7 @@ def _match_response(stored_match: StoredMatch) -> MatchResponse:
         score=match.score,
         score_breakdown=match.score_breakdown,
         gaps=match.gaps,
+        reasons=match.reasons,
         source=SourceResponse(
             title=match.source.title,
             url=match.source.url,

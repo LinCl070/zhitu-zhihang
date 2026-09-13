@@ -38,6 +38,8 @@ class Settings:
     fastgpt_chat_completions_path: str
     fastgpt_workflow_career_id: str | None
     fastgpt_workflow_policy_id: str | None
+    admin_bootstrap_username: str | None
+    admin_bootstrap_password: str | None
 
     @classmethod
     def from_environment(cls, env_file: Path | None = None) -> "Settings":
@@ -92,6 +94,12 @@ class Settings:
             os.getenv("FASTGPT_WORKFLOW_POLICY_ID", values.get("FASTGPT_WORKFLOW_POLICY_ID"))
             or None
         )
+        admin_bootstrap_username = (
+            os.getenv("ADMIN_BOOTSTRAP_USERNAME", values.get("ADMIN_BOOTSTRAP_USERNAME")) or None
+        )
+        admin_bootstrap_password = (
+            os.getenv("ADMIN_BOOTSTRAP_PASSWORD", values.get("ADMIN_BOOTSTRAP_PASSWORD")) or None
+        )
         if fastgpt_mode == "sf_fastgpt" and not all(
             (
                 fastgpt_base_url,
@@ -116,6 +124,8 @@ class Settings:
             fastgpt_chat_completions_path=fastgpt_chat_completions_path,
             fastgpt_workflow_career_id=fastgpt_workflow_career_id,
             fastgpt_workflow_policy_id=fastgpt_workflow_policy_id,
+            admin_bootstrap_username=admin_bootstrap_username,
+            admin_bootstrap_password=admin_bootstrap_password,
         )
 
 

@@ -2,7 +2,7 @@ import unittest
 from datetime import UTC, datetime, timedelta
 from uuid import UUID, uuid4
 
-from app.auth.demo import DemoIdentity, DemoSessionStore, SessionPrincipal
+from app.auth.session import AccountSessionStore, SessionPrincipal
 from app.models.entities import CareerProfile, UserRole
 from app.services.authorization import (
     get_readable_career_profile,
@@ -90,12 +90,14 @@ class AuthorizationTests(unittest.TestCase):
         self.assertEqual(raised.exception.status_code, 403)
         self.assertEqual(session.added[0].metadata_json, {})
 
-    def test_demo_session_token_expires_in_memory(self) -> None:
-        store = DemoSessionStore()
-        identity = DemoIdentity("student", self.student_a, "Demo Student", UserRole.STUDENT)
-        token, principal = store.issue(identity)
+    def test_account_session_token_expires_and_can_be_revoked(self) -> None:
+        store = AccountSessionStore()
+        principal = self._principal(self.student_a, UserRole.STUDENT)
+        store._sessions["active"] = principal
 
-        self.assertEqual(store.resolve(token), principal)
+        self.assertEqual(store.resolve("active"), principal)
+        store.revoke_user(self.student_a)
+        self.assertIsNone(store.resolve("active"))
         store._sessions["expired"] = SessionPrincipal(
             user_id=self.student_a,
             display_name="Demo Student",

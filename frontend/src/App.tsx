@@ -1,11 +1,16 @@
 import { FormEvent, useState } from 'react'
 import {
   ActionPlan,
-  INITIAL_JOBS,
-  INITIAL_PLAN_ITEMS,
+  ApiError,
+  api,
+  CareerProfile,
+  CareerProfilePayload,
+  AuthSession,
   Match,
+  ActionPlanResponse,
 } from './api/client'
 import { AdvicePanel } from './components/AdvicePanel'
+import { ChangePasswordDialog } from './components/ChangePasswordDialog'
 import { MatchesPanel } from './components/MatchesPanel'
 import { PlansPanel } from './components/PlansPanel'
 import { ProfilePanel } from './components/ProfilePanel'
@@ -29,46 +34,84 @@ export default function App() {
 function AppContent() {
   const { showToast } = useToast()
   const [role, setRole] = useState<AppRole>(null)
+  const [session, setSession] = useState<AuthSession | null>(null)
   const [studentNav, setStudentNav] = useState<StudentNav>('profile')
-  const [profileSaved, setProfileSaved] = useState(true)
+  const [profileSaved, setProfileSaved] = useState(false)
   const [form, setForm] = useState<ProfileForm>(defaultProfileForm)
-  const [jobs, setJobs] = useState<Match[]>(INITIAL_JOBS)
+  const [jobs, setJobs] = useState<Match[]>([])
   const [loadingJobs, setLoadingJobs] = useState(false)
+  const [matchesMessage, setMatchesMessage] = useState<string | null>(null)
+  const [handoffRecommended, setHandoffRecommended] = useState(false)
   const [savingProfile, setSavingProfile] = useState(false)
   const [planLoadingId, setPlanLoadingId] = useState<string | null>(null)
-  const [plan, setPlan] = useState<ActionPlan>({
-    id: 'p1',
-    match_id: 'j1',
-    status: 'active',
-    job_title: '后端开发实习生 · 成都示例科技',
-    created_at: '2026-05-14 11:06',
-    advice_count: 1,
-    items: INITIAL_PLAN_ITEMS,
-  })
+  const [plan, setPlan] = useState<ActionPlan | null>(null)
 
-  const handleEnterRole = (selectedRole: 'student' | 'teacher' | 'admin') => {
-    setRole(selectedRole)
-    if (selectedRole === 'student') {
-      setStudentNav('profile')
-      showToast('已进入学生工作台', '演示数据环境，可在右上角退出并切换角色。', 'info')
-    } else if (selectedRole === 'teacher') {
-      showToast('已进入教师工作台', '演示数据环境，可在右上角退出并切换角色。', 'info')
-    } else if (selectedRole === 'admin') {
-      showToast('已进入管理工作台', '演示数据环境，可在右上角退出并切换角色。', 'info')
+  const handleAuthenticated = async (nextSession: AuthSession) => {
+    try {
+      const selectedRole = nextSession.role === 'counselor' ? 'teacher' : nextSession.role
+      if (selectedRole === 'student') {
+        setProfileSaved(false)
+        setJobs([])
+        setPlan(null)
+        setMatchesMessage(null)
+        setHandoffRecommended(false)
+        try {
+          const profile = await api.readCareerProfile(nextSession.access_token)
+          setForm(profileToForm(profile))
+          setProfileSaved(true)
+          try {
+            const savedPlan = await api.readLatestActionPlan(nextSession.access_token)
+            setPlan(actionPlanToView(savedPlan))
+          } catch (error) {
+            if (!(error instanceof ApiError && error.status === 404)) throw error
+          }
+        } catch (error) {
+          if (!(error instanceof ApiError && error.status === 409)) throw error
+        }
+        setStudentNav('profile')
+        showToast('已进入学生工作台', '账号登录成功。', 'info')
+      } else if (selectedRole === 'teacher') {
+        showToast('已进入教师工作台', '账号登录成功。', 'info')
+      } else {
+        showToast('已进入管理工作台', '账号登录成功。', 'info')
+      }
+      setSession(nextSession)
+      setRole(selectedRole)
+    } catch (error) {
+      const message = error instanceof ApiError ? error.message : '无法完成登录，请稍后重试。'
+      showToast('登录失败', message, 'warning')
     }
   }
 
-  const handleSaveProfile = (e: FormEvent) => {
-    e.preventDefault()
-    setSavingProfile(true)
+  const handleExit = () => {
+    setSession(null)
+    setRole(null)
+  }
 
-    setTimeout(() => {
+  const handlePasswordChanged = () => {
+    handleExit()
+    showToast('密码已修改', '请使用新密码重新登录。', 'success')
+  }
+
+  const handleSaveProfile = async (e: FormEvent) => {
+    e.preventDefault()
+    if (!session) return
+    setSavingProfile(true)
+    try {
+      const savedProfile = await api.saveCareerProfile(session.access_token, formToPayload(form))
+      setForm(profileToForm(savedProfile))
       setProfileSaved(true)
-      setSavingProfile(false)
-      setJobs(INITIAL_JOBS)
+      setJobs([])
+      setMatchesMessage(null)
+      setHandoffRecommended(false)
       setStudentNav('jobs')
-      showToast('画像已保存', '已用于后续匹配。正在带你查看岗位推荐。', 'success')
-    }, 650)
+      await refreshMatches(session.access_token)
+      showToast('画像已保存', '已用于后续匹配，推荐已按最新画像更新。', 'success')
+    } catch (error) {
+      showApiError(error, '保存画像失败')
+    } finally {
+      setSavingProfile(false)
+    }
   }
 
   const handleResetProfile = () => {
@@ -77,67 +120,68 @@ function AppContent() {
     showToast('已重置画像', '已恢复默认示例画像。', 'info')
   }
 
-  const handleGenerateJobs = () => {
+  const refreshMatches = async (token = session?.access_token) => {
+    if (!token) return
     setLoadingJobs(true)
     setJobs([])
-
-    setTimeout(() => {
-      setJobs(INITIAL_JOBS)
+    setMatchesMessage(null)
+    setHandoffRecommended(false)
+    try {
+      const result = await api.generateMatches(token)
+      setJobs(result.matches)
+      setMatchesMessage(result.message || null)
+      setHandoffRecommended(result.handoff_recommended)
+      if (result.matches.length > 0) {
+        showToast('推荐结果已生成', `已返回 ${result.matches.length} 条未过期岗位。`, 'success')
+      }
+    } catch (error) {
+      setMatchesMessage('岗位推荐暂时无法生成，请稍后重试。')
+      showApiError(error, '生成推荐失败')
+    } finally {
       setLoadingJobs(false)
-      showToast('推荐结果已生成', `共 ${INITIAL_JOBS.length} 条未过期岗位，可展开查看匹配依据。`, 'success')
-    }, 750)
+    }
   }
 
-  const handleMakePlan = (job: Match) => {
+  const handleGenerateJobs = () => {
+    void refreshMatches()
+  }
+
+  const handleMakePlan = async (job: Match) => {
+    if (!session) return
     setPlanLoadingId(`plan-${job.id}`)
-
-    setTimeout(() => {
-      const targetGap = job.gaps[0] || '核心缺口'
-      const updatedItems = INITIAL_PLAN_ITEMS.map((item, idx) => {
-        if (idx === 0) {
-          return {
-            ...item,
-            title: `针对「${targetGap}」完成专项练习并更新项目说明`,
-            detail: `围绕 ${job.gaps.join('、')} 制定本周练习，关联岗位：${job.title}。`,
-          }
-        }
-        return item
-      })
-
-      const now = new Date()
-      const stamp = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(
-        now.getDate()
-      ).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(
-        now.getMinutes()
-      ).padStart(2, '0')}`
-
-      setPlan({
-        id: `plan-${Date.now()}`,
-        match_id: job.id,
-        status: 'active',
-        job_title: `${job.title} · ${job.company_name}`,
-        created_at: stamp,
-        advice_count: 1,
-        items: updatedItems,
-      })
-
-      setPlanLoadingId(null)
+    try {
+      const response = await api.createActionPlan(session.access_token, job.id)
+      setPlan(actionPlanToView(response))
       setStudentNav('plan')
-      showToast('行动计划已生成', '缺口已转换为分阶段任务，可在行动计划中查看。', 'success')
-    }, 700)
+      showToast('行动计划已生成', '已保存为当前岗位的分阶段任务。', 'success')
+    } catch (error) {
+      showApiError(error, '生成行动计划失败')
+    } finally {
+      setPlanLoadingId(null)
+    }
+  }
+
+  const showApiError = (error: unknown, title: string) => {
+    const message = error instanceof ApiError ? error.message : '操作未完成，请稍后重试。'
+    if (error instanceof ApiError && error.status === 401) handleExit()
+    showToast(title, message, 'warning')
   }
 
   if (!role) {
-    return <WelcomeScreen onEnterRole={handleEnterRole} />
+    return <WelcomeScreen onAuthenticated={handleAuthenticated} />
   }
 
-  if (role === 'teacher' || role === 'admin') {
+  if (session?.must_change_password) {
+    return <ChangePasswordDialog token={session.access_token} required onComplete={handlePasswordChanged} />
+  }
+
+  if ((role === 'teacher' || role === 'admin') && session) {
     return (
       <StaffDashboard
-        token="token"
-        name={role === 'teacher' ? '陈老师' : '就业管理员'}
+        token={session.access_token}
+        name={session.display_name}
         role={role}
-        onSwitch={() => setRole(null)}
+        onSwitch={handleExit}
       />
     )
   }
@@ -170,7 +214,7 @@ function AppContent() {
                 type="button"
                 className="btn btn-ghost"
                 data-action="switch-role"
-                onClick={() => setRole(null)}
+                onClick={handleExit}
               >
                 退出并切换角色
               </button>
@@ -277,7 +321,7 @@ function AppContent() {
               onSelectNav={(n) => setStudentNav(n)}
               profileSaved={profileSaved}
               jobsCount={jobs.length}
-              planCount={plan.items.length}
+              planCount={plan?.items.length || 0}
             />
 
             {/* Panels */}
@@ -299,6 +343,8 @@ function AppContent() {
               <MatchesPanel
                 matches={jobs}
                 loading={loadingJobs}
+                message={matchesMessage}
+                handoffRecommended={handoffRecommended}
                 planLoadingId={planLoadingId}
                 onGenerate={handleGenerateJobs}
                 onPlan={handleMakePlan}
@@ -312,7 +358,7 @@ function AppContent() {
               />
             )}
 
-            {studentNav === 'consult' && <AdvicePanel />}
+            {studentNav === 'consult' && session && <AdvicePanel token={session.access_token} />}
           </main>
         </div>
 
@@ -372,4 +418,53 @@ function AppContent() {
       </div>
     </div>
   )
+}
+
+function formToPayload(form: ProfileForm): CareerProfilePayload {
+  return {
+    major: form.major.trim(),
+    skills: splitList(form.skills),
+    projects: splitList(form.projects),
+    target_roles: splitList(form.targetRoles),
+    target_cities: splitList(form.targetCities),
+    job_stage: form.jobStage,
+  }
+
+}
+
+function profileToForm(profile: CareerProfile): ProfileForm {
+  return {
+    major: profile.major,
+    skills: profile.skills.join(', '),
+    projects: profile.projects.join('\n'),
+    targetRoles: profile.target_roles.join(', '),
+    targetCities: profile.target_cities.join(', '),
+    jobStage: profile.job_stage,
+  }
+}
+
+function splitList(value: string): string[] {
+  return value
+    .split(/[,，\n]/)
+    .map((item) => item.trim())
+    .filter(Boolean)
+}
+
+function actionPlanToView(response: ActionPlanResponse): ActionPlan {
+  return {
+    id: response.id,
+    match_id: response.match_id,
+    status: response.status,
+    job_title: [response.job_title, response.company_name].filter(Boolean).join(' · '),
+    created_at: response.created_at,
+    advice_count: response.advice_count,
+    items: response.items.map((item, index) => ({
+      id: `${response.id}-${index}`,
+      phase: item.phase,
+      priority: item.priority,
+      status: '待开始',
+      title: item.task,
+      detail: '根据当前岗位匹配结果生成，请结合实际情况执行。',
+    })),
+  }
 }

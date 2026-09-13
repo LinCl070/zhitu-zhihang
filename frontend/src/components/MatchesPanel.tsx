@@ -4,6 +4,8 @@ import { Match } from '../api/client'
 interface MatchesPanelProps {
   matches: Match[]
   loading: boolean
+  message?: string | null
+  handoffRecommended?: boolean
   planLoadingId: string | null
   onGenerate: () => void
   onPlan: (match: Match) => void
@@ -28,6 +30,8 @@ const dimMax: Record<string, number> = {
 export function MatchesPanel({
   matches,
   loading,
+  message,
+  handoffRecommended = false,
   planLoadingId,
   onGenerate,
   onPlan,
@@ -70,7 +74,8 @@ export function MatchesPanel({
       {!loading && matches.length === 0 && (
         <div id="jobs-empty" className="empty">
           <strong>暂无推荐结果</strong>
-          <div>请先保存职业画像，或点击重新生成。</div>
+          <div>{message || '请先保存职业画像，或点击重新生成。'}</div>
+          {handoffRecommended && <div>建议联系就业指导教师确认可用岗位。</div>}
           <button
             type="button"
             className="btn btn-primary"
@@ -175,7 +180,13 @@ export function MatchesPanel({
                 )}
 
                 <div className="job-source">
-                  <span>{job.source.title}</span>
+                  {job.source.url ? (
+                    <a href={job.source.url} target="_blank" rel="noreferrer">
+                      {job.source.title}
+                    </a>
+                  ) : (
+                    <span>{job.source.title}</span>
+                  )}
                   <span>发布 {job.source.published_on}</span>
                   <span>到期 {job.source.valid_until}</span>
                 </div>

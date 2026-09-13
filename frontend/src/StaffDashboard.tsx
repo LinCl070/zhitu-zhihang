@@ -1,10 +1,10 @@
-import { useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import {
+  api,
+  ApiError,
   CounselorStudent,
-  INITIAL_ADMIN_AUDIT,
-  INITIAL_ADMIN_JOBS,
-  INITIAL_ADMIN_KNOWLEDGE,
-  INITIAL_TEACHER_STUDENTS,
+  CounselorStudentResponse,
+  AdminOverviewResponse,
 } from './api/client'
 import { useToast } from './components/Toast'
 import { brand } from './config/brand'
@@ -13,6 +13,8 @@ export type TeacherNav = 'students' | 'summary' | 'advice'
 export type AdminNav = 'access' | 'jobs' | 'knowledge' | 'audit'
 
 export function StaffDashboard({
+  token,
+  name,
   role,
   onSwitch,
 }: {
@@ -22,53 +24,61 @@ export function StaffDashboard({
   onSwitch: () => void
 }) {
   if (role === 'teacher') {
-    return <TeacherWorkbench onSwitch={onSwitch} />
+    return <TeacherWorkbench token={token} name={name} onSwitch={onSwitch} />
   }
-  return <AdminWorkbench onSwitch={onSwitch} />
+  return <AdminWorkbench token={token} name={name} onSwitch={onSwitch} />
 }
 
-function TeacherWorkbench({ onSwitch }: { onSwitch: () => void }) {
+function TeacherWorkbench({ token, name, onSwitch }: { token: string; name: string; onSwitch: () => void }) {
   const { showToast } = useToast()
   const [nav, setNav] = useState<TeacherNav>('students')
-  const [students, setStudents] = useState<CounselorStudent[]>(INITIAL_TEACHER_STUDENTS)
-  const [selectedId, setSelectedId] = useState('s1')
+  const [students, setStudents] = useState<CounselorStudent[]>([])
+  const [selectedId, setSelectedId] = useState('')
   const [adviceText, setAdviceText] = useState('')
+  const [loading, setLoading] = useState(true)
+  const [submitting, setSubmitting] = useState(false)
+
+  const loadStudents = useCallback(async () => {
+    setLoading(true)
+    try {
+      const response = await api.readCounselorStudents(token)
+      const mapped = response.map(mapCounselorStudent)
+      setStudents(mapped)
+      setSelectedId((current) => current || mapped[0]?.id || '')
+    } catch (error) {
+      showToast('读取授权学生失败', getErrorMessage(error), 'warning')
+    } finally {
+      setLoading(false)
+    }
+  }, [showToast, token])
+
+  useEffect(() => {
+    void loadStudents()
+  }, [loadStudents])
 
   const selectedStudent = students.find((s) => s.id === selectedId) || students[0]
 
-  const handleSubmitAdvice = () => {
-    if (!adviceText.trim()) {
+  const handleSubmitAdvice = async () => {
+    if (!selectedStudent || !adviceText.trim()) {
       showToast('请填写意见', '指导意见不能为空。', 'warning')
       return
     }
 
-    const now = new Date()
-    const stamp = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(
-      now.getDate()
-    ).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(
-      now.getMinutes()
-    ).padStart(2, '0')}`
-
-    const newHistoryItem = {
-      id: `a${Date.now()}`,
-      at: stamp,
-      text: adviceText.trim(),
+    if (!selectedStudent.planId) {
+      showToast('暂不能提交', '该学生还没有行动计划，无法关联指导意见。', 'warning')
+      return
     }
-
-    setStudents((prev) =>
-      prev.map((s) =>
-        s.id === selectedStudent.id
-          ? {
-              ...s,
-              adviceCount: s.adviceCount + 1,
-              history: [newHistoryItem, ...s.history],
-            }
-          : s
-      )
-    )
-
-    setAdviceText('')
-    showToast('意见已提交', '已写入审计事件（演示）。', 'success')
+    setSubmitting(true)
+    try {
+      await api.createTeacherAdvice(token, selectedStudent.id, selectedStudent.planId, adviceText.trim())
+      setAdviceText('')
+      await loadStudents()
+      showToast('意见已提交', '已保存到服务端并写入脱敏审计。', 'success')
+    } catch (error) {
+      showToast('意见提交失败', getErrorMessage(error), 'warning')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -90,7 +100,7 @@ function TeacherWorkbench({ onSwitch }: { onSwitch: () => void }) {
         <div className="top-meta">
           <span className="meta-chip hide-sm">演示数据</span>
           <span className="meta-chip">
-            <b>陈老师</b> · 就业指导
+            <b>{name}</b> · 就业指导
           </span>
           <div className="top-actions">
             <button type="button" className="btn btn-ghost" onClick={onSwitch}>
@@ -176,8 +186,15 @@ function TeacherWorkbench({ onSwitch }: { onSwitch: () => void }) {
                 <div className="ld-list">
                   <div className="col-label">授权学生 · {students.length} 名</div>
                   <div id="teacher-student-list">
-                    {students.map((s) => {
-                      const isActive = s.id === selectedStudent.id
+                    {loading ? (
+                      <div className="empty">正在读取授权学生…</div>
+                    ) : students.length === 0 ? (
+                      <div className="empty">
+                        <strong>暂无授权学生</strong>
+                        <div>请联系管理员配置教师-学生授权关系。</div>
+                      </div>
+                    ) : students.map((s) => {
+                      const isActive = s.id === selectedStudent?.id
                       return (
                         <button
                           key={s.id}
@@ -204,9 +221,9 @@ function TeacherWorkbench({ onSwitch }: { onSwitch: () => void }) {
                     <dt>授权班级</dt>
                     <dd>软件工程 2023 级 1-2 班</dd>
                     <dt>授权学生</dt>
-                    <dd>3 名（本演示数据）</dd>
+                    <dd>{students.length} 名（服务端数据）</dd>
                     <dt>可见字段</dt>
-                    <dd>专业、目标、阶段、计划数、意见数</dd>
+                    <dd>姓名、学号、联系方式、入学年份及职业摘要</dd>
                     <dt>不可见</dt>
                     <dd>技能标签、项目原文</dd>
                   </dl>
@@ -229,12 +246,26 @@ function TeacherWorkbench({ onSwitch }: { onSwitch: () => void }) {
               <div className="page-head">
                 <div>
                   <h1>当前学生摘要</h1>
-                  <p className="desc">授权可见字段：专业、目标、阶段、计划数、意见数。</p>
+                  <p className="desc">授权可见账号档案与职业摘要，技能标签和项目原文除外。</p>
                 </div>
               </div>
               <div className="panel" id="teacher-summary-panel">
+                {!selectedStudent ? (
+                  <div className="empty">
+                    <strong>暂无可查看学生</strong>
+                    <div>请先由管理员配置授权关系。</div>
+                  </div>
+                ) : <>
                 <h3 className="panel-title">{selectedStudent.name} · 摘要</h3>
                 <dl className="kv">
+                  <dt>学号</dt>
+                  <dd>{selectedStudent.studentNumber || '未登记'}</dd>
+                  <dt>电话号码</dt>
+                  <dd>{selectedStudent.phone || '未登记'}</dd>
+                  <dt>联系邮箱</dt>
+                  <dd>{selectedStudent.email || '未登记'}</dd>
+                  <dt>入学年份</dt>
+                  <dd>{selectedStudent.enrollmentYear || '未登记'}</dd>
                   <dt>专业</dt>
                   <dd>{selectedStudent.major}</dd>
                   <dt>目标岗位</dt>
@@ -255,6 +286,7 @@ function TeacherWorkbench({ onSwitch }: { onSwitch: () => void }) {
                   </svg>
                   <div className="alert-body">技能标签与项目原文不在教师可见范围。</div>
                 </div>
+                </>}
               </div>
             </section>
           )}
@@ -267,7 +299,7 @@ function TeacherWorkbench({ onSwitch }: { onSwitch: () => void }) {
                   <p className="desc">提交后写入审计，学生端仅见意见正文与时间。</p>
                 </div>
               </div>
-              <div className="grid-2">
+              {!selectedStudent ? <div className="panel"><div className="empty"><strong>暂无可指导学生</strong><div>请先由管理员配置授权关系。</div></div></div> : <div className="grid-2">
                 <div className="panel">
                   <h3 className="panel-title">撰写意见 · <span id="advice-student-name">{selectedStudent.name}</span></h3>
                   <div className="field">
@@ -285,8 +317,9 @@ function TeacherWorkbench({ onSwitch }: { onSwitch: () => void }) {
                       className="btn btn-primary"
                       id="btn-submit-advice"
                       onClick={handleSubmitAdvice}
+                      disabled={submitting}
                     >
-                      提交指导意见
+                      {submitting ? '正在提交…' : '提交指导意见'}
                     </button>
                   </div>
                 </div>
@@ -308,7 +341,7 @@ function TeacherWorkbench({ onSwitch }: { onSwitch: () => void }) {
                     )}
                   </div>
                 </div>
-              </div>
+              </div>}
             </section>
           )}
         </main>
@@ -344,19 +377,101 @@ function TeacherWorkbench({ onSwitch }: { onSwitch: () => void }) {
   )
 }
 
-function AdminWorkbench({ onSwitch }: { onSwitch: () => void }) {
+function AdminWorkbench({ token, name, onSwitch }: { token: string; name: string; onSwitch: () => void }) {
   const { showToast } = useToast()
   const [nav, setNav] = useState<AdminNav>('access')
+  const [overview, setOverview] = useState<AdminOverviewResponse | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [submitting, setSubmitting] = useState(false)
+  const [selectedCounselorId, setSelectedCounselorId] = useState('')
+  const [selectedStudentId, setSelectedStudentId] = useState('')
+  const [teacherUsername, setTeacherUsername] = useState('')
+  const [teacherDisplayName, setTeacherDisplayName] = useState('')
+  const [temporaryPassword, setTemporaryPassword] = useState('')
+
+  const loadOverview = useCallback(async () => {
+    setLoading(true)
+    try {
+      const response = await api.readAdminOverview(token)
+      setOverview(response)
+      setSelectedCounselorId((current) => current || response.counselors[0]?.id || '')
+      setSelectedStudentId((current) => current || response.students[0]?.id || '')
+    } catch (error) {
+      showToast('读取管理台账失败', getErrorMessage(error), 'warning')
+    } finally {
+      setLoading(false)
+    }
+  }, [showToast, token])
+
+  useEffect(() => {
+    void loadOverview()
+  }, [loadOverview])
 
   const statusTagClass = (status: string) => {
-    if (status === '已发布' || status === '可用' || status === '成功' || status === '已记录' || status === '已脱敏') return 'tag-success'
-    if (status === '待审核' || status === '维护中' || status === '待处理') return 'tag-warning'
-    if (status === '已过期') return 'tag-danger'
+    if (status === '已发布' || status === 'published' || status === '可用' || status === 'approved' || status === '成功' || status === '已记录' || status === '已脱敏') return 'tag-success'
+    if (status === '待审核' || status === 'draft' || status === 'pending_review' || status === 'pending_source' || status === '维护中' || status === '待处理') return 'tag-warning'
+    if (status === '已过期' || status === 'expired') return 'tag-danger'
     return 'tag-neutral'
   }
 
-  const handleSaveGrant = () => {
-    showToast('授权已保存', '教师-学生范围已更新，并写入脱敏审计。', 'success')
+  const statusLabel = (status: string) => ({
+    published: '已发布',
+    draft: '待审核',
+    expired: '已过期',
+    approved: '可用',
+    pending_review: '待审核',
+    pending_source: '待补充来源',
+  }[status] || status)
+
+  const roleLabel = (role: string | null) => ({
+    student: '学生',
+    counselor: '教师',
+    admin: '管理员',
+  }[role || ''] || '系统')
+
+  const handleSaveGrant = async () => {
+    if (!selectedCounselorId || !selectedStudentId) {
+      showToast('请选择授权对象', '教师和学生均不能为空。', 'warning')
+      return
+    }
+    setSubmitting(true)
+    try {
+      await api.grantCounselorAccess(token, selectedCounselorId, selectedStudentId)
+      await loadOverview()
+      showToast('授权已保存', '教师-学生关系已持久化，并写入脱敏审计。', 'success')
+    } catch (error) {
+      showToast('授权保存失败', getErrorMessage(error), 'warning')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  const handleCreateTeacher = async () => {
+    if (!teacherUsername.trim() || !teacherDisplayName.trim()) {
+      showToast('请完善教师信息', '用户名和显示名称均不能为空。', 'warning')
+      return
+    }
+    setSubmitting(true)
+    try {
+      const account = await api.createTeacher(token, teacherUsername, teacherDisplayName)
+      setTemporaryPassword(`教师 ${account.display_name} 的初始密码：${account.temporary_password}`)
+      setTeacherUsername(''); setTeacherDisplayName('')
+      await loadOverview()
+      showToast('教师账号已创建', '请安全地交付一次性初始密码。', 'success')
+    } catch (error) {
+      showToast('创建教师账号失败', getErrorMessage(error), 'warning')
+    } finally { setSubmitting(false) }
+  }
+
+  const handleResetPassword = async (userId: string) => {
+    setSubmitting(true)
+    try {
+      const account = await api.resetAccountPassword(token, userId)
+      setTemporaryPassword(`${account.display_name} 的临时密码：${account.temporary_password}`)
+      showToast('密码已重置', '请安全地交付一次性临时密码。', 'success')
+    } catch (error) {
+      showToast('密码重置失败', getErrorMessage(error), 'warning')
+    } finally { setSubmitting(false) }
   }
 
   return (
@@ -378,7 +493,7 @@ function AdminWorkbench({ onSwitch }: { onSwitch: () => void }) {
         <div className="top-meta">
           <span className="meta-chip hide-sm">演示数据</span>
           <span className="meta-chip">
-            <b>就业管理员</b>
+            <b>{name}</b> · 就业管理员
           </span>
           <div className="top-actions">
             <button type="button" className="btn btn-ghost" onClick={onSwitch}>
@@ -478,25 +593,31 @@ function AdminWorkbench({ onSwitch }: { onSwitch: () => void }) {
                 </div>
               </div>
               <div className="admin-overview">
-                <div className="stat-card"><div className="k">授权关系</div><div className="v">12</div><div className="s">教师-学生</div></div>
-                <div className="stat-card"><div className="k">在岗教师</div><div className="v">4</div><div className="s">本学期</div></div>
-                <div className="stat-card"><div className="k">覆盖学生</div><div className="v">36</div><div className="s">授权有效</div></div>
-                <div className="stat-card"><div className="k">待处理</div><div className="v">2</div><div className="s">范围变更</div></div>
+                <div className="stat-card"><div className="k">授权关系</div><div className="v">{overview?.accesses.length ?? 0}</div><div className="s">教师-学生</div></div>
+                <div className="stat-card"><div className="k">教师账号</div><div className="v">{overview?.counselors.length ?? 0}</div><div className="s">可配置授权</div></div>
+                <div className="stat-card"><div className="k">学生账号</div><div className="v">{overview?.students.length ?? 0}</div><div className="s">可授权对象</div></div>
+                <div className="stat-card"><div className="k">审计事件</div><div className="v">{overview?.audits.length ?? 0}</div><div className="s">最近 50 条</div></div>
               </div>
               <div className="grant-box">
                 <div className="panel">
                   <h3 className="panel-title">选择教师</h3>
                   <div className="field">
-                    <label>教师</label>
-                    <select id="admin-teacher"><option>陈老师 · 就业指导</option><option>刘老师 · 生涯咨询</option></select>
+                    <label htmlFor="admin-teacher">教师</label>
+                    <select id="admin-teacher" value={selectedCounselorId} onChange={(e) => setSelectedCounselorId(e.target.value)} disabled={loading}>
+                      <option value="">请选择教师</option>
+                      {(overview?.counselors || []).map((user) => <option key={user.id} value={user.id}>{user.display_name}</option>)}
+                    </select>
                   </div>
                   <div className="field" style={{ marginTop: '10px' }}>
-                    <label>授权范围</label>
-                    <select><option>软件工程 2023 级 1-2 班</option><option>数据科学 2022 级</option></select>
+                    <label htmlFor="admin-student">学生</label>
+                    <select id="admin-student" value={selectedStudentId} onChange={(e) => setSelectedStudentId(e.target.value)} disabled={loading}>
+                      <option value="">请选择学生</option>
+                      {(overview?.students || []).map((user) => <option key={user.id} value={user.id}>{user.display_name}</option>)}
+                    </select>
                   </div>
                   <div className="textarea-actions">
-                    <button type="button" className="btn btn-primary" id="btn-save-grant" onClick={handleSaveGrant}>
-                      保存授权
+                    <button type="button" className="btn btn-primary" id="btn-save-grant" onClick={handleSaveGrant} disabled={submitting || loading}>
+                      {submitting ? '正在保存…' : '保存授权'}
                     </button>
                   </div>
                 </div>
@@ -508,9 +629,40 @@ function AdminWorkbench({ onSwitch }: { onSwitch: () => void }) {
                         <tr><th>教师</th><th>范围</th><th>状态</th></tr>
                       </thead>
                       <tbody>
-                        <tr><td>陈老师</td><td>软工 2023 · 授权学生 18</td><td><span className="tag tag-success">有效</span></td></tr>
-                        <tr><td>刘老师</td><td>数据 2022 · 授权学生 12</td><td><span className="tag tag-success">有效</span></td></tr>
-                        <tr><td>周老师</td><td>网络 2023 · 待确认</td><td><span className="tag tag-warning">待处理</span></td></tr>
+                        {loading ? <tr><td colSpan={3}>正在读取服务端授权状态…</td></tr> : (overview?.accesses || []).map((access) => (
+                          <tr key={`${access.counselor_id}-${access.student_id}`}>
+                            <td>{overview?.counselors.find((user) => user.id === access.counselor_id)?.display_name || '未知教师'}</td>
+                            <td>{overview?.students.find((user) => user.id === access.student_id)?.display_name || '未知学生'}</td>
+                            <td><span className="tag tag-success">有效</span></td>
+                          </tr>
+                        ))}
+                        {!loading && overview?.accesses.length === 0 && <tr><td colSpan={3}>当前暂无授权关系。</td></tr>}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div className="panel">
+                  <h3 className="panel-title">教师账号</h3>
+                  <div className="field"><label htmlFor="teacher-username">用户名</label><input id="teacher-username" value={teacherUsername} onChange={(event) => setTeacherUsername(event.target.value)} maxLength={64} /></div>
+                  <div className="field" style={{ marginTop: '10px' }}><label htmlFor="teacher-name">显示名称</label><input id="teacher-name" value={teacherDisplayName} onChange={(event) => setTeacherDisplayName(event.target.value)} maxLength={100} /></div>
+                  <div className="textarea-actions"><button type="button" className="btn btn-primary" onClick={handleCreateTeacher} disabled={submitting || loading}>创建教师账号</button></div>
+                  {temporaryPassword && <p className="auth-message">{temporaryPassword}</p>}
+                  <div className="table-wrap" style={{ marginTop: '14px' }}><table><thead><tr><th>教师</th><th>操作</th></tr></thead><tbody>{(overview?.counselors || []).map((user) => <tr key={user.id}><td>{user.display_name}</td><td><button type="button" className="btn btn-ghost" onClick={() => handleResetPassword(user.id)} disabled={submitting}>重置密码</button></td></tr>)}</tbody></table></div>
+                </div>
+                <div className="panel">
+                  <h3 className="panel-title">学生账号档案</h3>
+                  <div className="table-wrap" style={{ marginTop: '14px' }}>
+                    <table>
+                      <thead><tr><th>姓名</th><th>学号</th><th>电话</th><th>邮箱</th><th>入学年份</th></tr></thead>
+                      <tbody>
+                        {(overview?.students || []).map((student) => <tr key={student.id}>
+                          <td>{student.display_name}</td>
+                          <td>{student.student_number || '未登记'}</td>
+                          <td>{student.phone || '未登记'}</td>
+                          <td>{student.email || '未登记'}</td>
+                          <td>{student.enrollment_year || '未登记'}</td>
+                        </tr>)}
+                        {!loading && overview?.students.length === 0 && <tr><td colSpan={5}>当前暂无学生账号。</td></tr>}
                       </tbody>
                     </table>
                   </div>
@@ -533,13 +685,13 @@ function AdminWorkbench({ onSwitch }: { onSwitch: () => void }) {
                     <tr><th>岗位</th><th>单位</th><th>可见性</th><th>状态</th><th>到期</th></tr>
                   </thead>
                   <tbody>
-                    {INITIAL_ADMIN_JOBS.map((r, i) => (
-                      <tr key={i}>
+                    {loading ? <tr><td colSpan={5}>正在读取服务端岗位台账…</td></tr> : (overview?.jobs || []).map((r) => (
+                      <tr key={r.id}>
                         <td>{r.title}</td>
-                        <td>{r.org}</td>
-                        <td>{r.visibility}</td>
-                        <td><span className={`tag ${statusTagClass(r.status)}`}>{r.status}</span></td>
-                        <td>{r.expire}</td>
+                        <td>{r.source_title}</td>
+                        <td>{r.demo_only ? '模拟' : '公开'}</td>
+                        <td><span className={`tag ${statusTagClass(r.status)}`}>{statusLabel(r.status)}</span></td>
+                        <td>{r.valid_until}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -562,12 +714,12 @@ function AdminWorkbench({ onSwitch }: { onSwitch: () => void }) {
                     <tr><th>标题</th><th>类型</th><th>更新</th><th>状态</th></tr>
                   </thead>
                   <tbody>
-                    {INITIAL_ADMIN_KNOWLEDGE.map((r, i) => (
-                      <tr key={i}>
+                    {loading ? <tr><td colSpan={4}>正在读取服务端知识资料台账…</td></tr> : (overview?.sources || []).map((r) => (
+                      <tr key={r.asset_id}>
                         <td>{r.title}</td>
-                        <td>{r.type}</td>
-                        <td>{r.updated}</td>
-                        <td><span className={`tag ${statusTagClass(r.status)}`}>{r.status}</span></td>
+                        <td>{r.asset_type || '资料'}</td>
+                        <td>{r.published_on || '未登记'}</td>
+                        <td><span className={`tag ${statusTagClass(r.status)}`}>{statusLabel(r.status)}</span></td>
                       </tr>
                     ))}
                   </tbody>
@@ -590,13 +742,13 @@ function AdminWorkbench({ onSwitch }: { onSwitch: () => void }) {
                     <tr><th>时间</th><th>操作者</th><th>动作</th><th>范围</th><th>结果</th></tr>
                   </thead>
                   <tbody>
-                    {INITIAL_ADMIN_AUDIT.map((r, i) => (
-                      <tr key={i}>
-                        <td>{r.time}</td>
-                        <td>{r.actor}</td>
-                        <td>{r.action}</td>
-                        <td>{r.scope}</td>
-                        <td><span className={`tag ${statusTagClass(r.result)}`}>{r.result}</span></td>
+                    {loading ? <tr><td colSpan={5}>正在读取服务端审计事件…</td></tr> : (overview?.audits || []).map((r) => (
+                      <tr key={r.id}>
+                        <td>{formatDateTime(r.created_at)}</td>
+                        <td>{roleLabel(r.actor_role)}</td>
+                        <td>{auditActionLabel(r.action)}</td>
+                        <td>{r.resource_type}</td>
+                        <td><span className="tag tag-success">已记录</span></td>
                       </tr>
                     ))}
                   </tbody>
@@ -643,4 +795,47 @@ function AdminWorkbench({ onSwitch }: { onSwitch: () => void }) {
       </nav>
     </div>
   )
+}
+
+function mapCounselorStudent(response: CounselorStudentResponse): CounselorStudent {
+  const latestPlan = response.plans[0]
+  return {
+    id: response.student_id,
+    name: response.display_name,
+    studentNumber: response.student_number,
+    phone: response.phone,
+    email: response.email,
+    enrollmentYear: response.enrollment_year,
+    major: response.major,
+    targetRole: response.target_roles.join('、') || '未设置',
+    targetCity: response.target_cities.join('、') || '未设置',
+    stage: response.job_stage,
+    planCount: response.plans.length,
+    adviceCount: response.advice.length,
+    planId: latestPlan?.id,
+    history: response.advice.map((item) => ({
+      id: item.id,
+      at: formatDateTime(item.created_at),
+      text: item.content,
+    })),
+  }
+}
+
+function formatDateTime(value: string): string {
+  return value.replace('T', ' ').replace(/\+00:00$/, '').slice(0, 16)
+}
+
+function auditActionLabel(action: string): string {
+  return ({
+    career_profile_updated: '保存职业画像',
+    matches_generated: '生成岗位推荐',
+    action_plan_created: '生成行动计划',
+    teacher_advice_created: '提交指导意见',
+    counselor_access_granted: '更新授权关系',
+  }[action] || action)
+}
+
+function getErrorMessage(error: unknown): string {
+  if (error instanceof ApiError && error.message) return error.message
+  return '服务暂时不可用，请确认后端与数据库已启动后重试。'
 }

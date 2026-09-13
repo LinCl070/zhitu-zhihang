@@ -1,6 +1,7 @@
 """Safe consultation service that hides FastGPT implementation details from API callers."""
 
 from collections.abc import Mapping
+from dataclasses import replace
 
 from app.clients.fastgpt import (
     AssistantResponse,
@@ -25,6 +26,12 @@ class AssistantService:
         except FastGPTClientError:
             return handoff_response(mode="unavailable")
 
+        if not response.sources and response.mode == "sf_fastgpt":
+            return replace(
+                response,
+                disclaimer="平台未返回可核验来源，建议向学校就业指导部门或招聘方人工确认。",
+                handoff_recommended=True,
+            )
         if not response.sources:
             return handoff_response(mode=response.mode)
         return response

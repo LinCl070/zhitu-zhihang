@@ -1,13 +1,15 @@
 import { useState } from 'react'
+import { ApiError, api, AssistantResponse } from '../api/client'
 import { useToast } from './Toast'
 
 interface Message {
   id: string
   sender: 'bot' | 'user'
   text: string
+  response?: AssistantResponse
 }
 
-export function AdvicePanel() {
+export function AdvicePanel({ token }: { token: string }) {
   const { showToast } = useToast()
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -17,35 +19,42 @@ export function AdvicePanel() {
     },
   ])
   const [inputVal, setInputVal] = useState('')
+  const [consultationType, setConsultationType] = useState<'career' | 'policy'>('career')
+  const [loading, setLoading] = useState(false)
 
-  const handleSend = (text: string) => {
+  const handleSend = async (text: string) => {
     const q = text.trim()
-    if (!q) return
+    if (!q || loading) return
 
     const userMsg: Message = { id: `u-${Date.now()}`, sender: 'user', text: q }
     setMessages((prev) => [...prev, userMsg])
     setInputVal('')
-
-    setTimeout(() => {
-      let reply = '建议本周优先补齐 Redis/Docker 中更贴近目标岗的一项，并在项目摘要中写清你做过的接口与状态流转。投递时先本地后端实习，再扩到同城 Java 助理岗。'
-      if (q.includes('摘要') || q.includes('项目')) {
-        reply = '项目摘要可按「场景 → 职责 → 技术 → 结果」四句写，避免堆砌课程名；鉴权与状态机是后端实习官的加分点。'
-      } else if (q.includes('投递') || q.includes('顺序')) {
-        reply = '顺序建议：匹配分 ≥80 的本地后端实习 → 同城 Java 助理 → 可迁移测试岗作为保底体验。'
+    setLoading(true)
+    try {
+      const response = await api.queryAssistant(token, consultationType, q)
+      setMessages((prev) => [
+        ...prev,
+        { id: `b-${Date.now()}`, sender: 'bot', text: response.answer, response },
+      ])
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 401) {
+        showToast('会话已失效', '请退出后重新选择角色进入。', 'warning')
+      } else {
+        showToast('咨询暂时不可用', error instanceof ApiError ? error.message : '请稍后重试。', 'warning')
       }
-
-      setMessages((prev) => [...prev, { id: `b-${Date.now()}`, sender: 'bot', text: reply }])
-    }, 350)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleHumanHandoff = () => {
-    showToast('已申请转人工', '将在授权教师工作台生成待回复摘要（演示）。', 'info')
+    showToast('建议转人工', '请联系授权就业指导教师进一步确认；当前页面不会伪造提交状态。', 'info')
     setMessages((prev) => [
       ...prev,
       {
         id: `b-handoff-${Date.now()}`,
         sender: 'bot',
-        text: '已记录转人工请求。教师仅会看到脱敏摘要与你的问题概要，不会看到完整隐私字段。',
+        text: '建议联系授权就业指导教师确认。教师仅应看到脱敏摘要，不会看到完整隐私字段。',
       },
     ])
   }
@@ -62,10 +71,46 @@ export function AdvicePanel() {
       <div className="consult-layout">
         <div className="panel">
           <h3 className="panel-title">对话</h3>
+          <div className="segmented" role="group" aria-label="咨询类型">
+            <button
+              type="button"
+              className={consultationType === 'career' ? 'is-active' : ''}
+              onClick={() => setConsultationType('career')}
+              disabled={loading}
+            >
+              职业准备
+            </button>
+            <button
+              type="button"
+              className={consultationType === 'policy' ? 'is-active' : ''}
+              onClick={() => setConsultationType('policy')}
+              disabled={loading}
+            >
+              就业政策
+            </button>
+          </div>
           <div className="chat-box" id="chat-box">
             {messages.map((m) => (
-              <div key={m.id} className={`bubble ${m.sender}`}>
-                {m.text}
+              <div key={m.id}>
+                <div className={`bubble ${m.sender}`}>
+                  {m.text}
+                </div>
+                {m.response && (
+                  <div className="chat-meta">
+                    <span>{m.response.mode === 'sf_fastgpt' ? 'SF-FastGPT' : '模拟模式'}</span>
+                    {m.response.handoff_recommended && <span>建议人工确认</span>}
+                    {m.response.sources.map((source) =>
+                      source.url ? (
+                        <a key={`${m.id}-${source.title}`} href={source.url} target="_blank" rel="noreferrer">
+                          来源：{source.title}
+                        </a>
+                      ) : (
+                        <span key={`${m.id}-${source.title}`}>来源：{source.title}</span>
+                      )
+                    )}
+                    <small>{m.response.disclaimer}</small>
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -78,7 +123,7 @@ export function AdvicePanel() {
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   e.preventDefault()
-                  handleSend(inputVal)
+                  void handleSend(inputVal)
                 }
               }}
               placeholder="输入你的问题…"
@@ -87,9 +132,10 @@ export function AdvicePanel() {
               type="button"
               className="btn btn-primary"
               id="btn-chat-send"
-              onClick={() => handleSend(inputVal)}
+              onClick={() => void handleSend(inputVal)}
+              disabled={loading}
             >
-              发送
+              {loading ? '查询中…' : '发送'}
             </button>
           </div>
 
@@ -134,21 +180,24 @@ export function AdvicePanel() {
               <button
                 type="button"
                 className="btn btn-secondary"
-                onClick={() => handleSend('本周我应该优先补哪个缺口？')}
+                onClick={() => void handleSend('本周我应该优先补哪个缺口？')}
+                disabled={loading}
               >
                 本周优先缺口？
               </button>
               <button
                 type="button"
                 className="btn btn-secondary"
-                onClick={() => handleSend('项目摘要怎么写更匹配后端实习？')}
+                onClick={() => void handleSend('项目摘要怎么写更匹配目标岗位？')}
+                disabled={loading}
               >
                 项目摘要怎么写？
               </button>
               <button
                 type="button"
                 className="btn btn-secondary"
-                onClick={() => handleSend('本地后端实习投递顺序怎么排？')}
+                onClick={() => void handleSend('本地岗位投递顺序怎么排？')}
+                disabled={loading}
               >
                 投递顺序？
               </button>

@@ -6,7 +6,7 @@ from fastapi import HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.auth.demo import SessionPrincipal
+from app.auth.session import SessionPrincipal
 from app.models.entities import CareerProfile, CounselorStudentAccess, UserRole
 from app.services.audit import record_audit_event
 

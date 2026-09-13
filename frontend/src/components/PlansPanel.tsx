@@ -1,11 +1,29 @@
 import { ActionPlan } from '../api/client'
 
 interface PlansPanelProps {
-  plan: ActionPlan
+  plan: ActionPlan | null
   onGoJobs: () => void
 }
 
 export function PlansPanel({ plan, onGoJobs }: PlansPanelProps) {
+  if (!plan) {
+    return (
+      <section data-panel="plan">
+        <div className="page-head">
+          <div>
+            <h1>行动计划</h1>
+            <p className="desc">请先从一条岗位推荐生成分阶段任务。</p>
+          </div>
+          <div className="page-actions">
+            <button type="button" className="btn btn-primary" id="btn-go-jobs" onClick={onGoJobs}>
+              查看岗位推荐
+            </button>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
   return (
     <section data-panel="plan">
       <div className="page-head">

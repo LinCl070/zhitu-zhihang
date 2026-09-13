@@ -48,9 +48,28 @@ export type ActionPlan = {
   items: ActionPlanItem[]
 }
 
+export type ActionPlanResponse = {
+  id: string
+  match_id: string
+  status: string
+  items: Array<{
+    phase: string
+    priority: string
+    task: string
+  }>
+  job_title: string
+  company_name: string
+  created_at: string
+  advice_count: number
+}
+
 export type CounselorStudent = {
   id: string
   name: string
+  studentNumber: string | null
+  phone: string | null
+  email: string | null
+  enrollmentYear: number | null
   major: string
   targetRole: string
   targetCity: string
@@ -58,6 +77,7 @@ export type CounselorStudent = {
   planCount: number
   adviceCount: number
   history: Array<{ id: string; at: string; text: string }>
+  planId?: string
 }
 
 export type AdminJob = {
@@ -83,10 +103,92 @@ export type AdminAudit = {
   result: string
 }
 
-export type DemoSession = {
+export type AuthSession = {
   access_token: string
+  token_type: 'bearer'
+  expires_in: number
   display_name: string
-  role: 'student' | 'teacher' | 'admin'
+  role: 'student' | 'counselor' | 'admin'
+  must_change_password: boolean
+}
+
+export type StudentRegistrationRequest = {
+  username: string
+  password: string
+  passwordConfirmation: string
+  name: string
+  studentNumber: string
+  phone: string
+  email: string
+  enrollmentYear: number
+}
+
+export type CounselorStudentResponse = {
+  student_id: string
+  display_name: string
+  student_number: string | null
+  phone: string | null
+  email: string | null
+  enrollment_year: number | null
+  major: string
+  target_roles: string[]
+  target_cities: string[]
+  job_stage: string
+  plans: Array<{ id: string; status: string; created_at: string }>
+  advice: Array<{ id: string; action_plan_id: string; content: string; created_at: string }>
+}
+
+export type AdminOverviewResponse = {
+  jobs: Array<{
+    id: string
+    title: string
+    city: string
+    published_on: string
+    valid_until: string
+    status: string
+    source_title: string
+    demo_only: boolean
+  }>
+  sources: Array<Record<string, string>>
+  audits: Array<{
+    id: string
+    actor_role: string | null
+    action: string
+    resource_type: string
+    resource_id: string | null
+    created_at: string
+  }>
+  students: Array<{
+    id: string
+    display_name: string
+    role: string
+    student_number: string | null
+    phone: string | null
+    email: string | null
+    enrollment_year: number | null
+  }>
+  counselors: Array<{ id: string; display_name: string; role: string }>
+  accesses: Array<{ counselor_id: string; student_id: string }>
+}
+
+export type CareerProfilePayload = Omit<CareerProfile, 'id' | 'student_id'>
+
+export type MatchesResponse = {
+  matches: Match[]
+  handoff_recommended: boolean
+  message?: string | null
+}
+
+export type AssistantResponse = {
+  answer: string
+  sources: Array<{
+    title: string
+    url: string | null
+    version_or_date: string | null
+  }>
+  disclaimer: string
+  handoff_recommended: boolean
+  mode: string
 }
 
 export const INITIAL_JOBS: Match[] = [
@@ -186,6 +288,10 @@ export const INITIAL_TEACHER_STUDENTS: CounselorStudent[] = [
   {
     id: 's1',
     name: '王同学',
+    studentNumber: null,
+    phone: null,
+    email: null,
+    enrollmentYear: null,
     major: '软件工程',
     targetRole: '后端开发实习生',
     targetCity: '成都',
@@ -203,6 +309,10 @@ export const INITIAL_TEACHER_STUDENTS: CounselorStudent[] = [
   {
     id: 's2',
     name: '李同学',
+    studentNumber: null,
+    phone: null,
+    email: null,
+    enrollmentYear: null,
     major: '数据科学与大数据技术',
     targetRole: '数据分析实习生',
     targetCity: '成都',
@@ -214,6 +324,10 @@ export const INITIAL_TEACHER_STUDENTS: CounselorStudent[] = [
   {
     id: 's3',
     name: '赵同学',
+    studentNumber: null,
+    phone: null,
+    email: null,
+    enrollmentYear: null,
     major: '网络工程',
     targetRole: '运维开发实习生',
     targetCity: '重庆',
@@ -265,8 +379,9 @@ class ApiError extends Error {
 }
 
 async function request<T>(path: string, token?: string, init?: RequestInit): Promise<T> {
+  let response: Response
   try {
-    const response = await fetch(path, {
+    response = await fetch(path, {
       ...init,
       headers: {
         ...(init?.body ? { 'Content-Type': 'application/json' } : {}),
@@ -274,76 +389,113 @@ async function request<T>(path: string, token?: string, init?: RequestInit): Pro
         ...init?.headers,
       },
     })
-    if (response.ok) {
-      return (await response.json()) as T
-    }
   } catch {
-    // Network or offline fallback
+    throw new ApiError(0, '暂时无法连接服务，请确认后端与数据库已启动后重试。')
   }
 
-  return handleFallback<T>(path, init)
+  if (!response.ok) {
+    throw new ApiError(response.status, await readErrorMessage(response))
+  }
+
+  if (response.status === 204) return undefined as T
+
+  try {
+    return (await response.json()) as T
+  } catch {
+    throw new ApiError(response.status, '服务返回的数据格式无法识别，请稍后重试。')
+  }
 }
 
-function handleFallback<T>(path: string, init?: RequestInit): Promise<T> {
-  const body = init?.body ? (JSON.parse(String(init.body)) as Record<string, unknown>) : {}
-
-  if (path.includes('/demo/sessions')) {
-    const identity = (body.identity as string) || 'student'
-    if (identity === 'teacher' || identity === 'counselor') {
-      return Promise.resolve({
-        access_token: 'token-teacher',
-        display_name: '陈老师',
-        role: 'teacher',
-      } as T)
+async function readErrorMessage(response: Response): Promise<string> {
+  try {
+    const payload = (await response.json()) as { detail?: unknown }
+    if (typeof payload.detail === 'string' && payload.detail.trim()) {
+      return payload.detail.trim()
     }
-    if (identity === 'admin') {
-      return Promise.resolve({
-        access_token: 'token-admin',
-        display_name: '就业管理员',
-        role: 'admin',
-      } as T)
+    if (Array.isArray(payload.detail)) {
+      const firstError = payload.detail[0] as { msg?: unknown } | undefined
+      if (typeof firstError?.msg === 'string' && firstError.msg.trim()) return firstError.msg.trim()
     }
-    return Promise.resolve({
-      access_token: 'token-student',
-      display_name: '王同学',
-      role: 'student',
-    } as T)
+  } catch {
+    // Do not expose raw server responses in the browser.
   }
 
-  if (path.includes('/career-profile/me')) {
-    return Promise.resolve({
-      id: 'p1',
-      student_id: 's1',
-      major: '软件工程',
-      skills: ['Java', 'Spring Boot', 'MySQL', 'Git'],
-      projects: ['参与校园二手交易平台后端模块，负责订单状态机与接口鉴权（已脱敏）。'],
-      target_roles: ['后端开发实习生'],
-      target_cities: ['成都'],
-      job_stage: 'preparing',
-    } as T)
-  }
-
-  if (path.includes('/matches')) {
-    return Promise.resolve({
-      matches: INITIAL_JOBS,
-      handoff_recommended: false,
-      message: '推荐结果已生成',
-    } as T)
-  }
-
-  return Promise.resolve({} as T)
+  if (response.status === 401) return '登录会话已失效，请重新登录。'
+  if (response.status === 403) return '当前角色没有访问此数据的权限。'
+  if (response.status === 409) return '请先完成并保存职业画像。'
+  return '操作未完成，请稍后重试。'
 }
 
 export const api = {
-  startDemo: (identity: 'student' | 'teacher' | 'admin' | 'student-a' | 'student-b' | 'counselor') => {
-    let cleanRole: 'student' | 'teacher' | 'admin' = 'student'
-    if (identity === 'teacher' || identity === 'counselor') cleanRole = 'teacher'
-    else if (identity === 'admin') cleanRole = 'admin'
-    return request<DemoSession>('/api/v1/demo/sessions', undefined, {
+  login: (username: string, password: string) => request<AuthSession>('/api/v1/auth/login', undefined, {
       method: 'POST',
-      body: JSON.stringify({ identity: cleanRole }),
-    })
-  },
+      body: JSON.stringify({ username, password }),
+    }),
+  registerStudent: (payload: StudentRegistrationRequest) =>
+    request<{ id: string; username: string; display_name: string; role: string }>('/api/v1/auth/register/student', undefined, {
+      method: 'POST',
+      body: JSON.stringify({
+        username: payload.username,
+        password: payload.password,
+        password_confirmation: payload.passwordConfirmation,
+        name: payload.name,
+        student_number: payload.studentNumber,
+        phone: payload.phone,
+        email: payload.email,
+        enrollment_year: payload.enrollmentYear,
+      }),
+    }),
+  changePassword: (token: string, currentPassword: string, newPassword: string, confirmation: string) =>
+    request<void>('/api/v1/auth/change-password', token, {
+      method: 'POST',
+      body: JSON.stringify({ current_password: currentPassword, new_password: newPassword, password_confirmation: confirmation }),
+    }),
+  createTeacher: (token: string, username: string, displayName: string) =>
+    request<{ id: string; username: string; display_name: string; role: string; temporary_password: string }>('/api/v1/admin/users/teachers', token, {
+      method: 'POST',
+      body: JSON.stringify({ username, display_name: displayName }),
+    }),
+  resetAccountPassword: (token: string, userId: string) =>
+    request<{ id: string; username: string; display_name: string; role: string; temporary_password: string }>(`/api/v1/admin/users/${userId}/reset-password`, token, { method: 'POST' }),
+  setAccountStatus: (token: string, userId: string, isActive: boolean) =>
+    request<{ id: string; username: string; display_name: string; role: string }>(`/api/v1/admin/users/${userId}/status`, token, { method: 'PATCH', body: JSON.stringify({ is_active: isActive }) }),
+  readCareerProfile: (token: string) => request<CareerProfile>('/api/v1/career-profile/me', token),
+  saveCareerProfile: (token: string, payload: CareerProfilePayload) =>
+    request<CareerProfile>('/api/v1/career-profile/me', token, {
+      method: 'PUT',
+      body: JSON.stringify(payload),
+    }),
+  generateMatches: (token: string, limit = 10) =>
+    request<MatchesResponse>('/api/v1/matches', token, {
+      method: 'POST',
+      body: JSON.stringify({ limit }),
+    }),
+  createActionPlan: (token: string, matchId: string) =>
+    request<ActionPlanResponse>('/api/v1/action-plans', token, {
+      method: 'POST',
+      body: JSON.stringify({ match_id: matchId }),
+    }),
+  readLatestActionPlan: (token: string) =>
+    request<ActionPlanResponse>('/api/v1/action-plans/latest', token),
+  queryAssistant: (token: string, consultationType: 'career' | 'policy', question: string) =>
+    request<AssistantResponse>('/api/v1/assistant/query', token, {
+      method: 'POST',
+      body: JSON.stringify({ consultation_type: consultationType, question }),
+    }),
+  readCounselorStudents: (token: string) =>
+    request<CounselorStudentResponse[]>('/api/v1/staff/counselor/students', token),
+  createTeacherAdvice: (token: string, studentId: string, actionPlanId: string, content: string) =>
+    request<{ id: string; student_id: string; action_plan_id: string; content: string; created_at: string }>(
+      '/api/v1/staff/counselor/advice',
+      token,
+      { method: 'POST', body: JSON.stringify({ student_id: studentId, action_plan_id: actionPlanId, content }) }
+    ),
+  readAdminOverview: (token: string) => request<AdminOverviewResponse>('/api/v1/staff/admin/overview', token),
+  grantCounselorAccess: (token: string, counselorId: string, studentId: string) =>
+    request<{ status: string }>('/api/v1/staff/admin/counselor-access', token, {
+      method: 'POST',
+      body: JSON.stringify({ counselor_id: counselorId, student_id: studentId }),
+    }),
 }
 
 export { ApiError }

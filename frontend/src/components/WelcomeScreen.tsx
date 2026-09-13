@@ -1,125 +1,141 @@
-import { useState } from 'react'
+import { FormEvent, KeyboardEvent, useEffect, useMemo, useRef, useState } from 'react'
+import { ApiError, api, AuthSession } from '../api/client'
 import { brand } from '../config/brand'
 
-interface WelcomeScreenProps {
-  onEnterRole: (role: 'student' | 'teacher' | 'admin') => void
+const FIRST_ENROLLMENT_YEAR = 1958
+const YEAR_ROW_HEIGHT = 36
+
+function YearPicker({ value, onChange }: { value: number; onChange: (year: number) => void }) {
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const currentYear = new Date().getFullYear()
+  const years = useMemo(
+    () => Array.from({ length: currentYear - FIRST_ENROLLMENT_YEAR + 1 }, (_, index) => FIRST_ENROLLMENT_YEAR + index),
+    [currentYear],
+  )
+
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ top: (value - FIRST_ENROLLMENT_YEAR) * YEAR_ROW_HEIGHT, behavior: 'smooth' })
+  }, [value])
+
+  const selectYearAtCenter = () => {
+    const list = scrollRef.current
+    if (!list) return
+    const index = Math.round(list.scrollTop / YEAR_ROW_HEIGHT)
+    onChange(years[Math.min(Math.max(index, 0), years.length - 1)])
+  }
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key !== 'ArrowUp' && event.key !== 'ArrowDown') return
+    event.preventDefault()
+    onChange(Math.min(Math.max(value + (event.key === 'ArrowUp' ? 1 : -1), FIRST_ENROLLMENT_YEAR), currentYear))
+  }
+
+  return (
+    <div className="year-picker">
+      <div
+        ref={scrollRef}
+        className="year-picker-list"
+        role="listbox"
+        aria-label="入学年份"
+        aria-activedescendant={`enrollment-year-${value}`}
+        tabIndex={0}
+        onKeyDown={handleKeyDown}
+        onScroll={selectYearAtCenter}
+      >
+        <div className="year-picker-spacer" aria-hidden="true" />
+        {years.map((year) => (
+          <button
+            key={year}
+            id={`enrollment-year-${year}`}
+            type="button"
+            className="year-picker-option"
+            role="option"
+            aria-selected={year === value}
+            onClick={() => onChange(year)}
+          >
+            {year}
+          </button>
+        ))}
+        <div className="year-picker-spacer" aria-hidden="true" />
+      </div>
+      <div className="year-picker-center" aria-hidden="true" />
+    </div>
+  )
 }
 
-export function WelcomeScreen({ onEnterRole }: WelcomeScreenProps) {
-  const [enteringRole, setEnteringRole] = useState<string | null>(null)
+export function WelcomeScreen({ onAuthenticated }: { onAuthenticated: (session: AuthSession) => Promise<void> }) {
+  const [mode, setMode] = useState<'login' | 'register'>('login')
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [confirmation, setConfirmation] = useState('')
+  const [name, setName] = useState('')
+  const [studentNumber, setStudentNumber] = useState('')
+  const [phone, setPhone] = useState('')
+  const [email, setEmail] = useState('')
+  const [enrollmentYear, setEnrollmentYear] = useState(new Date().getFullYear())
+  const [busy, setBusy] = useState(false)
+  const [message, setMessage] = useState('')
 
-  const handleRoleClick = (role: 'student' | 'teacher' | 'admin') => {
-    setEnteringRole(role)
-    setTimeout(() => {
-      onEnterRole(role)
-      setEnteringRole(null)
-    }, 200)
+  const submit = async (event: FormEvent) => {
+    event.preventDefault()
+    setBusy(true)
+    setMessage('')
+    try {
+      if (mode === 'register') {
+        await api.registerStudent({
+          username,
+          password,
+          passwordConfirmation: confirmation,
+          name,
+          studentNumber,
+          phone,
+          email,
+          enrollmentYear,
+        })
+        setMode('login')
+        setPassword('')
+        setConfirmation('')
+        setMessage('注册成功，请使用新账号登录。')
+      } else {
+        await onAuthenticated(await api.login(username, password))
+      }
+    } catch (reason) {
+      setMessage(reason instanceof ApiError ? reason.message : '操作未完成，请稍后重试。')
+    } finally {
+      setBusy(false)
+    }
   }
 
   return (
     <div className="login-wrap">
       <div className="login-card">
-        {/* Topbar inside Login */}
         <header className="login-topbar">
-          <div className="login-brand">
-            <div className="brand-mark" aria-hidden="true">
-              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M4 19V5" />
-                <path d="M4 17c4-3 8-3 12 0V7c-4-3-8-3-12 0" />
-                <path d="M16 19l4-2V5l-4 2" />
-              </svg>
-            </div>
-            <div>
-              <div className="login-brand-title">{brand.productName}</div>
-              <div className="login-brand-sub">{brand.universityName} · 就业择业规划工作台</div>
-            </div>
-          </div>
-          <div className="login-top-meta">
-            <span className="meta-chip">演示数据 · 已脱敏</span>
-          </div>
+          <div className="login-brand"><div className="brand-mark" aria-hidden="true">↗</div><div><div className="login-brand-title">{brand.productName}</div><div className="login-brand-sub">{brand.universityName} · 就业择业规划工作台</div></div></div>
+          <span className="meta-chip">账号登录</span>
         </header>
-
         <div className="login-main">
-          <div className="login-heading">
-            <h1>选择角色进入工作台</h1>
-            <p className="login-lead">学生、就业指导教师与就业管理员使用同一套账号体系，可见范围按角色授权。</p>
-          </div>
-
-          <div className="role-cards">
-            {/* Student Card */}
-            <button
-              type="button"
-              className="role-card"
-              onClick={() => handleRoleClick('student')}
-              disabled={Boolean(enteringRole)}
-            >
-              <span className="icon">
-                <svg viewBox="0 0 24 24">
-                  <path d="M20 21a8 8 0 0 0-16 0" />
-                  <circle cx="12" cy="8" r="4" />
-                </svg>
-              </span>
-              <span className="role-kicker">STUDENT</span>
-              <h2>学生</h2>
-              <p>职业画像、岗位推荐、行动计划与就业咨询，按阶段推进择业任务。</p>
-              <span className="enter">
-                <span>{enteringRole === 'student' ? '进入中...' : '进入学生工作台'}</span>
-                <span aria-hidden="true">→</span>
-              </span>
-            </button>
-
-            {/* Teacher Card */}
-            <button
-              type="button"
-              className="role-card"
-              onClick={() => handleRoleClick('teacher')}
-              disabled={Boolean(enteringRole)}
-            >
-              <span className="icon">
-                <svg viewBox="0 0 24 24">
-                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                  <circle cx="9" cy="7" r="4" />
-                  <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                </svg>
-              </span>
-              <span className="role-kicker">TEACHER</span>
-              <h2>就业指导教师</h2>
-              <p>仅查看授权学生摘要，提交指导意见并跟踪历史记录。</p>
-              <span className="enter">
-                <span>{enteringRole === 'teacher' ? '进入中...' : '进入教师工作台'}</span>
-                <span aria-hidden="true">→</span>
-              </span>
-            </button>
-
-            {/* Admin Card */}
-            <button
-              type="button"
-              className="role-card"
-              onClick={() => handleRoleClick('admin')}
-              disabled={Boolean(enteringRole)}
-            >
-              <span className="icon">
-                <svg viewBox="0 0 24 24">
-                  <circle cx="12" cy="12" r="3" />
-                  <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9c.3.6.9 1 1.6 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" />
-                </svg>
-              </span>
-              <span className="role-kicker">ADMIN</span>
-              <h2>就业管理员</h2>
-              <p>配置授权范围，管理岗位与资料台账，查看脱敏审计事件。</p>
-              <span className="enter">
-                <span>{enteringRole === 'admin' ? '进入中...' : '进入管理工作台'}</span>
-                <span aria-hidden="true">→</span>
-              </span>
-            </button>
+          <div className="login-heading"><h1>{mode === 'login' ? '登录工作台' : '注册学生账号'}</h1><p className="login-lead">登录后系统将按账号角色展示对应工作台。</p></div>
+          <form className="auth-form" onSubmit={submit}>
+            {mode === 'register' && <>
+              <label><span><i className="required-mark" aria-hidden="true">*</i>姓名</span><input value={name} onChange={(event) => setName(event.target.value)} required maxLength={100} autoComplete="name" /></label>
+              <label><span><i className="required-mark" aria-hidden="true">*</i>学号</span><input value={studentNumber} onChange={(event) => setStudentNumber(event.target.value)} required inputMode="numeric" pattern="[0-9]{10}" minLength={10} maxLength={10} /></label>
+              <label><span><i className="required-mark" aria-hidden="true">*</i>电话号码</span><input type="tel" value={phone} onChange={(event) => setPhone(event.target.value)} required inputMode="tel" autoComplete="tel" /></label>
+              <label><span><i className="required-mark" aria-hidden="true">*</i>联系邮箱</span><input type="email" value={email} onChange={(event) => setEmail(event.target.value)} required autoComplete="email" /></label>
+              <label><span><i className="required-mark" aria-hidden="true">*</i>入学年份</span><YearPicker value={enrollmentYear} onChange={setEnrollmentYear} /></label>
+            </>}
+            <label><span>{mode === 'register' && <i className="required-mark" aria-hidden="true">*</i>}用户名</span><input value={username} onChange={(event) => setUsername(event.target.value)} required minLength={3} maxLength={64} autoComplete="username" /></label>
+            <label><span>{mode === 'register' && <i className="required-mark" aria-hidden="true">*</i>}密码</span><input type="password" value={password} onChange={(event) => setPassword(event.target.value)} required minLength={8} maxLength={128} autoComplete={mode === 'login' ? 'current-password' : 'new-password'} /></label>
+            {mode === 'register' && <label><span><i className="required-mark" aria-hidden="true">*</i>确认密码</span><input type="password" value={confirmation} onChange={(event) => setConfirmation(event.target.value)} required minLength={8} maxLength={128} autoComplete="new-password" /></label>}
+            {message && <p className="auth-message" role="alert">{message}</p>}
+            <button className="btn btn-primary" type="submit" disabled={busy}>{busy ? '处理中…' : mode === 'login' ? '登录' : '注册学生账号'}</button>
+          </form>
+          <div className="auth-switch">
+            {mode === 'login' ? <button type="button" className="btn btn-ghost" onClick={() => { setMode('register'); setMessage('') }}>注册学生账号</button> : <button type="button" className="btn btn-ghost" onClick={() => { setMode('login'); setMessage('') }}>返回登录</button>}
+            <span>教师和管理员账号由管理员创建。</span>
           </div>
         </div>
       </div>
-
-      <div className="footer-note">
-        {brand.universityName}就业指导中心 · 演示环境使用脱敏示例数据，不含真实学生信息
-      </div>
+      <div className="footer-note">{brand.universityName}就业指导中心 · 账号权限由服务端统一校验</div>
     </div>
   )
 }

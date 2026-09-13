@@ -9,7 +9,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.auth.demo import DbSession, SessionPrincipal, require_roles
+from app.auth.session import DbSession, SessionPrincipal, require_roles
 from app.models.entities import (
     ActionPlan,
     AuditEvent,
@@ -44,6 +44,10 @@ class AdviceSummary(BaseModel):
 class CounselorStudentSummary(BaseModel):
     student_id: UUID
     display_name: str
+    student_number: str | None
+    phone: str | None
+    email: str | None
+    enrollment_year: int | None
     major: str
     target_roles: list[str]
     target_cities: list[str]
@@ -96,18 +100,31 @@ class AuditSummary(BaseModel):
     created_at: datetime
 
 
-class DemoUserSummary(BaseModel):
+class UserSummary(BaseModel):
     id: UUID
     display_name: str
     role: str
+
+
+class StudentAccountSummary(UserSummary):
+    student_number: str | None
+    phone: str | None
+    email: str | None
+    enrollment_year: int | None
+
+
+class AccessSummary(BaseModel):
+    counselor_id: UUID
+    student_id: UUID
 
 
 class AdminOverview(BaseModel):
     jobs: list[JobGovernanceRow]
     sources: list[dict[str, str]]
     audits: list[AuditSummary]
-    students: list[DemoUserSummary]
-    counselors: list[DemoUserSummary]
+    students: list[StudentAccountSummary]
+    counselors: list[UserSummary]
+    accesses: list[AccessSummary]
 
 
 class GrantAccessPayload(BaseModel):
@@ -155,6 +172,10 @@ def read_counselor_students(
             CounselorStudentSummary(
                 student_id=profile.student_id,
                 display_name=user.display_name,
+                student_number=user.student_number,
+                phone=user.phone,
+                email=user.email,
+                enrollment_year=user.enrollment_year,
                 major=profile.major,
                 target_roles=profile.target_roles,
                 target_cities=profile.target_cities,
@@ -223,6 +244,11 @@ def read_admin_overview(_: AdminPrincipal, session: DbSession) -> AdminOverview:
     audits = session.scalars(
         select(AuditEvent).order_by(AuditEvent.created_at.desc()).limit(50)
     ).all()
+    accesses = session.scalars(
+        select(CounselorStudentAccess).order_by(
+            CounselorStudentAccess.counselor_id, CounselorStudentAccess.student_id
+        )
+    ).all()
     users = session.scalars(select(User).order_by(User.display_name)).all()
     return AdminOverview(
         jobs=[
@@ -250,8 +276,14 @@ def read_admin_overview(_: AdminPrincipal, session: DbSession) -> AdminOverview:
             )
             for event in audits
         ],
-        students=[_user_summary(user) for user in users if user.role is UserRole.STUDENT],
+        students=[
+            _student_account_summary(user) for user in users if user.role is UserRole.STUDENT
+        ],
         counselors=[_user_summary(user) for user in users if user.role is UserRole.COUNSELOR],
+        accesses=[
+            AccessSummary(counselor_id=item.counselor_id, student_id=item.student_id)
+            for item in accesses
+        ],
     )
 
 
@@ -304,5 +336,15 @@ def _require_counselor_access(session: Session, counselor_id: UUID, student_id: 
         )
 
 
-def _user_summary(user: User) -> DemoUserSummary:
-    return DemoUserSummary(id=user.id, display_name=user.display_name, role=user.role.value)
+def _user_summary(user: User) -> UserSummary:
+    return UserSummary(id=user.id, display_name=user.display_name, role=user.role.value)
+
+
+def _student_account_summary(user: User) -> StudentAccountSummary:
+    return StudentAccountSummary(
+        **_user_summary(user).model_dump(),
+        student_number=user.student_number,
+        phone=user.phone,
+        email=user.email,
+        enrollment_year=user.enrollment_year,
+    )

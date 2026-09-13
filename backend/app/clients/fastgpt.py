@@ -71,12 +71,10 @@ class FastGPTClient:
             raise ValueError("Question must not be empty")
 
         payload = {
-            "appId": self._app_ids[route],
             "chatId": f"career-navigator-{route.value}-{uuid4().hex}",
             "stream": False,
             "detail": False,
             "messages": [{"role": "user", "content": question.strip()}],
-            "variables": dict(context or {}),
         }
         try:
             async with httpx.AsyncClient(transport=self._transport, timeout=15.0) as client:
