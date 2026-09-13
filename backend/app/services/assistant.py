@@ -23,7 +23,7 @@ class AssistantService:
     ) -> AssistantResponse:
         try:
             response = await self._client.query(route, question, context)
-        except FastGPTClientError:
+        except (FastGPTClientError, Exception):
             return handoff_response(mode="unavailable")
 
         if not response.sources and response.mode == "sf_fastgpt":

@@ -1021,6 +1021,92 @@ button:disabled {
   background: var(--surface);
 }
 
+.chat-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  margin-top: 6px;
+  padding: 0 4px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.chat-meta a {
+  color: var(--primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.mode-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 7px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.5;
+  background: var(--surface-muted);
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+
+.mode-tag.mode-sf {
+  background: var(--primary-soft);
+  color: var(--primary-strong);
+  border: 1px solid color-mix(in srgb, var(--primary) 30%, transparent);
+}
+
+.mode-tag.mode-mock {
+  background: var(--surface-muted);
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+
+.mode-tag.mode-unavailable {
+  background: var(--warning-soft);
+  color: var(--warning);
+  border: 1px solid color-mix(in srgb, var(--warning) 40%, transparent);
+  font-weight: 700;
+}
+
+.mode-tag.mode-handoff {
+  background: #fdf2f2;
+  color: var(--danger);
+  border: 1px solid color-mix(in srgb, var(--danger) 30%, transparent);
+}
+
+.chat-unavailable-notice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 6px;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--warning-soft);
+  border: 1px solid color-mix(in srgb, var(--warning) 30%, transparent);
+  font-size: 12px;
+  color: var(--warning);
+}
+
+.btn-warn {
+  background: var(--warning-soft);
+  color: var(--warning);
+  border-color: color-mix(in srgb, var(--warning) 40%, transparent);
+}
+
+.btn-warn:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--warning-soft) 80%, var(--warning));
+  color: #fff;
+}
+
+.btn-sm {
+  min-height: 28px;
+  padding: 0 10px;
+  font-size: 12px;
+}
+
 /* —— 教师工作台 —— */
 .list-detail {
   display: grid;

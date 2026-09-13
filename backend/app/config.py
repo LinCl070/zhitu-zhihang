@@ -15,13 +15,31 @@ def _read_dotenv(path: Path) -> dict[str, str]:
         return {}
 
     values: dict[str, str] = {}
-    for raw_line in path.read_text(encoding="utf-8").splitlines():
+    for raw_line in path.read_text(encoding="utf-8-sig").splitlines():
         line = raw_line.strip()
         if not line or line.startswith("#") or "=" not in line:
             continue
         key, value = line.split("=", maxsplit=1)
         values[key.strip()] = value.strip().strip('"').strip("'")
     return values
+
+
+def _find_env_file(env_file: Path | None = None) -> Path:
+    if env_file is not None:
+        return env_file
+    env_override = os.getenv("ENV_FILE")
+    if env_override:
+        return Path(env_override)
+    candidates = [
+        PROJECT_ROOT / ".env",
+        Path.cwd() / ".env",
+        PROJECT_ROOT / "backend" / ".env",
+        Path.cwd() / "backend" / ".env",
+    ]
+    for candidate in candidates:
+        if candidate.is_file():
+            return candidate
+    return PROJECT_ROOT / ".env"
 
 
 @dataclass(frozen=True)
@@ -43,7 +61,8 @@ class Settings:
 
     @classmethod
     def from_environment(cls, env_file: Path | None = None) -> "Settings":
-        values = _read_dotenv(env_file or PROJECT_ROOT / ".env")
+        target_env = _find_env_file(env_file)
+        values = _read_dotenv(target_env)
         app_env = os.getenv("APP_ENV", values.get("APP_ENV", "development"))
         fastgpt_mode = os.getenv("FASTGPT_MODE", values.get("FASTGPT_MODE", "mock"))
         database_url = os.getenv("DATABASE_URL", values.get("DATABASE_URL", "")).strip()
@@ -100,16 +119,24 @@ class Settings:
         admin_bootstrap_password = (
             os.getenv("ADMIN_BOOTSTRAP_PASSWORD", values.get("ADMIN_BOOTSTRAP_PASSWORD")) or None
         )
-        if fastgpt_mode == "sf_fastgpt" and not all(
-            (
-                fastgpt_base_url,
-                fastgpt_api_key_career,
-                fastgpt_api_key_policy,
-                fastgpt_workflow_career_id,
-                fastgpt_workflow_policy_id,
-            )
-        ):
-            raise ValueError("SF-FastGPT mode requires base URL, API key, and both workflow IDs")
+        if fastgpt_mode == "sf_fastgpt":
+            missing_fastgpt = []
+            if not fastgpt_base_url:
+                missing_fastgpt.append("FASTGPT_BASE_URL")
+            if not fastgpt_api_key_career:
+                missing_fastgpt.append("FASTGPT_API_KEY_CAREER (or FASTGPT_API_KEY)")
+            if not fastgpt_api_key_policy:
+                missing_fastgpt.append("FASTGPT_API_KEY_POLICY (or FASTGPT_API_KEY)")
+            if not fastgpt_workflow_career_id:
+                missing_fastgpt.append("FASTGPT_WORKFLOW_CAREER_ID")
+            if not fastgpt_workflow_policy_id:
+                missing_fastgpt.append("FASTGPT_WORKFLOW_POLICY_ID")
+            if missing_fastgpt:
+                missing_desc = ", ".join(missing_fastgpt)
+                raise ValueError(
+                    f"SF-FastGPT mode requires base URL, API key, and both workflow IDs; "
+                    f"missing: {missing_desc}"
+                )
 
         return cls(
             app_env=cast(Literal["development", "demo", "production"], app_env),

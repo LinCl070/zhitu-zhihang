@@ -51,3 +51,19 @@ class StaffBoundaryTests(unittest.TestCase):
                 content="   ",
                 phone="not allowed",
             )
+
+    def test_source_registry_indexes_docker_resource(self) -> None:
+        from app.services.governance import read_source_registry
+
+        sources = read_source_registry()
+        docker_sources = [s for s in sources if s["asset_id"] == "SRC-DOCKER-SKILLS-202609"]
+        self.assertEqual(len(docker_sources), 1)
+        item = docker_sources[0]
+        self.assertEqual(item["title"], "Docker基础与岗位技能准备指南")
+        self.assertEqual(item["status"], "approved")
+        self.assertEqual(item["published_on"], "2026-09-13")
+        self.assertEqual(item["version"], "v1.0")
+        self.assertEqual(item["asset_type"], "career_guidance")
+        self.assertEqual(item["effective_until"], "2027-09-13")
+        self.assertIn("06-Docker", item["source_uri_or_file"])
+        self.assertIn("Docker技能准备", item["applicable_scope"])

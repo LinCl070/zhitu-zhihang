@@ -57,15 +57,26 @@ async def _run(settings: Settings) -> tuple[WorkflowDiagnostic, ...]:
 
 
 def main() -> int:
-    settings = get_settings()
+    try:
+        settings = get_settings()
+    except Exception as exc:
+        print(f"SF-FastGPT configuration diagnostic error: {exc}")
+        return 2
+
     if settings.fastgpt_mode != "sf_fastgpt":
-        print("SF-FastGPT acceptance check requires FASTGPT_MODE=sf_fastgpt.")
+        print(
+            "SF-FastGPT acceptance check requires FASTGPT_MODE=sf_fastgpt "
+            f"(current mode: {settings.fastgpt_mode})."
+        )
         return 2
 
     try:
         diagnostics = asyncio.run(_run(settings))
-    except FastGPTClientError:
-        print("SF-FastGPT acceptance check failed without exposing platform details.")
+    except FastGPTClientError as exc:
+        print(f"SF-FastGPT acceptance check failed without exposing platform details: {exc}")
+        return 1
+    except Exception as exc:
+        print(f"SF-FastGPT acceptance check encountered an unexpected error: {type(exc).__name__}")
         return 1
 
     print(json.dumps([asdict(item) for item in diagnostics], ensure_ascii=True, indent=2))

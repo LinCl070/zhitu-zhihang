@@ -15,18 +15,21 @@ export function AdvicePanel({ token }: { token: string }) {
     {
       id: 'm-init',
       sender: 'bot',
-      text: '你好，我是职途智航助手。可以问我：如何补齐 Docker 缺口、本周优先做什么、或如何改项目摘要。',
+      text: '你好，我是职途智航助手。支持咨询技术技能准备（如“如何补齐 Docker 缺口”、项目与简历准备）与高校毕业生就业政策。智能建议仅供准备参考，不构成录用、资格或期限承诺；涉及关键决策、资格认定或疑难诉求，请通过下方【转人工教师】入口联系老师确认。',
     },
   ])
   const [inputVal, setInputVal] = useState('')
   const [consultationType, setConsultationType] = useState<'career' | 'policy'>('career')
   const [loading, setLoading] = useState(false)
 
+  const createMessageId = (prefix: string) =>
+    `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
+
   const handleSend = async (text: string) => {
     const q = text.trim()
     if (!q || loading) return
 
-    const userMsg: Message = { id: `u-${Date.now()}`, sender: 'user', text: q }
+    const userMsg: Message = { id: createMessageId('u'), sender: 'user', text: q }
     setMessages((prev) => [...prev, userMsg])
     setInputVal('')
     setLoading(true)
@@ -34,13 +37,29 @@ export function AdvicePanel({ token }: { token: string }) {
       const response = await api.queryAssistant(token, consultationType, q)
       setMessages((prev) => [
         ...prev,
-        { id: `b-${Date.now()}`, sender: 'bot', text: response.answer, response },
+        { id: createMessageId('b'), sender: 'bot', text: response.answer, response },
       ])
     } catch (error) {
       if (error instanceof ApiError && error.status === 401) {
         showToast('会话已失效', '请退出后重新选择角色进入。', 'warning')
       } else {
-        showToast('咨询暂时不可用', error instanceof ApiError ? error.message : '请稍后重试。', 'warning')
+        const errorMsg = error instanceof ApiError ? error.message : '请稍后重试。'
+        showToast('咨询服务暂不可用', errorMsg, 'warning')
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: createMessageId('b-err'),
+            sender: 'bot',
+            text: '智能咨询服务暂不可用（服务连接异常或上游无响应）。涉及求职技能准备或政策咨询，请通过下方【转人工教师】联系就业指导老师人工确认。',
+            response: {
+              answer: '智能咨询服务暂不可用（服务连接异常或上游无响应）。涉及求职技能准备或政策咨询，请通过下方【转人工教师】联系就业指导老师人工确认。',
+              sources: [],
+              disclaimer: '服务连接异常，已转为人工指引。',
+              handoff_recommended: true,
+              mode: 'unavailable',
+            },
+          },
+        ])
       }
     } finally {
       setLoading(false)
@@ -52,11 +71,25 @@ export function AdvicePanel({ token }: { token: string }) {
     setMessages((prev) => [
       ...prev,
       {
-        id: `b-handoff-${Date.now()}`,
+        id: createMessageId('b-handoff'),
         sender: 'bot',
         text: '建议联系授权就业指导教师确认。教师仅应看到脱敏摘要，不会看到完整隐私字段。',
       },
     ])
+  }
+
+  const renderModeTag = (mode?: string) => {
+    if (!mode) return null
+    if (mode === 'sf_fastgpt') {
+      return <span className="mode-tag mode-sf">SF-FastGPT</span>
+    }
+    if (mode === 'unavailable') {
+      return <span className="mode-tag mode-unavailable">服务暂不可用</span>
+    }
+    if (mode === 'mock') {
+      return <span className="mode-tag mode-mock">模拟模式</span>
+    }
+    return <span className="mode-tag">{mode}</span>
   }
 
   return (
@@ -97,8 +130,10 @@ export function AdvicePanel({ token }: { token: string }) {
                 </div>
                 {m.response && (
                   <div className="chat-meta">
-                    <span>{m.response.mode === 'sf_fastgpt' ? 'SF-FastGPT' : '模拟模式'}</span>
-                    {m.response.handoff_recommended && <span>建议人工确认</span>}
+                    {renderModeTag(m.response.mode)}
+                    {m.response.handoff_recommended && (
+                      <span className="mode-tag mode-handoff">建议人工确认</span>
+                    )}
                     {m.response.sources.map((source) =>
                       source.url ? (
                         <a key={`${m.id}-${source.title}`} href={source.url} target="_blank" rel="noreferrer">
@@ -111,6 +146,18 @@ export function AdvicePanel({ token }: { token: string }) {
                     <small>{m.response.disclaimer}</small>
                   </div>
                 )}
+                {m.response?.mode === 'unavailable' && (
+                  <div className="chat-unavailable-notice">
+                    <span>提示：上游服务异常或暂不可用，建议转人工教师核实。</span>
+                    <button
+                      type="button"
+                      className="btn btn-warn btn-sm"
+                      onClick={handleHumanHandoff}
+                    >
+                      转人工教师
+                    </button>
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -121,12 +168,16 @@ export function AdvicePanel({ token }: { token: string }) {
               value={inputVal}
               onChange={(e) => setInputVal(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === 'Enter') {
+                if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
                   e.preventDefault()
                   void handleSend(inputVal)
                 }
               }}
-              placeholder="输入你的问题…"
+              placeholder={
+                consultationType === 'career'
+                  ? '输入职业技能或求职准备问题（如“如何补齐 Docker 缺口”、“什么是 Docker”）…'
+                  : '输入高校毕业生就业政策或办事咨询问题…'
+              }
             />
             <button
               type="button"
@@ -177,30 +228,77 @@ export function AdvicePanel({ token }: { token: string }) {
           <div className="panel">
             <h3 className="panel-title">快捷问题</h3>
             <div className="stack" style={{ gap: '8px' }}>
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={() => void handleSend('本周我应该优先补哪个缺口？')}
-                disabled={loading}
-              >
-                本周优先缺口？
-              </button>
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={() => void handleSend('项目摘要怎么写更匹配目标岗位？')}
-                disabled={loading}
-              >
-                项目摘要怎么写？
-              </button>
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={() => void handleSend('本地岗位投递顺序怎么排？')}
-                disabled={loading}
-              >
-                投递顺序？
-              </button>
+              {consultationType === 'career' ? (
+                <>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => void handleSend('如何补齐 Docker 缺口？')}
+                    disabled={loading}
+                  >
+                    如何补齐 Docker 缺口？
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => void handleSend('什么是 Docker？')}
+                    disabled={loading}
+                  >
+                    什么是 Docker？
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => void handleSend('本周我应该优先补哪个缺口？')}
+                    disabled={loading}
+                  >
+                    本周优先缺口？
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => void handleSend('项目摘要怎么写更匹配目标岗位？')}
+                    disabled={loading}
+                  >
+                    项目摘要怎么写？
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => void handleSend('校内就业指导服务的咨询渠道有哪些？')}
+                    disabled={loading}
+                  >
+                    校内咨询渠道有哪些？
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => void handleSend('高校毕业生就业办事与档案去向如何办理？')}
+                    disabled={loading}
+                  >
+                    办事与档案去向？
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => void handleSend('基层就业项目与求职补贴政策有哪些？')}
+                    disabled={loading}
+                  >
+                    基层项目与补贴政策？
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => void handleSend('如何核验求职与招聘风险防范？')}
+                    disabled={loading}
+                  >
+                    求职风险防范？
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>

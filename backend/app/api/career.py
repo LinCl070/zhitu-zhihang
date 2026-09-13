@@ -14,7 +14,7 @@ from app.auth.session import (
     get_current_principal,
     require_roles,
 )
-from app.clients.fastgpt import AssistantRoute
+from app.clients.fastgpt import AssistantRoute, handoff_response
 from app.config import get_settings
 from app.models.entities import (
     ActionPlan,
@@ -271,11 +271,16 @@ async def query_assistant(
     session: DbSession,
 ) -> AssistantQueryResponse:
     context = _assistant_context(session, principal)
-    response = await create_assistant_service(get_settings()).query(
-        AssistantRoute(payload.consultation_type),
-        payload.question,
-        context,
-    )
+    try:
+        service = create_assistant_service(get_settings())
+        response = await service.query(
+            AssistantRoute(payload.consultation_type),
+            payload.question,
+            context,
+        )
+    except Exception:
+        response = handoff_response(mode="unavailable")
+
     record_audit_event(
         session,
         actor_id=principal.user_id,
