@@ -70,6 +70,7 @@ export type CounselorStudent = {
   phone: string | null
   email: string | null
   enrollmentYear: number | null
+  enrollmentDate: string | null
   major: string
   targetRole: string
   targetCity: string
@@ -120,7 +121,16 @@ export type StudentRegistrationRequest = {
   studentNumber: string
   phone: string
   email: string
-  enrollmentYear: number
+  enrollmentDate: string
+}
+
+export type TeacherCreateRequest = {
+  username: string
+  displayName: string
+  phone: string
+  email: string
+  employmentDate: string
+  password: string
 }
 
 export type CounselorStudentResponse = {
@@ -130,6 +140,7 @@ export type CounselorStudentResponse = {
   phone: string | null
   email: string | null
   enrollment_year: number | null
+  enrollment_date: string | null
   major: string
   target_roles: string[]
   target_cities: string[]
@@ -166,8 +177,16 @@ export type AdminOverviewResponse = {
     phone: string | null
     email: string | null
     enrollment_year: number | null
+    enrollment_date: string | null
   }>
-  counselors: Array<{ id: string; display_name: string; role: string }>
+  counselors: Array<{
+    id: string
+    display_name: string
+    role: string
+    phone: string | null
+    email: string | null
+    employment_date: string | null
+  }>
   accesses: Array<{ counselor_id: string; student_id: string }>
 }
 
@@ -292,6 +311,7 @@ export const INITIAL_TEACHER_STUDENTS: CounselorStudent[] = [
     phone: null,
     email: null,
     enrollmentYear: null,
+    enrollmentDate: null,
     major: '软件工程',
     targetRole: '后端开发实习生',
     targetCity: '成都',
@@ -313,6 +333,7 @@ export const INITIAL_TEACHER_STUDENTS: CounselorStudent[] = [
     phone: null,
     email: null,
     enrollmentYear: null,
+    enrollmentDate: null,
     major: '数据科学与大数据技术',
     targetRole: '数据分析实习生',
     targetCity: '成都',
@@ -328,6 +349,7 @@ export const INITIAL_TEACHER_STUDENTS: CounselorStudent[] = [
     phone: null,
     email: null,
     enrollmentYear: null,
+    enrollmentDate: null,
     major: '网络工程',
     targetRole: '运维开发实习生',
     targetCity: '重庆',
@@ -442,7 +464,7 @@ export const api = {
         student_number: payload.studentNumber,
         phone: payload.phone,
         email: payload.email,
-        enrollment_year: payload.enrollmentYear,
+        enrollment_date: payload.enrollmentDate,
       }),
     }),
   changePassword: (token: string, currentPassword: string, newPassword: string, confirmation: string) =>
@@ -450,10 +472,17 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ current_password: currentPassword, new_password: newPassword, password_confirmation: confirmation }),
     }),
-  createTeacher: (token: string, username: string, displayName: string) =>
-    request<{ id: string; username: string; display_name: string; role: string; temporary_password: string }>('/api/v1/admin/users/teachers', token, {
+  createTeacher: (token: string, payload: TeacherCreateRequest) =>
+    request<{ id: string; username: string; display_name: string; role: string; must_change_password: boolean }>('/api/v1/admin/users/teachers', token, {
       method: 'POST',
-      body: JSON.stringify({ username, display_name: displayName }),
+      body: JSON.stringify({
+        username: payload.username,
+        display_name: payload.displayName,
+        phone: payload.phone,
+        email: payload.email,
+        employment_date: payload.employmentDate,
+        password: payload.password,
+      }),
     }),
   resetAccountPassword: (token: string, userId: string) =>
     request<{ id: string; username: string; display_name: string; role: string; temporary_password: string }>(`/api/v1/admin/users/${userId}/reset-password`, token, { method: 'POST' }),

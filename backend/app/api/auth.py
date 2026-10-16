@@ -1,7 +1,7 @@
 """Account registration, login, password changes, and account lifecycle endpoints."""
 
 import re
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, date, datetime, timedelta
 
 from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, ConfigDict, Field, field_validator
@@ -44,7 +44,7 @@ class StudentRegistrationPayload(CredentialsPayload):
     student_number: str = Field(min_length=10, max_length=10)
     phone: str = Field(min_length=11, max_length=32)
     email: str = Field(min_length=3, max_length=254)
-    enrollment_year: int
+    enrollment_date: date
     password_confirmation: str = Field(min_length=1, max_length=128)
 
     @field_validator("name")
@@ -79,11 +79,11 @@ class StudentRegistrationPayload(CredentialsPayload):
             raise ValueError("联系邮箱格式不正确")
         return result
 
-    @field_validator("enrollment_year")
+    @field_validator("enrollment_date")
     @classmethod
-    def valid_enrollment_year(cls, value: int) -> int:
-        if not 1958 <= value <= datetime.now(UTC).year:
-            raise ValueError("入学年份须在 1958 年至当前年份之间")
+    def valid_enrollment_date(cls, value: date) -> date:
+        if not date(1958, 1, 1) <= value <= date.today():
+            raise ValueError("入学日期须在 1958-01-01 至今天之间")
         return value
 
 
@@ -128,7 +128,8 @@ def register_student(payload: StudentRegistrationPayload, session: DbSession) ->
         student_number=payload.student_number,
         phone=payload.phone,
         email=payload.email,
-        enrollment_year=payload.enrollment_year,
+        enrollment_year=payload.enrollment_date.year,
+        enrollment_date=payload.enrollment_date,
         role=UserRole.STUDENT,
         password_hash=hash_password(payload.password),
         password_changed_at=datetime.now(UTC),
@@ -161,7 +162,7 @@ def login(payload: CredentialsPayload, session: DbSession) -> LoginResponse:
     if not verify_password(payload.password, user.password_hash):
         _record_failed_login(session, user)
         raise _invalid_credentials()
-    if user.must_change_password and not _has_valid_temporary_password(
+    if user.must_change_password and not _has_valid_forced_change_credential(
         session, user, payload.password, now
     ):
         _record_failed_login(session, user)
@@ -236,9 +237,17 @@ def create_temporary_password_record(
     account_session_store.revoke_user(user.id)
 
 
-def _has_valid_temporary_password(
+def _has_valid_forced_change_credential(
     session: DbSession, user: User, password: str, now: datetime
 ) -> bool:
+    has_unused_reset = session.scalar(
+        select(PasswordResetToken.id).where(
+            PasswordResetToken.user_id == user.id,
+            PasswordResetToken.used_at.is_(None),
+        )
+    )
+    if has_unused_reset is None:
+        return True
     return (
         session.scalar(
             select(PasswordResetToken.id).where(

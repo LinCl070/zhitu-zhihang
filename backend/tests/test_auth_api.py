@@ -1,5 +1,5 @@
 import unittest
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 from uuid import uuid4
 
 from app.api.admin_accounts import TeacherCreatePayload, create_teacher
@@ -82,7 +82,7 @@ class AuthApiTests(unittest.TestCase):
                 student_number="2026000001",
                 phone="13800138000",
                 email="new.student@example.edu.cn",
-                enrollment_year=2026,
+                enrollment_date=date(2026, 9, 1),
             ),
             session,
         )
@@ -94,6 +94,7 @@ class AuthApiTests(unittest.TestCase):
         self.assertEqual(created.phone, "13800138000")
         self.assertEqual(created.email, "new.student@example.edu.cn")
         self.assertEqual(created.enrollment_year, 2026)
+        self.assertEqual(created.enrollment_date, date(2026, 9, 1))
         self.assertTrue(verify_password("SecurePass9", created.password_hash))
         with self.assertRaises(ValidationError):
             StudentRegistrationPayload(
@@ -104,7 +105,7 @@ class AuthApiTests(unittest.TestCase):
                 student_number="2026000002",
                 phone="13800138001",
                 email="student.two@example.edu.cn",
-                enrollment_year=2026,
+                enrollment_date=date(2026, 9, 1),
                 role="admin",
             )
 
@@ -132,7 +133,7 @@ class AuthApiTests(unittest.TestCase):
                     student_number="2026000001",
                     phone="13800138003",
                     email="student.four@example.edu.cn",
-                    enrollment_year=2026,
+                    enrollment_date=date(2026, 9, 1),
                 ),
                 session,
             )
@@ -182,14 +183,34 @@ class AuthApiTests(unittest.TestCase):
         administrator = user(role=UserRole.ADMIN)
         session = FakeSession(users={administrator.id: administrator})
         result = create_teacher(
-            payload=TeacherCreatePayload(username="teacher-one", display_name="教师"),
+            payload=TeacherCreatePayload(
+                username="teacher-one",
+                display_name="教师",
+                phone="13800138000",
+                email="teacher@example.edu.cn",
+                employment_date=date(2026, 9, 1),
+                password="TeacherPass9",
+            ),
             principal=SessionPrincipal(
                 administrator.id, administrator.display_name, administrator.role, datetime.now(UTC)
             ),
             session=session,
         )
         self.assertEqual(result.role, UserRole.COUNSELOR)
-        self.assertTrue(result.temporary_password)
+        self.assertTrue(result.must_change_password)
+        created = next(item for item in session.added if isinstance(item, User))
+        self.assertEqual(created.phone, "13800138000")
+        self.assertEqual(created.email, "teacher@example.edu.cn")
+        self.assertEqual(created.employment_date, date(2026, 9, 1))
+        self.assertIsNotNone(created.password_changed_at)
+        self.assertTrue(verify_password("TeacherPass9", created.password_hash))
+        login_session = FakeSession(scalar_values=[created, None])
+        login_result = login(
+            CredentialsPayload(username="teacher-one", password="TeacherPass9"),
+            login_session,
+        )
+        self.assertEqual(login_result.role, UserRole.COUNSELOR)
+        self.assertTrue(login_result.must_change_password)
         self.assertTrue(
             any(
                 isinstance(item, User) and item.role is UserRole.COUNSELOR

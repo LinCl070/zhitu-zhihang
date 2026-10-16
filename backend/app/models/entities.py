@@ -70,6 +70,8 @@ class User(Base):
     phone: Mapped[str | None] = mapped_column(String(32))
     email: Mapped[str | None] = mapped_column(String(254))
     enrollment_year: Mapped[int | None] = mapped_column(Integer)
+    enrollment_date: Mapped[date | None] = mapped_column(Date)
+    employment_date: Mapped[date | None] = mapped_column(Date)
     role: Mapped[UserRole] = mapped_column(
         Enum(UserRole, name="user_role", values_callable=enum_values), nullable=False
     )

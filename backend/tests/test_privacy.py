@@ -19,11 +19,19 @@ class PrivacyBoundaryTests(unittest.TestCase):
     def test_contact_fields_are_limited_to_account_and_authorized_staff_paths(self) -> None:
         source_root = Path(__file__).resolve().parents[1] / "app"
         allowed_paths = {
+            "api/admin_accounts.py",
             "api/auth.py",
             "api/staff.py",
             "models/entities.py",
         }
-        contact_fields = ("student_number", "phone", "email", "enrollment_year")
+        contact_fields = (
+            "student_number",
+            "phone",
+            "email",
+            "enrollment_year",
+            "enrollment_date",
+            "employment_date",
+        )
         violations = []
 
         for path in source_root.rglob("*.py"):

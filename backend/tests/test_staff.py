@@ -1,4 +1,5 @@
 import unittest
+from datetime import date
 from uuid import uuid4
 
 from app.api.staff import AdvicePayload, CounselorStudentSummary, StudentAccountSummary
@@ -15,6 +16,7 @@ class StaffBoundaryTests(unittest.TestCase):
             phone="13800138000",
             email="student@example.edu.cn",
             enrollment_year=2026,
+            enrollment_date=date(2026, 9, 1),
             major="软件工程",
             target_roles=["后端开发"],
             target_cities=["成都"],
@@ -30,10 +32,12 @@ class StaffBoundaryTests(unittest.TestCase):
             phone=student.phone,
             email=student.email,
             enrollment_year=student.enrollment_year,
+            enrollment_date=student.enrollment_date,
         )
 
         self.assertEqual(account.student_number, "2026000001")
         self.assertEqual(student.email, "student@example.edu.cn")
+        self.assertEqual(account.enrollment_date, date(2026, 9, 1))
 
     def test_teacher_advice_is_limited_to_guidance_fields(self) -> None:
         columns = set(TeacherAdvice.__table__.columns.keys())

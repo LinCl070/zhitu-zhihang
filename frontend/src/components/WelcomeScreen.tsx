@@ -1,67 +1,9 @@
-import { FormEvent, KeyboardEvent, useEffect, useMemo, useRef, useState } from 'react'
+import { FormEvent, useState } from 'react'
 import { ApiError, api, AuthSession } from '../api/client'
 import { brand } from '../config/brand'
+import { DatePickerField } from './DatePickerField'
 
-const FIRST_ENROLLMENT_YEAR = 1958
-const YEAR_ROW_HEIGHT = 36
-
-function YearPicker({ value, onChange }: { value: number; onChange: (year: number) => void }) {
-  const scrollRef = useRef<HTMLDivElement>(null)
-  const currentYear = new Date().getFullYear()
-  const years = useMemo(
-    () => Array.from({ length: currentYear - FIRST_ENROLLMENT_YEAR + 1 }, (_, index) => FIRST_ENROLLMENT_YEAR + index),
-    [currentYear],
-  )
-
-  useEffect(() => {
-    scrollRef.current?.scrollTo({ top: (value - FIRST_ENROLLMENT_YEAR) * YEAR_ROW_HEIGHT, behavior: 'smooth' })
-  }, [value])
-
-  const selectYearAtCenter = () => {
-    const list = scrollRef.current
-    if (!list) return
-    const index = Math.round(list.scrollTop / YEAR_ROW_HEIGHT)
-    onChange(years[Math.min(Math.max(index, 0), years.length - 1)])
-  }
-
-  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-    if (event.key !== 'ArrowUp' && event.key !== 'ArrowDown') return
-    event.preventDefault()
-    onChange(Math.min(Math.max(value + (event.key === 'ArrowUp' ? 1 : -1), FIRST_ENROLLMENT_YEAR), currentYear))
-  }
-
-  return (
-    <div className="year-picker">
-      <div
-        ref={scrollRef}
-        className="year-picker-list"
-        role="listbox"
-        aria-label="入学年份"
-        aria-activedescendant={`enrollment-year-${value}`}
-        tabIndex={0}
-        onKeyDown={handleKeyDown}
-        onScroll={selectYearAtCenter}
-      >
-        <div className="year-picker-spacer" aria-hidden="true" />
-        {years.map((year) => (
-          <button
-            key={year}
-            id={`enrollment-year-${year}`}
-            type="button"
-            className="year-picker-option"
-            role="option"
-            aria-selected={year === value}
-            onClick={() => onChange(year)}
-          >
-            {year}
-          </button>
-        ))}
-        <div className="year-picker-spacer" aria-hidden="true" />
-      </div>
-      <div className="year-picker-center" aria-hidden="true" />
-    </div>
-  )
-}
+const today = new Date().toLocaleDateString('en-CA')
 
 export function WelcomeScreen({ onAuthenticated }: { onAuthenticated: (session: AuthSession) => Promise<void> }) {
   const [mode, setMode] = useState<'login' | 'register'>('login')
@@ -72,7 +14,7 @@ export function WelcomeScreen({ onAuthenticated }: { onAuthenticated: (session: 
   const [studentNumber, setStudentNumber] = useState('')
   const [phone, setPhone] = useState('')
   const [email, setEmail] = useState('')
-  const [enrollmentYear, setEnrollmentYear] = useState(new Date().getFullYear())
+  const [enrollmentDate, setEnrollmentDate] = useState('')
   const [busy, setBusy] = useState(false)
   const [message, setMessage] = useState('')
 
@@ -90,7 +32,7 @@ export function WelcomeScreen({ onAuthenticated }: { onAuthenticated: (session: 
           studentNumber,
           phone,
           email,
-          enrollmentYear,
+          enrollmentDate,
         })
         setMode('login')
         setPassword('')
@@ -121,7 +63,7 @@ export function WelcomeScreen({ onAuthenticated }: { onAuthenticated: (session: 
               <label><span><i className="required-mark" aria-hidden="true">*</i>学号</span><input value={studentNumber} onChange={(event) => setStudentNumber(event.target.value)} required inputMode="numeric" pattern="[0-9]{10}" minLength={10} maxLength={10} /></label>
               <label><span><i className="required-mark" aria-hidden="true">*</i>电话号码</span><input type="tel" value={phone} onChange={(event) => setPhone(event.target.value)} required inputMode="tel" autoComplete="tel" /></label>
               <label><span><i className="required-mark" aria-hidden="true">*</i>联系邮箱</span><input type="email" value={email} onChange={(event) => setEmail(event.target.value)} required autoComplete="email" /></label>
-              <label><span><i className="required-mark" aria-hidden="true">*</i>入学年份</span><YearPicker value={enrollmentYear} onChange={setEnrollmentYear} /></label>
+              <DatePickerField id="student-enrollment-date" label="入学时间" value={enrollmentDate} onChange={setEnrollmentDate} max={today} required />
             </>}
             <label><span>{mode === 'register' && <i className="required-mark" aria-hidden="true">*</i>}用户名</span><input value={username} onChange={(event) => setUsername(event.target.value)} required minLength={3} maxLength={64} autoComplete="username" /></label>
             <label><span>{mode === 'register' && <i className="required-mark" aria-hidden="true">*</i>}密码</span><input type="password" value={password} onChange={(event) => setPassword(event.target.value)} required minLength={8} maxLength={128} autoComplete={mode === 'login' ? 'current-password' : 'new-password'} /></label>

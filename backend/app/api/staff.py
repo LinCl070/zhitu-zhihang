@@ -1,6 +1,6 @@
 """Role-scoped teacher assistance and administrator governance routes."""
 
-from datetime import datetime
+from datetime import date, datetime
 from typing import Annotated
 from uuid import UUID
 
@@ -48,6 +48,7 @@ class CounselorStudentSummary(BaseModel):
     phone: str | None
     email: str | None
     enrollment_year: int | None
+    enrollment_date: date | None
     major: str
     target_roles: list[str]
     target_cities: list[str]
@@ -111,6 +112,13 @@ class StudentAccountSummary(UserSummary):
     phone: str | None
     email: str | None
     enrollment_year: int | None
+    enrollment_date: date | None
+
+
+class CounselorAccountSummary(UserSummary):
+    phone: str | None
+    email: str | None
+    employment_date: date | None
 
 
 class AccessSummary(BaseModel):
@@ -123,7 +131,7 @@ class AdminOverview(BaseModel):
     sources: list[dict[str, str]]
     audits: list[AuditSummary]
     students: list[StudentAccountSummary]
-    counselors: list[UserSummary]
+    counselors: list[CounselorAccountSummary]
     accesses: list[AccessSummary]
 
 
@@ -176,6 +184,7 @@ def read_counselor_students(
                 phone=user.phone,
                 email=user.email,
                 enrollment_year=user.enrollment_year,
+                enrollment_date=user.enrollment_date,
                 major=profile.major,
                 target_roles=profile.target_roles,
                 target_cities=profile.target_cities,
@@ -279,7 +288,11 @@ def read_admin_overview(_: AdminPrincipal, session: DbSession) -> AdminOverview:
         students=[
             _student_account_summary(user) for user in users if user.role is UserRole.STUDENT
         ],
-        counselors=[_user_summary(user) for user in users if user.role is UserRole.COUNSELOR],
+        counselors=[
+            _counselor_account_summary(user)
+            for user in users
+            if user.role is UserRole.COUNSELOR
+        ],
         accesses=[
             AccessSummary(counselor_id=item.counselor_id, student_id=item.student_id)
             for item in accesses
@@ -347,4 +360,14 @@ def _student_account_summary(user: User) -> StudentAccountSummary:
         phone=user.phone,
         email=user.email,
         enrollment_year=user.enrollment_year,
+        enrollment_date=user.enrollment_date,
+    )
+
+
+def _counselor_account_summary(user: User) -> CounselorAccountSummary:
+    return CounselorAccountSummary(
+        **_user_summary(user).model_dump(),
+        phone=user.phone,
+        email=user.email,
+        employment_date=user.employment_date,
     )

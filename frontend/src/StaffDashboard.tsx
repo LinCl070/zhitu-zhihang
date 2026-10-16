@@ -7,6 +7,7 @@ import {
   AdminOverviewResponse,
 } from './api/client'
 import { useToast } from './components/Toast'
+import { DatePickerField } from './components/DatePickerField'
 import { brand } from './config/brand'
 
 export type TeacherNav = 'students' | 'summary' | 'advice'
@@ -264,8 +265,8 @@ function TeacherWorkbench({ token, name, onSwitch }: { token: string; name: stri
                   <dd>{selectedStudent.phone || '未登记'}</dd>
                   <dt>联系邮箱</dt>
                   <dd>{selectedStudent.email || '未登记'}</dd>
-                  <dt>入学年份</dt>
-                  <dd>{selectedStudent.enrollmentYear || '未登记'}</dd>
+                  <dt>入学时间</dt>
+                  <dd>{selectedStudent.enrollmentDate || selectedStudent.enrollmentYear || '未登记'}</dd>
                   <dt>专业</dt>
                   <dd>{selectedStudent.major}</dd>
                   <dt>目标岗位</dt>
@@ -387,6 +388,10 @@ function AdminWorkbench({ token, name, onSwitch }: { token: string; name: string
   const [selectedStudentId, setSelectedStudentId] = useState('')
   const [teacherUsername, setTeacherUsername] = useState('')
   const [teacherDisplayName, setTeacherDisplayName] = useState('')
+  const [teacherPhone, setTeacherPhone] = useState('')
+  const [teacherEmail, setTeacherEmail] = useState('')
+  const [teacherEmploymentDate, setTeacherEmploymentDate] = useState('')
+  const [teacherPassword, setTeacherPassword] = useState('')
   const [temporaryPassword, setTemporaryPassword] = useState('')
 
   const loadOverview = useCallback(async () => {
@@ -447,17 +452,29 @@ function AdminWorkbench({ token, name, onSwitch }: { token: string; name: string
   }
 
   const handleCreateTeacher = async () => {
-    if (!teacherUsername.trim() || !teacherDisplayName.trim()) {
-      showToast('请完善教师信息', '用户名和显示名称均不能为空。', 'warning')
+    if (!teacherUsername.trim() || !teacherDisplayName.trim() || !teacherPhone.trim() || !teacherEmail.trim() || !teacherEmploymentDate || !teacherPassword) {
+      showToast('请完善教师信息', '用户名、教师身份、联系电话、联系邮箱、入职时间和密码均不能为空。', 'warning')
       return
     }
     setSubmitting(true)
     try {
-      const account = await api.createTeacher(token, teacherUsername, teacherDisplayName)
-      setTemporaryPassword(`教师 ${account.display_name} 的初始密码：${account.temporary_password}`)
-      setTeacherUsername(''); setTeacherDisplayName('')
+      const account = await api.createTeacher(token, {
+        username: teacherUsername,
+        displayName: teacherDisplayName,
+        phone: teacherPhone,
+        email: teacherEmail,
+        employmentDate: teacherEmploymentDate,
+        password: teacherPassword,
+      })
+      setTemporaryPassword('')
+      setTeacherUsername('')
+      setTeacherDisplayName('')
+      setTeacherPhone('')
+      setTeacherEmail('')
+      setTeacherEmploymentDate('')
+      setTeacherPassword('')
       await loadOverview()
-      showToast('教师账号已创建', '请安全地交付一次性初始密码。', 'success')
+      showToast('教师账号已创建', `教师 ${account.display_name} 可使用管理员设置的初始密码登录。`, 'success')
     } catch (error) {
       showToast('创建教师账号失败', getErrorMessage(error), 'warning')
     } finally { setSubmitting(false) }
@@ -643,24 +660,30 @@ function AdminWorkbench({ token, name, onSwitch }: { token: string; name: string
                 </div>
                 <div className="panel">
                   <h3 className="panel-title">教师账号</h3>
-                  <div className="field"><label htmlFor="teacher-username">用户名</label><input id="teacher-username" value={teacherUsername} onChange={(event) => setTeacherUsername(event.target.value)} maxLength={64} /></div>
-                  <div className="field" style={{ marginTop: '10px' }}><label htmlFor="teacher-name">显示名称</label><input id="teacher-name" value={teacherDisplayName} onChange={(event) => setTeacherDisplayName(event.target.value)} maxLength={100} /></div>
+                  <div className="teacher-create-form">
+                    <div className="field"><label htmlFor="teacher-username"><span><i className="required-mark" aria-hidden="true">*</i>用户名</span></label><input id="teacher-username" value={teacherUsername} onChange={(event) => setTeacherUsername(event.target.value)} required minLength={3} maxLength={64} autoComplete="username" /></div>
+                    <div className="field"><label htmlFor="teacher-name"><span><i className="required-mark" aria-hidden="true">*</i>教师身份</span></label><input id="teacher-name" value={teacherDisplayName} onChange={(event) => setTeacherDisplayName(event.target.value)} required maxLength={100} autoComplete="name" /></div>
+                    <div className="field"><label htmlFor="teacher-phone"><span><i className="required-mark" aria-hidden="true">*</i>联系电话</span></label><input id="teacher-phone" type="tel" value={teacherPhone} onChange={(event) => setTeacherPhone(event.target.value)} required inputMode="tel" autoComplete="tel" /></div>
+                    <div className="field"><label htmlFor="teacher-email"><span><i className="required-mark" aria-hidden="true">*</i>联系邮箱</span></label><input id="teacher-email" type="email" value={teacherEmail} onChange={(event) => setTeacherEmail(event.target.value)} required autoComplete="email" /></div>
+                    <DatePickerField id="teacher-employment-date" label="入职时间" value={teacherEmploymentDate} onChange={setTeacherEmploymentDate} max={new Date().toLocaleDateString('en-CA')} required disabled={submitting} />
+                    <div className="field"><label htmlFor="teacher-password"><span><i className="required-mark" aria-hidden="true">*</i>密码</span></label><input id="teacher-password" type="password" value={teacherPassword} onChange={(event) => setTeacherPassword(event.target.value)} required minLength={8} maxLength={128} autoComplete="new-password" /></div>
+                  </div>
                   <div className="textarea-actions"><button type="button" className="btn btn-primary" onClick={handleCreateTeacher} disabled={submitting || loading}>创建教师账号</button></div>
                   {temporaryPassword && <p className="auth-message">{temporaryPassword}</p>}
-                  <div className="table-wrap" style={{ marginTop: '14px' }}><table><thead><tr><th>教师</th><th>操作</th></tr></thead><tbody>{(overview?.counselors || []).map((user) => <tr key={user.id}><td>{user.display_name}</td><td><button type="button" className="btn btn-ghost" onClick={() => handleResetPassword(user.id)} disabled={submitting}>重置密码</button></td></tr>)}</tbody></table></div>
+                  <div className="table-wrap" style={{ marginTop: '14px' }}><table><thead><tr><th>教师</th><th>电话</th><th>邮箱</th><th>入职时间</th><th>操作</th></tr></thead><tbody>{(overview?.counselors || []).map((user) => <tr key={user.id}><td>{user.display_name}</td><td>{user.phone || '未登记'}</td><td>{user.email || '未登记'}</td><td>{user.employment_date || '未登记'}</td><td><button type="button" className="btn btn-ghost" onClick={() => handleResetPassword(user.id)} disabled={submitting}>重置密码</button></td></tr>)}</tbody></table></div>
                 </div>
                 <div className="panel">
                   <h3 className="panel-title">学生账号档案</h3>
                   <div className="table-wrap" style={{ marginTop: '14px' }}>
                     <table>
-                      <thead><tr><th>姓名</th><th>学号</th><th>电话</th><th>邮箱</th><th>入学年份</th></tr></thead>
+                      <thead><tr><th>姓名</th><th>学号</th><th>电话</th><th>邮箱</th><th>入学时间</th></tr></thead>
                       <tbody>
                         {(overview?.students || []).map((student) => <tr key={student.id}>
                           <td>{student.display_name}</td>
                           <td>{student.student_number || '未登记'}</td>
                           <td>{student.phone || '未登记'}</td>
                           <td>{student.email || '未登记'}</td>
-                          <td>{student.enrollment_year || '未登记'}</td>
+                          <td>{student.enrollment_date || student.enrollment_year || '未登记'}</td>
                         </tr>)}
                         {!loading && overview?.students.length === 0 && <tr><td colSpan={5}>当前暂无学生账号。</td></tr>}
                       </tbody>
@@ -806,6 +829,7 @@ function mapCounselorStudent(response: CounselorStudentResponse): CounselorStude
     phone: response.phone,
     email: response.email,
     enrollmentYear: response.enrollment_year,
+    enrollmentDate: response.enrollment_date,
     major: response.major,
     targetRole: response.target_roles.join('、') || '未设置',
     targetCity: response.target_cities.join('、') || '未设置',
