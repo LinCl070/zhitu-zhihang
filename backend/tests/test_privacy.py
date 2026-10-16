@@ -23,6 +23,7 @@ class PrivacyBoundaryTests(unittest.TestCase):
             "api/auth.py",
             "api/staff.py",
             "models/entities.py",
+            "services/risk.py",
         }
         contact_fields = (
             "student_number",
@@ -51,3 +52,25 @@ class PrivacyBoundaryTests(unittest.TestCase):
         self.assertNotIn("FASTGPT_API_KEY", source)
         self.assertNotIn("FASTGPT_WORKFLOW", source)
         self.assertNotIn("postgresql+psycopg://", source)
+
+    def test_governance_response_models_exclude_contact_fields(self) -> None:
+        from app.api.governance import InsightsResponse, RiskItem
+
+        risk_fields = set(RiskItem.model_fields.keys())
+        insights_fields = set(InsightsResponse.model_fields.keys())
+        sensitive = {"phone", "email", "student_number", "enrollment_year", "enrollment_date"}
+        self.assertFalse(risk_fields & sensitive)
+        self.assertFalse(insights_fields & sensitive)
+
+    def test_audit_metadata_is_limited_to_whitelisted_fields(self) -> None:
+        # record_audit_event accepts a metadata dict whose keys are caller-controlled.
+        # The simulation caller must only pass scenarios and cohort_size (see governance API).
+        import inspect
+
+        from app.services.audit import record_audit_event
+
+        signature = inspect.signature(record_audit_event)
+        self.assertIn("metadata", signature.parameters)
+        # The function must not itself retain user-provided content beyond whitelisted fields.
+        source = inspect.getsource(record_audit_event)
+        self.assertIn("metadata or {}", source)

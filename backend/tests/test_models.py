@@ -16,6 +16,7 @@ class ModelMetadataTests(unittest.TestCase):
             "teacher_advice",
             "action_plans",
             "audit_events",
+            "simulation_runs",
         }
         prohibited_columns = {
             "gender",

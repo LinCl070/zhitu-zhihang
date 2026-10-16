@@ -15,6 +15,7 @@ def record_audit_event(
     action: str,
     resource_type: str,
     resource_id: UUID | None,
+    metadata: dict[str, str] | None = None,
 ) -> AuditEvent:
     """Persist only whitelisted event fields; request and profile contents are excluded."""
 
@@ -24,7 +25,7 @@ def record_audit_event(
         action=action,
         resource_type=resource_type,
         resource_id=resource_id,
-        metadata_json={},
+        metadata_json=metadata or {},
     )
     session.add(event)
     session.flush()

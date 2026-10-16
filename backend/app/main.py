@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from app.api.admin_accounts import router as admin_accounts_router
 from app.api.auth import router as auth_router
 from app.api.career import router as career_router
+from app.api.governance import router as governance_router
 from app.api.staff import router as staff_router
 from app.config import get_settings
 
@@ -17,6 +18,7 @@ app.include_router(auth_router)
 app.include_router(admin_accounts_router)
 app.include_router(career_router)
 app.include_router(staff_router)
+app.include_router(governance_router)
 
 
 @app.get("/health", tags=["system"])

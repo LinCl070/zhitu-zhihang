@@ -252,3 +252,22 @@ class AuditEvent(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.now()
     )
+
+
+class SimulationRun(Base):
+    __tablename__ = "simulation_runs"
+    __table_args__ = (Index("ix_simulation_runs_created_at", "created_at"),)
+
+    id: Mapped[UUID] = mapped_column(PostgreSQLUUID(as_uuid=True), primary_key=True, default=uuid4)
+    created_by: Mapped[UUID | None] = mapped_column(
+        ForeignKey("users.id", ondelete="SET NULL")
+    )
+    params: Mapped[dict] = mapped_column(JSONB, nullable=False)
+    seed: Mapped[int] = mapped_column(Integer, nullable=False)
+    model_version: Mapped[str] = mapped_column(String(20), nullable=False)
+    results: Mapped[dict] = mapped_column(JSONB, nullable=False)
+    adopted_scenario: Mapped[str | None] = mapped_column(String(40))
+    adopted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
