@@ -245,9 +245,15 @@ class DefaultsResponseTests(unittest.TestCase):
             cohort_size={"default": 300, "min": 50, "max": 1000},
             weeks={"default": 16, "min": 4, "max": 26},
             replications={"default": 10, "min": 1, "max": 20},
+            seed={"default": 1, "min": 1, "max": 1_000_000},
+            counselor_count={"default": 4, "min": 0, "max": 100},
+            sessions_per_week={"default": 8, "min": 1, "max": 40},
+            supply_ratio={"default": 0.8, "min": 0.0, "max": 2.0},
             scenarios=["baseline", "skill_training", "precision_coaching", "job_push", "combined"],
         )
         self.assertEqual(defaults.cohort_size["default"], 300)
+        self.assertEqual(defaults.supply_ratio["default"], 0.8)
+        self.assertEqual(defaults.counselor_count["default"], 4)
         self.assertIn("baseline", defaults.scenarios)
 
 

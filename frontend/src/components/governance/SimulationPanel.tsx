@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Play, RefreshCw, Download } from 'lucide-react'
+import { Download, Info, Play, RefreshCw } from 'lucide-react'
 import {
   api,
   ApiError,
@@ -13,6 +13,8 @@ import { METRIC_OPTIONS, MetricKey, scenarioLabel } from './labels'
 import { SimulationCharts, SkillGapChart } from './SimulationCharts'
 import { StrategyReportView } from './StrategyReport'
 
+const MAX_SCENARIOS = 4
+
 const SCENARIO_OPTIONS = [
   { key: 'baseline', label: '现状基线', required: true },
   { key: 'skill_training', label: '技能补强培训' },
@@ -21,15 +23,22 @@ const SCENARIO_OPTIONS = [
   { key: 'combined', label: '组合策略' },
 ]
 
-export function SimulationPanel({ token }: { token: string }) {
+export function SimulationPanel({
+  token,
+  onAdopt,
+}: {
+  token: string
+  onAdopt?: () => void
+}) {
   const { showToast } = useToast()
   const [defaults, setDefaults] = useState<SimulationDefaults | null>(null)
-  const [cohortSize, setCohortSize] = useState(300)
-  const [weeks, setWeeks] = useState(16)
-  const [replications, setReplications] = useState(10)
-  const [seed, setSeed] = useState(1)
-  const [supplyRatio, setSupplyRatio] = useState(0.8)
-  const [counselorCount, setCounselorCount] = useState(4)
+  const [cohortSize, setCohortSize] = useState<number | ''>(300)
+  const [weeks, setWeeks] = useState<number | ''>(16)
+  const [replications, setReplications] = useState<number | ''>(10)
+  const [seed, setSeed] = useState<number | ''>(1)
+  const [supplyRatio, setSupplyRatio] = useState<number | ''>(0.8)
+  const [counselorCount, setCounselorCount] = useState<number | ''>(4)
+  const [sessionsPerWeek, setSessionsPerWeek] = useState<number | ''>(8)
   const [scenarios, setScenarios] = useState<string[]>(['baseline', 'precision_coaching'])
 
   const [history, setHistory] = useState<SimulationSummary[]>([])
@@ -37,6 +46,7 @@ export function SimulationPanel({ token }: { token: string }) {
   const [report, setReport] = useState<StrategyReport | null>(null)
   const [metric, setMetric] = useState<MetricKey>('matched_rate')
   const [running, setRunning] = useState(false)
+  const [reporting, setReporting] = useState(false)
   const [adopting, setAdopting] = useState(false)
 
   const loadDefaults = useCallback(async () => {
@@ -46,6 +56,10 @@ export function SimulationPanel({ token }: { token: string }) {
       setCohortSize(payload.cohort_size.default)
       setWeeks(payload.weeks.default)
       setReplications(payload.replications.default)
+      setSeed(payload.seed.default)
+      setSupplyRatio(payload.supply_ratio.default)
+      setCounselorCount(payload.counselor_count.default)
+      setSessionsPerWeek(payload.sessions_per_week.default)
     } catch (error) {
       showToast('读取仿真参数失败', getErrorMessage(error), 'warning')
     }
@@ -68,12 +82,23 @@ export function SimulationPanel({ token }: { token: string }) {
   const toggleScenario = (key: string) => {
     setScenarios((current) => {
       if (key === 'baseline') return current
-      return current.includes(key) ? current.filter((s) => s !== key) : [...current, key]
+      if (current.includes(key)) {
+        return current.filter((s) => s !== key)
+      }
+      if (current.length >= MAX_SCENARIOS) {
+        showToast('最多选择 4 个场景', `请先取消一个已选场景（当前已选 ${current.length} 个）。`, 'warning')
+        return current
+      }
+      return [...current, key]
     })
   }
 
   const handleRun = async () => {
-    if (scenarios.length === 0 || !scenarios.includes('baseline')) {
+    if (cohortSize === '' || weeks === '' || replications === '' || seed === '' || supplyRatio === '' || counselorCount === '' || sessionsPerWeek === '') {
+      showToast('参数不完整', '请填写所有参数，数字输入框不能留空。', 'warning')
+      return
+    }
+    if (!scenarios.includes('baseline')) {
       showToast('请选择场景', '至少包含现状基线。', 'warning')
       return
     }
@@ -86,7 +111,7 @@ export function SimulationPanel({ token }: { token: string }) {
         replications,
         seed,
         counselor_count: counselorCount,
-        sessions_per_week: 8,
+        sessions_per_week: sessionsPerWeek,
         supply_ratio: supplyRatio,
         scenarios,
       })
@@ -103,12 +128,15 @@ export function SimulationPanel({ token }: { token: string }) {
 
   const handleGenerateReport = async () => {
     if (!currentRun) return
+    setReporting(true)
     try {
       const payload = await api.generateReport(token, currentRun.id)
       setReport(payload)
       showToast('报告已生成', '策略对比报告已就绪。', 'success')
     } catch (error) {
       showToast('报告生成失败', getErrorMessage(error), 'warning')
+    } finally {
+      setReporting(false)
     }
   }
 
@@ -117,7 +145,9 @@ export function SimulationPanel({ token }: { token: string }) {
     setAdopting(true)
     try {
       await api.adoptSimulation(token, currentRun.id, scenario)
+      setCurrentRun((run) => (run ? { ...run, adopted_scenario: scenario } : run))
       await loadHistory()
+      onAdopt?.()
       showToast('策略已采纳', '已写入脱敏审计，不触发任何自动操作。', 'success')
     } catch (error) {
       showToast('采纳失败', getErrorMessage(error), 'warning')
@@ -147,38 +177,29 @@ export function SimulationPanel({ token }: { token: string }) {
         </div>
       </div>
 
+      <div className="alert alert-info" style={{ marginTop: '14px' }}>
+        <Info size={18} />
+        <div className="alert-body">
+          <strong>合成数据，不代表真实就业预测。</strong>
+          本页仿真基于合成群体与规则模型，结果仅用于对比治理策略的相对效果。
+        </div>
+      </div>
+
       <div className="grid-2">
         <div className="panel">
           <h3 className="panel-title">仿真参数</h3>
           <div className="sim-form">
-            <div className="field">
-              <label>群体规模</label>
-              <input type="number" value={cohortSize} min={50} max={1000} onChange={(e) => setCohortSize(Number(e.target.value))} />
-            </div>
-            <div className="field">
-              <label>仿真周数</label>
-              <input type="number" value={weeks} min={4} max={26} onChange={(e) => setWeeks(Number(e.target.value))} />
-            </div>
-            <div className="field">
-              <label>重复次数</label>
-              <input type="number" value={replications} min={1} max={20} onChange={(e) => setReplications(Number(e.target.value))} />
-            </div>
-            <div className="field">
-              <label>随机种子</label>
-              <input type="number" value={seed} min={1} max={1000000} onChange={(e) => setSeed(Number(e.target.value))} />
-            </div>
-            <div className="field">
-              <label>岗位供给比例</label>
-              <input type="number" step="0.1" value={supplyRatio} min={0} max={2} onChange={(e) => setSupplyRatio(Number(e.target.value))} />
-            </div>
-            <div className="field">
-              <label>教师数量</label>
-              <input type="number" value={counselorCount} min={0} max={100} onChange={(e) => setCounselorCount(Number(e.target.value))} />
-            </div>
+            <NumberField label="群体规模" value={cohortSize} onChange={setCohortSize} bounds={defaults?.cohort_size} />
+            <NumberField label="仿真周数" value={weeks} onChange={setWeeks} bounds={defaults?.weeks} />
+            <NumberField label="重复次数" value={replications} onChange={setReplications} bounds={defaults?.replications} />
+            <NumberField label="随机种子" value={seed} onChange={setSeed} bounds={defaults?.seed} />
+            <NumberField label="岗位供给比例" value={supplyRatio} onChange={setSupplyRatio} bounds={defaults?.supply_ratio} step="0.1" />
+            <NumberField label="教师数量" value={counselorCount} onChange={setCounselorCount} bounds={defaults?.counselor_count} />
+            <NumberField label="每周会话数" value={sessionsPerWeek} onChange={setSessionsPerWeek} bounds={defaults?.sessions_per_week} />
           </div>
 
           <div className="scenario-picker">
-            <label className="col-label">治理策略（可多选，基线必选）</label>
+            <label className="col-label">治理策略（最多 4 个，基线必选）</label>
             {SCENARIO_OPTIONS.map((option) => (
               <label key={option.key} className="scenario-check">
                 <input
@@ -273,14 +294,18 @@ export function SimulationPanel({ token }: { token: string }) {
                       <td>{Math.round(scenario.summary.high_risk_count.mean)}</td>
                       <td>{scenario.summary.avg_gap.mean.toFixed(1)}</td>
                       <td>
-                        <button
-                          type="button"
-                          className="btn btn-ghost"
-                          disabled={adopting}
-                          onClick={() => handleAdopt(scenario.scenario)}
-                        >
-                          采纳
-                        </button>
+                        {currentRun.adopted_scenario === scenario.scenario ? (
+                          <span className="tag tag-success">已采纳</span>
+                        ) : (
+                          <button
+                            type="button"
+                            className="btn btn-ghost"
+                            disabled={adopting}
+                            onClick={() => handleAdopt(scenario.scenario)}
+                          >
+                            采纳
+                          </button>
+                        )}
                       </td>
                     </tr>
                   ))}
@@ -300,9 +325,13 @@ export function SimulationPanel({ token }: { token: string }) {
           </div>
 
           <div className="textarea-actions" style={{ marginTop: '14px' }}>
-            <button type="button" className="btn btn-primary" onClick={handleGenerateReport}>
-              <Download size={14} />
-              生成策略报告
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={handleGenerateReport}
+              disabled={reporting}
+            >
+              {reporting ? <><RefreshCw size={14} className="spin" /> 正在生成…</> : <><Download size={14} /> 生成策略报告</>}
             </button>
           </div>
         </>
@@ -314,6 +343,41 @@ export function SimulationPanel({ token }: { token: string }) {
         </div>
       )}
     </section>
+  )
+}
+
+function NumberField({
+  label,
+  value,
+  onChange,
+  bounds,
+  step,
+}: {
+  label: string
+  value: number | ''
+  onChange: (value: number | '') => void
+  bounds?: { default: number; min: number; max: number }
+  step?: string
+}) {
+  return (
+    <div className="field">
+      <label>{label}</label>
+      <input
+        type="number"
+        value={value}
+        step={step}
+        min={bounds?.min}
+        max={bounds?.max}
+        onChange={(e) => {
+          const raw = e.target.value
+          if (raw === '') {
+            onChange('')
+            return
+          }
+          onChange(Number(raw))
+        }}
+      />
+    </div>
   )
 }
 

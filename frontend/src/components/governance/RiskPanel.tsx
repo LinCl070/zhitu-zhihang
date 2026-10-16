@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { AlertTriangle, CheckCircle2, ShieldAlert } from 'lucide-react'
+import { AlertTriangle, CheckCircle2, MessageSquareText, ShieldAlert } from 'lucide-react'
 import { api, ApiError, RiskItem } from '../../api/client'
 import { useToast } from '../Toast'
 
@@ -18,7 +18,23 @@ const FACTOR_LABEL: Record<string, string> = {
   stale: '画像更新',
 }
 
-export function RiskPanel({ token }: { token: string }) {
+// Maximum score per factor (architecture section 2); bars scale to their own max.
+const FACTOR_MAX: Record<string, number> = {
+  profile: 25,
+  match: 25,
+  gap: 15,
+  stage: 20,
+  plan: 10,
+  stale: 5,
+}
+
+export function RiskPanel({
+  token,
+  onAdvise,
+}: {
+  token: string
+  onAdvise?: (studentId: string) => void
+}) {
   const { showToast } = useToast()
   const [risks, setRisks] = useState<RiskItem[]>([])
   const [loading, setLoading] = useState(true)
@@ -88,7 +104,7 @@ export function RiskPanel({ token }: { token: string }) {
       ) : (
         <div className="risk-list">
           {risks.map((risk) => (
-            <RiskCard key={risk.student_id} risk={risk} />
+            <RiskCard key={risk.student_id} risk={risk} onAdvise={onAdvise} />
           ))}
         </div>
       )}
@@ -96,7 +112,13 @@ export function RiskPanel({ token }: { token: string }) {
   )
 }
 
-function RiskCard({ risk }: { risk: RiskItem }) {
+function RiskCard({
+  risk,
+  onAdvise,
+}: {
+  risk: RiskItem
+  onAdvise?: (studentId: string) => void
+}) {
   const levelClass = `risk-level risk-${risk.level}`
   const factorEntries = Object.entries(risk.factors).filter(([, value]) => value > 0)
 
@@ -127,7 +149,12 @@ function RiskCard({ risk }: { risk: RiskItem }) {
             <div className="factor-row" key={key}>
               <span className="factor-label">{FACTOR_LABEL[key] || key}</span>
               <div className="factor-track" role="img" aria-label={`${FACTOR_LABEL[key] || key} 得分 ${value}`}>
-                <div className="factor-fill" style={{ width: `${Math.min(100, (value / 25) * 100)}%` }} />
+                <div
+                  className="factor-fill"
+                  style={{
+                    width: `${Math.min(100, (value / (FACTOR_MAX[key] || 1)) * 100)}%`,
+                  }}
+                />
               </div>
               <span className="factor-value">{value}</span>
             </div>
@@ -154,6 +181,19 @@ function RiskCard({ risk }: { risk: RiskItem }) {
               {action}
             </span>
           ))}
+        </div>
+      )}
+
+      {onAdvise && (
+        <div className="risk-advise">
+          <button
+            type="button"
+            className="btn btn-ghost"
+            onClick={() => onAdvise(risk.student_id)}
+          >
+            <MessageSquareText size={14} />
+            去提交指导意见
+          </button>
         </div>
       )}
     </div>

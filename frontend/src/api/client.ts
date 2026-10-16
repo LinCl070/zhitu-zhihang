@@ -420,6 +420,10 @@ export type SimulationDefaults = {
   cohort_size: { default: number; min: number; max: number }
   weeks: { default: number; min: number; max: number }
   replications: { default: number; min: number; max: number }
+  seed: { default: number; min: number; max: number }
+  counselor_count: { default: number; min: number; max: number }
+  sessions_per_week: { default: number; min: number; max: number }
+  supply_ratio: { default: number; min: number; max: number }
   scenarios: string[]
 }
 
@@ -446,7 +450,7 @@ export type ScenarioDetail = {
   scenario: string
   weeks: WeekPoint[]
   summary: Record<string, { mean: number; ci_low: number; ci_high: number }>
-  top_skill_gaps: Array<{ skill: string; demand: number }>
+  top_skill_gaps: Array<{ skill: string; demand: number; supply: number; gap: number }>
 }
 
 export type SimulationDetail = {

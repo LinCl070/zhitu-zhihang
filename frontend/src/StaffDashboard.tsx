@@ -368,7 +368,15 @@ function TeacherWorkbench({ token, name, onSwitch }: { token: string; name: stri
             </section>
           )}
 
-          {nav === 'risks' && <RiskPanel token={token} />}
+          {nav === 'risks' && (
+            <RiskPanel
+              token={token}
+              onAdvise={(studentId) => {
+                setSelectedId(studentId)
+                setNav('advice')
+              }}
+            />
+          )}
         </main>
       </div>
 
@@ -850,7 +858,7 @@ function AdminWorkbench({ token, name, onSwitch }: { token: string; name: string
           )}
 
           {nav === 'insights' && <InsightsPanel token={token} />}
-          {nav === 'simulation' && <SimulationPanel token={token} />}
+          {nav === 'simulation' && <SimulationPanel token={token} onAdopt={loadOverview} />}
         </main>
       </div>
 
@@ -886,6 +894,22 @@ function AdminWorkbench({ token, name, onSwitch }: { token: string; name: string
         >
           <svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" /></svg>
           <span>审计</span>
+        </button>
+        <button
+          type="button"
+          aria-current={nav === 'insights' ? 'page' : undefined}
+          onClick={() => setNav('insights')}
+        >
+          <svg viewBox="0 0 24 24"><path d="M3 3v18h18" /><path d="M7 15l4-4 3 3 5-6" /></svg>
+          <span>画像</span>
+        </button>
+        <button
+          type="button"
+          aria-current={nav === 'simulation' ? 'page' : undefined}
+          onClick={() => setNav('simulation')}
+        >
+          <svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2" /><path d="M8 12h8" /><path d="M12 8v8" /></svg>
+          <span>仿真</span>
         </button>
       </nav>
     </div>
@@ -928,6 +952,8 @@ function auditActionLabel(action: string): string {
     action_plan_created: '生成行动计划',
     teacher_advice_created: '提交指导意见',
     counselor_access_granted: '更新授权关系',
+    simulation_run_created: '运行策略仿真',
+    governance_strategy_adopted: '采纳治理策略',
   }[action] || action)
 }
 

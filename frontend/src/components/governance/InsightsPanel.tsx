@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { BarChart3, Database, Users } from 'lucide-react'
+import { BarChart3, Database, Search, Users } from 'lucide-react'
 import { api, ApiError, InsightsResponse } from '../../api/client'
 import { useToast } from '../Toast'
 
@@ -12,26 +12,49 @@ const STAGE_LABEL: Record<string, string> = {
 export function InsightsPanel({ token }: { token: string }) {
   const { showToast } = useToast()
   const [source, setSource] = useState<'live' | 'synthetic'>('live')
-  const [seed, setSeed] = useState(1)
-  const [cohortSize, setCohortSize] = useState(300)
+  const [seed, setSeed] = useState<number | ''>(1)
+  const [cohortSize, setCohortSize] = useState<number | ''>(300)
+  const [applied, setApplied] = useState<{ seed: number; cohortSize: number; source: 'live' | 'synthetic' }>({
+    seed: 1,
+    cohortSize: 300,
+    source: 'live',
+  })
   const [insights, setInsights] = useState<InsightsResponse | null>(null)
   const [loading, setLoading] = useState(true)
 
   const load = useCallback(async () => {
     setLoading(true)
     try {
-      const payload = await api.readAdminInsights(token, source, seed, cohortSize)
+      const payload = await api.readAdminInsights(
+        token,
+        applied.source,
+        applied.seed,
+        applied.cohortSize
+      )
       setInsights(payload)
     } catch (error) {
       showToast('读取群体画像失败', getErrorMessage(error), 'warning')
     } finally {
       setLoading(false)
     }
-  }, [token, source, seed, cohortSize, showToast])
+  }, [token, applied, showToast])
 
   useEffect(() => {
     void load()
   }, [load])
+
+  const applySource = (next: 'live' | 'synthetic') => {
+    setSource(next)
+    setApplied((current) => ({ ...current, source: next }))
+  }
+
+  const applyParams = () => {
+    if (seed === '' || cohortSize === '') {
+      showToast('参数不完整', '种子和规模不能为空。', 'warning')
+      return
+    }
+    setApplied({ source, seed, cohortSize })
+  }
 
   const total = insights?.total_count ?? 0
 
@@ -46,7 +69,7 @@ export function InsightsPanel({ token }: { token: string }) {
           <button
             type="button"
             className={`seg-btn ${source === 'live' ? 'is-active' : ''}`}
-            onClick={() => setSource('live')}
+            onClick={() => applySource('live')}
           >
             <Users size={14} />
             真实账号
@@ -54,7 +77,7 @@ export function InsightsPanel({ token }: { token: string }) {
           <button
             type="button"
             className={`seg-btn ${source === 'synthetic' ? 'is-active' : ''}`}
-            onClick={() => setSource('synthetic')}
+            onClick={() => applySource('synthetic')}
           >
             <Database size={14} />
             仿真合成
@@ -67,7 +90,7 @@ export function InsightsPanel({ token }: { token: string }) {
           <BarChart3 size={18} />
           <div className="alert-body">
             <strong>合成数据。</strong>
-            以下统计来自仿真合成群体（种子 {seed}，规模 {cohortSize}），与真实账号无关。
+            以下统计来自仿真合成群体，与真实账号无关。
           </div>
         </div>
       )}
@@ -87,7 +110,8 @@ export function InsightsPanel({ token }: { token: string }) {
               value={seed}
               min={1}
               max={1000000}
-              onChange={(e) => setSeed(Number(e.target.value))}
+              onChange={(e) => setSeed(e.target.value === '' ? '' : Number(e.target.value))}
+              onBlur={applyParams}
               style={{ width: '90px' }}
             />
             规模
@@ -96,9 +120,14 @@ export function InsightsPanel({ token }: { token: string }) {
               value={cohortSize}
               min={50}
               max={1000}
-              onChange={(e) => setCohortSize(Number(e.target.value))}
+              onChange={(e) => setCohortSize(e.target.value === '' ? '' : Number(e.target.value))}
+              onBlur={applyParams}
               style={{ width: '90px' }}
             />
+            <button type="button" className="btn btn-ghost" onClick={applyParams}>
+              <Search size={14} />
+              查询
+            </button>
           </span>
         )}
       </div>

@@ -66,6 +66,10 @@ class SimulationDefaultsResponse(BaseModel):
     cohort_size: dict[str, int]
     weeks: dict[str, int]
     replications: dict[str, int]
+    seed: dict[str, int]
+    counselor_count: dict[str, int]
+    sessions_per_week: dict[str, int]
+    supply_ratio: dict[str, float]
     scenarios: list[str]
 
 
@@ -201,6 +205,10 @@ def read_simulation_defaults(_: AdminPrincipal) -> SimulationDefaultsResponse:
             "min": REPLICATIONS_MIN,
             "max": REPLICATIONS_MAX,
         },
+        seed={"default": 1, "min": 1, "max": 1_000_000},
+        counselor_count={"default": 4, "min": 0, "max": 100},
+        sessions_per_week={"default": 8, "min": 1, "max": 40},
+        supply_ratio={"default": 0.8, "min": 0.0, "max": 2.0},
         scenarios=list(SCENARIOS),
     )
 

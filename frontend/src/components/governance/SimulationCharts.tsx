@@ -105,7 +105,8 @@ export function SkillGapChart({ scenario }: { scenario: ScenarioDetail }) {
     return <div className="empty">暂无技能缺口数据。</div>
   }
 
-  const maxDemand = Math.max(1, ...gaps.map((gap) => gap.demand))
+  // Gap = demand - supply; a positive gap means more demand than supply.
+  const maxGap = Math.max(1, ...gaps.map((gap) => Math.abs(gap.gap)))
   const barHeight = 20
   const labelWidth = 140
   const chartWidth = 460
@@ -121,20 +122,37 @@ export function SkillGapChart({ scenario }: { scenario: ScenarioDetail }) {
         <title>Top 技能供需缺口</title>
         {gaps.map((gap, index) => {
           const yPos = index * (barHeight + 10)
-          const barWidth = (gap.demand / maxDemand) * chartWidth
+          const barWidth = (Math.abs(gap.gap) / maxGap) * chartWidth
           return (
             <g key={gap.skill}>
               <text x={0} y={yPos + barHeight - 6} fontSize={12} fill="#18332d">
                 {gap.skill}
               </text>
-              <rect x={labelWidth} y={yPos} width={barWidth} height={barHeight} rx={4} fill="#0b6956" />
+              <rect
+                x={labelWidth}
+                y={yPos}
+                width={barWidth}
+                height={barHeight}
+                rx={4}
+                fill={gap.gap >= 0 ? '#0b6956' : '#c56a42'}
+              />
               <text x={labelWidth + barWidth + 8} y={yPos + barHeight - 6} fontSize={11} fill="#66756f">
-                {gap.demand}
+                {gap.gap >= 0 ? '+' : ''}{gap.gap.toFixed(1)}
               </text>
             </g>
           )
         })}
       </svg>
+      <div className="chart-legend">
+        <span className="legend-item">
+          <span className="legend-swatch" style={{ background: '#0b6956' }} />
+          供不应求（缺口为正）
+        </span>
+        <span className="legend-item">
+          <span className="legend-swatch" style={{ background: '#c56a42' }} />
+          供过于求（缺口为负）
+        </span>
+      </div>
     </div>
   )
 }
