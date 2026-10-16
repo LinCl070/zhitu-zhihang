@@ -301,7 +301,7 @@ class SimulationEngine:
         # Derive a per-week RNG so the baseline serves a *different* random subset
         # each week (the previous code reshuffled with the same run_seed every week,
         # serving the same 32 students across all 16 weeks).
-        rng = Random(f"{run_seed}:service:{week}")
+        rng = Random(run_seed * 1_000_000 + 990_000 + week)
         order = list(states)
         rng.shuffle(order)
         return order
@@ -345,17 +345,15 @@ class SimulationEngine:
         job_capacities: dict[int, int],
         city_open: bool,
     ) -> list[tuple[int, int]]:
-        """Top 3 available jobs as (index, score), highest score first."""
-        scored: list[tuple[int, int]] = []
-        for index, job in enumerate(scorer._jobs):
-            if not city_open and job.city != _normalize_city(agent.target_city):
-                continue
-            if job_capacities.get(index, 0) <= 0:
-                continue
-            result = scorer.score_job(agent, job)
-            scored.append((index, result.score))
-        scored.sort(key=lambda item: item[1], reverse=True)
-        return scored[:3]
+        """Top 3 available jobs as (index, score), highest score first.
+
+        Scores only visible jobs that still have capacity (with precomputed agent
+        fields), keeps the top 3.
+        """
+        scored = scorer.top_jobs(
+            agent, all_cities=city_open, k=3, capacities=job_capacities
+        )
+        return scored
 
     def _risk(self, agent: StudentAgent):
         return assess_risk(
@@ -434,20 +432,16 @@ class SimulationEngine:
         return gaps[:10]
 
 
-def _normalize_city(value: str) -> str:
-    return " ".join(value.casefold().strip().split())
-
-
 def _agent_rng(run_seed: int, agent_index: int, week: int) -> Random:
-    """Deterministic per-agent, per-week RNG with a collision-free string seed.
+    """Deterministic per-agent, per-week RNG with a collision-free integer seed.
 
     The previous integer derivation ``run_seed*1_000_000 + index*10_000 + week``
     collided across replications: the ``i+100``-th student of replication ``r``
     shared a random stream with the ``i``-th student of replication ``r+1``.
-    A colon-delimited string seed guarantees distinct streams per
-    (run_seed, agent_index, week) triple.
+    ``index*100 + week`` fits below 1_000_000 (index < 1000, week < 100), so each
+    (run_seed, agent_index, week) triple maps to a unique seed.
     """
-    return Random(f"{run_seed}:{agent_index}:{week}")
+    return Random(run_seed * 1_000_000 + agent_index * 100 + week)
 
 
 def _mean_ci(samples: list[float]) -> dict[str, float]:
