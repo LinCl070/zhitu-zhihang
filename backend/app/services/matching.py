@@ -4,6 +4,7 @@ import re
 from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import date
+from functools import cache
 from uuid import UUID
 
 from app.models.entities import CareerProfile, JobPosting, JobStatus
@@ -135,6 +136,7 @@ class MatchingService:
         return 0
 
 
+@cache
 def _normalize(value: str) -> str:
     return " ".join(value.casefold().strip().split())
 

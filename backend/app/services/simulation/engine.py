@@ -116,6 +116,7 @@ class SimulationEngine:
         self, params: SimulationParams, jobs: list[JobTemplate], scenario: str
     ) -> ScenarioResult:
         weekly_runs: list[list[WeekMetric]] = []
+        supplies: list[dict[str, int]] = []
         for replication in range(params.replications):
             run_seed = params.seed + replication
             cohort = generate_cohort(
@@ -125,12 +126,13 @@ class SimulationEngine:
                 learning_rate=params.learning_rate,
             )
             scorer = FastScorer(jobs)
-            weekly = self._run_single(params, cohort, scorer, scenario, run_seed)
+            weekly, supply = self._run_single(params, cohort, scorer, scenario, run_seed)
             weekly_runs.append(weekly)
+            supplies.append(supply)
 
         weeks = self._aggregate_weekly(weekly_runs, params)
         summary = self._summarize(weekly_runs, params)
-        top_skill_gaps = self._top_skill_gaps(weekly_runs, params, jobs)
+        top_skill_gaps = self._top_skill_gaps(supplies, jobs)
         return ScenarioResult(
             scenario=scenario, weeks=weeks, summary=summary, top_skill_gaps=top_skill_gaps
         )
@@ -142,45 +144,69 @@ class SimulationEngine:
         scorer: FastScorer,
         scenario: str,
         run_seed: int,
-    ) -> list[WeekMetric]:
+    ) -> tuple[list[WeekMetric], dict[str, int]]:
         states = [
             _AgentState(agent=agent, index=index) for index, agent in enumerate(cohort)
         ]
         job_capacities = {
             index: job.template.capacity for index, job in enumerate(scorer._jobs)
         }
-        all_cities = scenario in ("job_push", "combined")
+        # ``job_push``/``combined`` unlock all cities for every agent regardless of
+        # ``city_flex``; other scenarios resolve per-agent city visibility weekly.
+        force_all_cities = scenario in ("job_push", "combined")
         precision = scenario in ("precision_coaching", "combined")
         training = scenario in ("skill_training", "combined")
         training_count = int(params.cohort_size * params.coverage) if training else 0
 
+        # Initial best-match with the agent's city visibility decided for week 0.
         for state in states:
-            state.best = scorer.best_score(state.agent, all_cities=all_cities)
+            city_open = force_all_cities or self._city_open(state, run_seed, week=0)
+            state.best = scorer.best_score(state.agent, all_cities=city_open)
             state.agent.best_match_score = state.best.score
             state.agent.best_match_gaps = state.best.gaps
             state.dirty = False
 
         weeks: list[WeekMetric] = []
+        served_this_week = 0
         for week in range(params.weeks + 1):
-            weeks.append(self._measure(states, params, week, run_seed))
+            weeks.append(
+                self._measure(states, params, week, served_this_week)
+            )
             if week == params.weeks:
                 break
-            self._advance(
+            served_this_week = self._advance(
                 states,
                 scorer,
                 job_capacities,
                 params,
-                all_cities,
+                force_all_cities,
                 precision,
                 training_count,
                 run_seed,
                 week,
             )
 
-        return weeks
+        # Supply side for the skill-gap analysis: number of students who mastered
+        # each skill at the terminal week (architecture 3.5).
+        supply: dict[str, int] = {}
+        for state in states:
+            for skill in state.agent.skills:
+                supply[skill] = supply.get(skill, 0) + 1
+
+        return weeks, supply
+
+    @staticmethod
+    def _city_open(state: _AgentState, run_seed: int, week: int) -> bool:
+        """Whether the agent sees all cities this week (architecture 3.3)."""
+        rng = _agent_rng(run_seed, state.index, week)
+        return rng.random() < state.agent.city_flex
 
     def _measure(
-        self, states: list[_AgentState], params: SimulationParams, week: int, run_seed: int
+        self,
+        states: list[_AgentState],
+        params: SimulationParams,
+        week: int,
+        served_this_week: int,
     ) -> WeekMetric:
         total = len(states)
         readiness = sum(1 for s in states if s.agent.best_match_score >= READINESS_THRESHOLD)
@@ -189,7 +215,10 @@ class SimulationEngine:
         gaps = [len(s.agent.best_match_gaps) for s in states]
         avg_gap = mean(gaps) if gaps else 0.0
         available = params.counselor_count * params.sessions_per_week
-        utilization = min(available, len(states)) / available if available else 0.0
+        # Actual served sessions / available sessions (architecture 3.5): already
+        # matched students no longer occupy a session, so utilization can drop
+        # below 1.0 as the cohort gets matched or when the cohort is small.
+        utilization = served_this_week / available if available else 0.0
 
         return WeekMetric(
             week=week,
@@ -206,20 +235,23 @@ class SimulationEngine:
         scorer: FastScorer,
         job_capacities: dict[int, int],
         params: SimulationParams,
-        all_cities: bool,
+        force_all_cities: bool,
         precision: bool,
         training_count: int,
         run_seed: int,
         week: int,
-    ) -> None:
-        # Step 1: counselor service (up to available sessions).
+    ) -> int:
+        # Step 1: counselor service (up to available sessions). Already-matched
+        # students no longer consume a session; return the actual served count.
         available = params.counselor_count * params.sessions_per_week
-        order = self._service_order(states, precision, run_seed)
-        served_ids: set[str] = set()
+        order = self._service_order(states, precision, run_seed, week)
+        served = 0
         for state in order:
-            if len(served_ids) >= available:
+            if served >= available:
                 break
-            served_ids.add(state.agent.id)
+            if state.agent.matched:
+                continue
+            served += 1
             state.agent.initiative = min(1.0, state.agent.initiative + 0.15)
             if state.agent.stage is JobStage.EXPLORING:
                 state.agent.stage = JobStage.PREPARING
@@ -245,24 +277,31 @@ class SimulationEngine:
                 if agent.best_match_score >= READINESS_THRESHOLD:
                     agent.stage = JobStage.APPLYING
             elif agent.stage is JobStage.APPLYING:
-                self._apply(agent, scorer, job_capacities, all_cities)
+                city_open = force_all_cities or self._city_open(state, run_seed, week)
+                self._apply(agent, scorer, job_capacities, city_open)
 
         # Step 4: time advance and best-match refresh (only for changed agents).
         for state in states:
             agent = state.agent
             agent.months_to_graduation -= 0.25
             if state.dirty:
-                state.best = scorer.best_score(agent, all_cities=all_cities)
+                city_open = force_all_cities or self._city_open(state, run_seed, week)
+                state.best = scorer.best_score(agent, all_cities=city_open)
                 state.dirty = False
             agent.best_match_score = state.best.score
             agent.best_match_gaps = state.best.gaps
 
+        return served
+
     def _service_order(
-        self, states: list[_AgentState], precision: bool, run_seed: int
+        self, states: list[_AgentState], precision: bool, run_seed: int, week: int
     ) -> list[_AgentState]:
         if precision:
             return sorted(states, key=lambda s: self._risk(s.agent).score, reverse=True)
-        rng = Random(run_seed)
+        # Derive a per-week RNG so the baseline serves a *different* random subset
+        # each week (the previous code reshuffled with the same run_seed every week,
+        # serving the same 32 students across all 16 weeks).
+        rng = Random(f"{run_seed}:service:{week}")
         order = list(states)
         rng.shuffle(order)
         return order
@@ -285,34 +324,38 @@ class SimulationEngine:
         agent: StudentAgent,
         scorer: FastScorer,
         job_capacities: dict[int, int],
-        all_cities: bool,
+        city_open: bool,
     ) -> None:
         if agent.matched:
             return
-        best_index = self._best_available_job(scorer, agent, job_capacities, all_cities)
-        if best_index is not None:
-            agent.matched = True
-            job_capacities[best_index] -= 1
+        # Apply to the top 3 best-matching jobs (architecture 3.3); a match is
+        # achieved when a job scores >= threshold and still has capacity.
+        for best_index, score in self._top_available_jobs(
+            scorer, agent, job_capacities, city_open
+        ):
+            if score >= READINESS_THRESHOLD:
+                agent.matched = True
+                job_capacities[best_index] -= 1
+                return
 
     @staticmethod
-    def _best_available_job(
+    def _top_available_jobs(
         scorer: FastScorer,
         agent: StudentAgent,
         job_capacities: dict[int, int],
-        all_cities: bool,
-    ) -> int | None:
-        best_index: int | None = None
-        best_score = -1
+        city_open: bool,
+    ) -> list[tuple[int, int]]:
+        """Top 3 available jobs as (index, score), highest score first."""
+        scored: list[tuple[int, int]] = []
         for index, job in enumerate(scorer._jobs):
-            if not all_cities and job.city != _normalize_city(agent.target_city):
+            if not city_open and job.city != _normalize_city(agent.target_city):
                 continue
             if job_capacities.get(index, 0) <= 0:
                 continue
             result = scorer.score_job(agent, job)
-            if result.score >= READINESS_THRESHOLD and result.score > best_score:
-                best_score = result.score
-                best_index = index
-        return best_index
+            scored.append((index, result.score))
+        scored.sort(key=lambda item: item[1], reverse=True)
+        return scored[:3]
 
     def _risk(self, agent: StudentAgent):
         return assess_risk(
@@ -361,16 +404,34 @@ class SimulationEngine:
 
     def _top_skill_gaps(
         self,
-        weekly_runs: list[list[WeekMetric]],
-        params: SimulationParams,
+        supplies: list[dict[str, int]],
         jobs: list[JobTemplate],
     ) -> list[dict[str, object]]:
+        # Demand: job capacity-weighted required skills.
         demand: dict[str, int] = {}
         for job in jobs:
             for skill in job.required_skills:
                 demand[skill] = demand.get(skill, 0) + job.capacity
-        ranked = sorted(demand.items(), key=lambda item: item[1], reverse=True)
-        return [{"skill": skill, "demand": count} for skill, count in ranked[:10]]
+
+        # Supply: mean number of students who mastered each skill across replications.
+        all_skills = set(demand)
+        for supply in supplies:
+            all_skills.update(supply)
+        mean_supply: dict[str, float] = {}
+        for skill in all_skills:
+            mean_supply[skill] = mean(s.get(skill, 0) for s in supplies) if supplies else 0.0
+
+        gaps = [
+            {
+                "skill": skill,
+                "demand": demand.get(skill, 0),
+                "supply": round(mean_supply[skill], 1),
+                "gap": demand.get(skill, 0) - mean_supply[skill],
+            }
+            for skill in all_skills
+        ]
+        gaps.sort(key=lambda item: float(item["gap"]), reverse=True)
+        return gaps[:10]
 
 
 def _normalize_city(value: str) -> str:
@@ -378,8 +439,15 @@ def _normalize_city(value: str) -> str:
 
 
 def _agent_rng(run_seed: int, agent_index: int, week: int) -> Random:
-    """Deterministic per-agent, per-week RNG derived from the run seed."""
-    return Random(run_seed * 1_000_000 + agent_index * 10_000 + week)
+    """Deterministic per-agent, per-week RNG with a collision-free string seed.
+
+    The previous integer derivation ``run_seed*1_000_000 + index*10_000 + week``
+    collided across replications: the ``i+100``-th student of replication ``r``
+    shared a random stream with the ``i``-th student of replication ``r+1``.
+    A colon-delimited string seed guarantees distinct streams per
+    (run_seed, agent_index, week) triple.
+    """
+    return Random(f"{run_seed}:{agent_index}:{week}")
 
 
 def _mean_ci(samples: list[float]) -> dict[str, float]:

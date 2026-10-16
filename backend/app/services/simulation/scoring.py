@@ -21,6 +21,7 @@ class PreparedJob:
 
     template: JobTemplate
     required_skills: tuple[str, ...]
+    normalized_required_skills: tuple[str, ...]
     preferred_majors: frozenset[str]
     project_terms: tuple[tuple[str, ...], ...]
     city: str
@@ -41,11 +42,15 @@ class FastScorer:
     @staticmethod
     def _prepare(job: JobTemplate) -> PreparedJob:
         required_skills = tuple(skill for skill in job.required_skills if _normalize(skill))
+        normalized_required_skills = tuple(
+            _normalize(skill) for skill in required_skills
+        )
         preferred_majors = frozenset(_normalize(major) for major in job.preferred_majors)
         project_terms = tuple(_project_terms(signal) for signal in job.project_signals)
         return PreparedJob(
             template=job,
             required_skills=required_skills,
+            normalized_required_skills=normalized_required_skills,
             preferred_majors=preferred_majors,
             project_terms=project_terms,
             city=_normalize(job.city),
@@ -70,9 +75,19 @@ class FastScorer:
     @staticmethod
     def _score(agent: StudentAgent, job: PreparedJob) -> ScoreResult:
         normalized_skills = {_normalize(skill) for skill in agent.skills if _normalize(skill)}
-        matched = [skill for skill in job.required_skills if _normalize(skill) in normalized_skills]
+        matched = [
+            original
+            for original, normalized in zip(
+                job.required_skills, job.normalized_required_skills, strict=True
+            )
+            if normalized in normalized_skills
+        ]
         gaps = tuple(
-            skill for skill in job.required_skills if _normalize(skill) not in normalized_skills
+            original
+            for original, normalized in zip(
+                job.required_skills, job.normalized_required_skills, strict=True
+            )
+            if normalized not in normalized_skills
         )
 
         skills = _weighted_ratio(len(matched), len(job.required_skills), SKILL_WEIGHT)

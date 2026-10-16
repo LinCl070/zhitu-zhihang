@@ -9,7 +9,13 @@ from uuid import uuid4
 from app.models.entities import CareerProfile, JobPosting, JobStage, JobStatus
 from app.services.matching import MatchingService
 from app.services.simulation.cohort import JobTemplate, generate_cohort, load_job_templates
-from app.services.simulation.engine import MODEL_VERSION, SimulationEngine, SimulationParams
+from app.services.simulation.engine import (
+    MODEL_VERSION,
+    SimulationEngine,
+    SimulationParams,
+    _agent_rng,
+    _AgentState,
+)
 from app.services.simulation.scoring import FastScorer
 
 
@@ -68,6 +74,120 @@ class FastScorerEquivalenceTests(unittest.TestCase):
             fast_best = scorer.best_score(agent, all_cities=True).score
 
             self.assertEqual(fast_best, matching_best)
+
+
+class EngineCorrectnessTests(unittest.TestCase):
+    """R-001 regression tests: seed collision, weekly service sets, utilization, city_flex."""
+
+    def test_agent_rng_no_collision_across_replications(self) -> None:
+        # The old derivation collided: replication r student i+100 shared a stream
+        # with replication r+1 student i. Assert distinct streams for 3 replications
+        # x 300 agents x 2 sampled weeks.
+        streams: set[tuple[float, ...]] = set()
+        for replication in range(3):
+            run_seed = 1 + replication
+            for index in range(300):
+                for week in (0, 16):
+                    rng = _agent_rng(run_seed, index, week)
+                    sample = (rng.random(), rng.random(), rng.random())
+                    self.assertNotIn(sample, streams)
+                    streams.add(sample)
+
+    def test_baseline_service_sets_differ_across_weeks(self) -> None:
+        engine = SimulationEngine()
+        cohort = generate_cohort(300, seed=7)
+        states = [_AgentState(agent=agent, index=i) for i, agent in enumerate(cohort)]
+        weekly_sets: list[set[str]] = []
+        for week in range(16):
+            order = engine._service_order(states, precision=False, run_seed=7, week=week)
+            served = {state.agent.id for state in order[:32]}
+            weekly_sets.append(served)
+        # The baseline must serve different subsets across weeks (the old code
+        # reused the same shuffle, serving the same 32 students every week).
+        distinct = len({frozenset(s) for s in weekly_sets})
+        self.assertGreater(distinct, 1)
+        self.assertGreaterEqual(distinct, 8, "至少一半周的服务名单应当互不相同")
+
+    def test_utilization_below_one_when_cohort_smaller_than_sessions(self) -> None:
+        # cohort_size 20 < available sessions 32 -> utilization < 1.0 at some week.
+        params = SimulationParams(
+            cohort_size=20,
+            weeks=4,
+            replications=1,
+            counselor_count=4,
+            sessions_per_week=8,
+            seed=7,
+            scenarios=("baseline",),
+        )
+        result = SimulationEngine().run(params)
+        weekly = result["scenarios"]["baseline"]["weeks"]
+        utilizations = [week["counselor_utilization"] for week in weekly]
+        self.assertTrue(any(0.0 < u < 1.0 for u in utilizations), utilizations)
+
+    def test_utilization_drops_as_students_get_matched(self) -> None:
+        # With a large supply the cohort matches quickly and already-matched
+        # students stop consuming sessions, so utilization drops below 1.0 once
+        # most students are matched.
+        params = SimulationParams(
+            cohort_size=100,
+            weeks=20,
+            replications=1,
+            counselor_count=4,
+            sessions_per_week=8,
+            supply_ratio=2.0,
+            seed=11,
+            scenarios=("baseline",),
+        )
+        result = SimulationEngine().run(params)
+        weekly = result["scenarios"]["baseline"]["weeks"]
+        utilizations = [week["counselor_utilization"] for week in weekly]
+        matched_rates = [week["matched_rate"] for week in weekly]
+        self.assertTrue(any(0.0 < u < 1.0 for u in utilizations), utilizations)
+        # The drop happens once a meaningful share of the cohort is already matched.
+        low_weeks = [i for i, u in enumerate(utilizations) if 0.0 < u < 1.0]
+        self.assertTrue(all(matched_rates[i] > 0.5 for i in low_weeks))
+
+    def test_city_flex_zero_differs_from_job_push(self) -> None:
+        # city_flex == 0 means the agent never sees other cities, whereas job_push
+        # unlocks all cities. Verify the weekly visibility resolves accordingly and
+        # that the two scenarios produce different matched rates.
+        from app.services.simulation.cohort import StudentAgent
+
+        engine = SimulationEngine()
+
+        def make_agent(flex: float) -> StudentAgent:
+            return StudentAgent(
+                id="syn-x",
+                major="软件工程",
+                skills=["Java", "SQL", "Git"],
+                projects=["后端项目"],
+                target_role="后端开发实习生",
+                target_city="成都",
+                city_flex=flex,
+                learning_rate=0.3,
+                initiative=0.8,
+                stage=JobStage.APPLYING,
+                months_to_graduation=10.0,
+            )
+
+        zero_flex_state = _AgentState(agent=make_agent(0.0), index=0)
+        # With city_flex == 0 the agent never opens all cities.
+        for week in range(20):
+            self.assertFalse(engine._city_open(zero_flex_state, run_seed=1, week=week))
+
+        # End-to-end: run baseline vs job_push at small scale and assert difference.
+        params = SimulationParams(
+            cohort_size=100,
+            weeks=8,
+            replications=3,
+            seed=5,
+            scenarios=("baseline", "job_push"),
+        )
+        result = engine.run(params)
+        baseline_matched = result["scenarios"]["baseline"]["summary"]["matched_rate"]["mean"]
+        job_push_matched = result["scenarios"]["job_push"]["summary"]["matched_rate"]["mean"]
+        self.assertNotEqual(round(baseline_matched, 4), round(job_push_matched, 4))
+        self.assertGreater(job_push_matched, baseline_matched)
 
 
 class EngineDeterminismTests(unittest.TestCase):
