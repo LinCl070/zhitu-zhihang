@@ -88,15 +88,15 @@
 
 | 任务 ID | 完成时间 | Commit Hash | 备注 |
 |:---|:---|:---|:---|
-| T-GOV-001 | 2026-10-16 | 待提交 | 风险模型 risk.py，11 项测试通过（边界值、等级阈值、actions、字段集合）。 |
-| T-GOV-002 | 2026-10-16 | 待提交 | 合成群体 cohort.py + FastScorer scoring.py，500 组随机样本与 MatchingService 分数一致。 |
-| T-GOV-003 | 2026-10-16 | 待提交 | ABM 引擎 engine.py，确定性/极端条件/共同随机数/CI 检验通过；默认参数 5.6s ≤ 10s。 |
-| T-GOV-004 | 2026-10-16 | 待提交 | simulation_runs 模型 + 迁移 20261016_0007，alembic upgrade/downgrade 往返通过。 |
-| T-GOV-005 | 2026-10-16 | 待提交 | GET /governance/counselor/risks，响应 schema 不含学号/联系方式，按分数降序。 |
-| T-GOV-006 | 2026-10-16 | 待提交 | 仿真接口 defaults/创建/列表/详情/采纳，参数上限 422、未知字段 422、审计 metadata 仅 scenarios+cohort_size。 |
-| T-GOV-007 | 2026-10-16 | 待提交 | insights.py + GET /admin/insights，k=5 抑制，synthetic 标注合成数据。 |
-| T-GOV-008 | 2026-10-16 | 待提交 | report.py + /report，caveats 含免责语，handoff 时不含 ai_narrative。 |
-| T-GOV-009 | 2026-10-16 | 待提交 | RiskPanel.tsx，等级配色可区分+文字，窄屏无溢出，附辅助用途说明。 |
-| T-GOV-010 | 2026-10-16 | 待提交 | SimulationPanel/SimulationCharts/StrategyReport，SVG 带 title+图例，闭环接线完成。 |
-| T-GOV-011 | 2026-10-16 | 待提交 | InsightsPanel.tsx，live/synthetic 切换，合成数据标注。 |
-| T-GOV-012 | 2026-10-16 | 待提交 | 敏感性分析脚本+md、privacy 补充、方案书/报名表文案/视频脚本/README。数字来自脚本输出。 |
+| T-GOV-001 | 2026-10-16 | 03719a6 | 风险模型 risk.py，11 项测试通过（边界值、等级阈值、actions、字段集合）。 |
+| T-GOV-002 | 2026-10-16 | 03719a6 | 合成群体 cohort.py + FastScorer scoring.py，500 组随机样本与 MatchingService 分数一致。 |
+| T-GOV-003 | 2026-10-16 | 03719a6 | ABM 引擎 engine.py，确定性/极端条件/共同随机数/CI 检验通过；默认参数 5.6s ≤ 10s。 |
+| T-GOV-004 | 2026-10-16 | 03719a6 | simulation_runs 模型 + 迁移 20261016_0007，alembic upgrade/downgrade 往返通过。 |
+| T-GOV-005 | 2026-10-16 | 03719a6 | GET /governance/counselor/risks，响应 schema 不含学号/联系方式，按分数降序。 |
+| T-GOV-006 | 2026-10-16 | 03719a6 | 仿真接口 defaults/创建/列表/详情/采纳，参数上限 422、未知字段 422、审计 metadata 仅 scenarios+cohort_size。 |
+| T-GOV-007 | 2026-10-16 | 03719a6 | insights.py + GET /admin/insights，k=5 抑制，synthetic 标注合成数据。 |
+| T-GOV-008 | 2026-10-16 | 03719a6 | report.py + /report，caveats 含免责语，handoff 时不含 ai_narrative。 |
+| T-GOV-009 | 2026-10-16 | 676d237 | RiskPanel.tsx，等级配色可区分+文字，窄屏无溢出，附辅助用途说明。 |
+| T-GOV-010 | 2026-10-16 | 676d237 | SimulationPanel/SimulationCharts/StrategyReport，SVG 带 title+图例，闭环接线完成。 |
+| T-GOV-011 | 2026-10-16 | 676d237 | InsightsPanel.tsx，live/synthetic 切换，合成数据标注。 |
+| T-GOV-012 | 2026-10-16 | 676d237 | 敏感性分析脚本+md、privacy 补充、方案书/报名表文案/视频脚本/README。数字来自脚本输出。 |
