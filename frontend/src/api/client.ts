@@ -391,7 +391,95 @@ export const INITIAL_ADMIN_AUDIT: AdminAudit[] = [
   { time: '2026-05-13 15:28', actor: '系统', action: '生成岗位推荐', scope: '模拟/公开岗位', result: '成功' },
 ]
 
-class ApiError extends Error {
+export type RiskItem = {
+  student_id: string
+  display_name: string
+  major: string
+  job_stage: string | null
+  score: number
+  level: 'high' | 'medium' | 'low'
+  factors: Record<string, number>
+  reasons: string[]
+  actions: string[]
+}
+
+export type InsightsResponse = {
+  source: string
+  synthetic: boolean
+  groups: Array<{
+    major: string
+    stage: string
+    count: number
+    readiness_mean: number
+    risk_distribution: Record<string, number>
+  }>
+  total_count: number
+}
+
+export type SimulationDefaults = {
+  cohort_size: { default: number; min: number; max: number }
+  weeks: { default: number; min: number; max: number }
+  replications: { default: number; min: number; max: number }
+  scenarios: string[]
+}
+
+export type SimulationSummary = {
+  id: string
+  created_at: string
+  model_version: string
+  seed: number
+  cohort_size: number
+  scenarios: string[]
+  adopted_scenario: string | null
+}
+
+export type WeekPoint = {
+  week: number
+  readiness_rate: number
+  matched_rate: number
+  high_risk_count: number
+  avg_gap: number
+  counselor_utilization: number
+}
+
+export type ScenarioDetail = {
+  scenario: string
+  weeks: WeekPoint[]
+  summary: Record<string, { mean: number; ci_low: number; ci_high: number }>
+  top_skill_gaps: Array<{ skill: string; demand: number }>
+}
+
+export type SimulationDetail = {
+  id: string
+  created_at: string
+  model_version: string
+  seed: number
+  params: Record<string, unknown>
+  results: { scenarios: Record<string, ScenarioDetail> }
+  adopted_scenario: string | null
+}
+
+export type StrategyReport = {
+  ranking: Array<{ scenario: string; label: string; matched_rate: number }>
+  findings: string[]
+  recommendation: string
+  caveats: string[]
+  ai_narrative: string | null
+  requires_review: boolean
+}
+
+export type SimulationCreatePayload = {
+  cohort_size: number
+  weeks: number
+  replications: number
+  seed: number
+  counselor_count: number
+  sessions_per_week: number
+  supply_ratio: number
+  scenarios: string[]
+}
+
+export class ApiError extends Error {
   status: number
 
   constructor(status: number, message: string) {
@@ -525,6 +613,31 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ counselor_id: counselorId, student_id: studentId }),
     }),
+  readCounselorRisks: (token: string) => request<RiskItem[]>('/api/v1/governance/counselor/risks', token),
+  readAdminInsights: (token: string, source: 'live' | 'synthetic', seed = 1, cohortSize = 300) =>
+    request<InsightsResponse>(
+      `/api/v1/governance/admin/insights?source=${source}&seed=${seed}&cohort_size=${cohortSize}`,
+      token
+    ),
+  readSimulationDefaults: (token: string) =>
+    request<SimulationDefaults>('/api/v1/governance/admin/simulations/defaults', token),
+  createSimulation: (token: string, payload: SimulationCreatePayload) =>
+    request<SimulationSummary>('/api/v1/governance/admin/simulations', token, {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    }),
+  listSimulations: (token: string) =>
+    request<SimulationSummary[]>('/api/v1/governance/admin/simulations', token),
+  readSimulation: (token: string, runId: string) =>
+    request<SimulationDetail>(`/api/v1/governance/admin/simulations/${runId}`, token),
+  generateReport: (token: string, runId: string) =>
+    request<StrategyReport>(`/api/v1/governance/admin/simulations/${runId}/report`, token, {
+      method: 'POST',
+    }),
+  adoptSimulation: (token: string, runId: string, scenario: string) =>
+    request<{ status: string; scenario: string }>(
+      `/api/v1/governance/admin/simulations/${runId}/adopt`,
+      token,
+      { method: 'POST', body: JSON.stringify({ scenario }) }
+    ),
 }
-
-export { ApiError }

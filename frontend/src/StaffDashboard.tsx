@@ -9,9 +9,12 @@ import {
 import { useToast } from './components/Toast'
 import { DatePickerField } from './components/DatePickerField'
 import { brand } from './config/brand'
+import { RiskPanel } from './components/governance/RiskPanel'
+import { InsightsPanel } from './components/governance/InsightsPanel'
+import { SimulationPanel } from './components/governance/SimulationPanel'
 
-export type TeacherNav = 'students' | 'summary' | 'advice'
-export type AdminNav = 'access' | 'jobs' | 'knowledge' | 'audit'
+export type TeacherNav = 'students' | 'summary' | 'advice' | 'risks'
+export type AdminNav = 'access' | 'jobs' | 'knowledge' | 'audit' | 'insights' | 'simulation'
 
 export function StaffDashboard({
   token,
@@ -166,6 +169,25 @@ function TeacherWorkbench({ token, name, onSwitch }: { token: string; name: stri
               <span className="nav-copy">
                 <div className="nav-title">指导意见</div>
                 <div className="nav-hint">提交与历史</div>
+              </span>
+            </button>
+            <button
+              type="button"
+              className="nav-item"
+              data-nav="risks"
+              aria-current={nav === 'risks' ? 'page' : undefined}
+              onClick={() => setNav('risks')}
+            >
+              <span>
+                <svg viewBox="0 0 24 24">
+                  <path d="M12 3l8 3v6c0 5-3.5 8.5-8 9-4.5-.5-8-4-8-9V6l8-3z" />
+                  <path d="M12 8v4" />
+                  <path d="M12 15h.01" />
+                </svg>
+              </span>
+              <span className="nav-copy">
+                <div className="nav-title">风险预警</div>
+                <div className="nav-hint">可解释分级</div>
               </span>
             </button>
           </nav>
@@ -345,6 +367,8 @@ function TeacherWorkbench({ token, name, onSwitch }: { token: string; name: stri
               </div>}
             </section>
           )}
+
+          {nav === 'risks' && <RiskPanel token={token} />}
         </main>
       </div>
 
@@ -372,6 +396,14 @@ function TeacherWorkbench({ token, name, onSwitch }: { token: string; name: stri
         >
           <svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.5 7.2L3 21l1.8-4.8A8 8 0 1 1 21 12z" /></svg>
           <span>意见</span>
+        </button>
+        <button
+          type="button"
+          aria-current={nav === 'risks' ? 'page' : undefined}
+          onClick={() => setNav('risks')}
+        >
+          <svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8.5-8 9-4.5-.5-8-4-8-9V6l8-3z" /><path d="M12 8v4" /></svg>
+          <span>预警</span>
         </button>
       </nav>
     </div>
@@ -594,6 +626,43 @@ function AdminWorkbench({ token, name, onSwitch }: { token: string; name: string
                 <div className="nav-hint">事件扫描</div>
               </span>
             </button>
+            <button
+              type="button"
+              className="nav-item"
+              data-nav="insights"
+              aria-current={nav === 'insights' ? 'page' : undefined}
+              onClick={() => setNav('insights')}
+            >
+              <span>
+                <svg viewBox="0 0 24 24">
+                  <path d="M3 3v18h18" />
+                  <path d="M7 15l4-4 3 3 5-6" />
+                </svg>
+              </span>
+              <span className="nav-copy">
+                <div className="nav-title">群体画像</div>
+                <div className="nav-hint">聚合统计</div>
+              </span>
+            </button>
+            <button
+              type="button"
+              className="nav-item"
+              data-nav="simulation"
+              aria-current={nav === 'simulation' ? 'page' : undefined}
+              onClick={() => setNav('simulation')}
+            >
+              <span>
+                <svg viewBox="0 0 24 24">
+                  <rect x="4" y="4" width="16" height="16" rx="2" />
+                  <path d="M8 12h8" />
+                  <path d="M12 8v8" />
+                </svg>
+              </span>
+              <span className="nav-copy">
+                <div className="nav-title">策略仿真</div>
+                <div className="nav-hint">ABM 推演</div>
+              </span>
+            </button>
           </nav>
           <div className="sidebar-note">
             <strong>管理边界</strong>不展示完整画像、意见正文、平台密钥或数据库连接信息。
@@ -779,6 +848,9 @@ function AdminWorkbench({ token, name, onSwitch }: { token: string; name: string
               </div>
             </section>
           )}
+
+          {nav === 'insights' && <InsightsPanel token={token} />}
+          {nav === 'simulation' && <SimulationPanel token={token} />}
         </main>
       </div>
 
