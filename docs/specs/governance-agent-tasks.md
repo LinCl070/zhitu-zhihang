@@ -136,4 +136,4 @@
 | T-GOV-011 | 2026-10-16 | 676d237 | InsightsPanel.tsx，live/synthetic 切换，合成数据标注。 |
 | T-GOV-012 | 2026-10-16 | 676d237 | 敏感性分析脚本+md、privacy 补充、方案书/报名表文案/视频脚本/README。数字来自脚本输出。 |
 | R-001 | 2026-10-16 | c6ca2aa | 修复种子碰撞（无碰撞种子）、基线每周服务名单不同（按 run_seed+week 派生）、utilization=实际服务/可用会话（跳过 matched）、city_flex 生效（每周按概率看全城）、applying 投前 3 岗位、top_skill_gaps 补供给侧。新增 5 项单元测试（种子无碰撞/服务集合/utilization×2/city_flex），98 项后端测试通过，ruff 通过，默认 4 场景 7.4s ≤10s（性能优化 commit 3c3972a）。修复前后 matched_rate：baseline 0.377→0.536，precision 0.427→0.541，job_push 0.529→0.567。 |
-| R-002 | 2026-10-16 | （待填） | report.py：最优场景与基线 95% CI 重叠时结论改写为"差异不显著"、不再输出"建议优先采用"；governance.py：synthetic.csv 改用 csv 模块写出、首行附带 seed/cohort_size/MODEL_VERSION。新增 5 项测试（CI 重叠/不相交、CSV 元数据+往返、含逗号字段、含引号字段），103 项后端测试通过，ruff 通过。 |
+| R-002 | 2026-10-16 | 1806f4c | report.py：最优场景与基线 95% CI 重叠时结论改写为"差异不显著"、不再输出"建议优先采用"；governance.py：synthetic.csv 改用 csv 模块写出、首行附带 seed/cohort_size/MODEL_VERSION。新增 5 项测试（CI 重叠/不相交、CSV 元数据+往返、含逗号字段、含引号字段），103 项后端测试通过，ruff 通过。 |
