@@ -87,7 +87,7 @@
   6. `top_skill_gaps` 补上供给侧：用终点周各场景中已掌握该技能的学生数，计算 `gap = demand - supply`，并按场景分别输出。
   - 验证：新增测试，包括 3 次重复 × 300 人不出现种子碰撞、基线各周服务集合不同、utilization 在 cohort_size < 可用会话数或多数学生已匹配时小于 1、`city_flex=0` 与 `job_push` 结果有差异；原有确定性和极端条件测试仍然通过；默认 4 场景耗时 ≤10 秒。
 
-- [ ] **R-002 报告与导出**，`report.py`、`governance.py`
+- [x] **R-002 报告与导出**，`report.py`、`governance.py`
   1. 最优场景与基线的 95% 置信区间重叠时，结论改写为“差异不显著”，不再输出“建议优先采用”。
   2. `synthetic.csv` 改用 `csv` 模块写出，正确处理引号；首行以注释或额外列附带 seed、cohort_size 和 `MODEL_VERSION`（AC-G05.1）。
   - 验证：补充 CI 重叠用例和含逗号字段的导出用例。
@@ -135,4 +135,5 @@
 | T-GOV-010 | 2026-10-16 | 676d237 | SimulationPanel/SimulationCharts/StrategyReport，SVG 带 title+图例，闭环接线完成。 |
 | T-GOV-011 | 2026-10-16 | 676d237 | InsightsPanel.tsx，live/synthetic 切换，合成数据标注。 |
 | T-GOV-012 | 2026-10-16 | 676d237 | 敏感性分析脚本+md、privacy 补充、方案书/报名表文案/视频脚本/README。数字来自脚本输出。 |
-| R-001 | 2026-10-16 | c6ca2aa | 修复种子碰撞（字符串种子）、基线每周服务名单不同（按 run_seed+week 派生）、utilization=实际服务/可用会话（跳过 matched）、city_flex 生效（每周按概率看全城）、applying 投前 3 岗位、top_skill_gaps 补供给侧。新增 5 项单元测试（种子无碰撞/服务集合/utilization×2/city_flex），98 项后端测试通过，ruff 通过，默认 4 场景 8.4s ≤10s。修复前后 matched_rate：baseline 0.377→0.537，precision 0.427→0.541，job_push 0.529→0.569。 |
+| R-001 | 2026-10-16 | c6ca2aa | 修复种子碰撞（无碰撞种子）、基线每周服务名单不同（按 run_seed+week 派生）、utilization=实际服务/可用会话（跳过 matched）、city_flex 生效（每周按概率看全城）、applying 投前 3 岗位、top_skill_gaps 补供给侧。新增 5 项单元测试（种子无碰撞/服务集合/utilization×2/city_flex），98 项后端测试通过，ruff 通过，默认 4 场景 7.4s ≤10s（性能优化 commit 3c3972a）。修复前后 matched_rate：baseline 0.377→0.536，precision 0.427→0.541，job_push 0.529→0.567。 |
+| R-002 | 2026-10-16 | （待填） | report.py：最优场景与基线 95% CI 重叠时结论改写为"差异不显著"、不再输出"建议优先采用"；governance.py：synthetic.csv 改用 csv 模块写出、首行附带 seed/cohort_size/MODEL_VERSION。新增 5 项测试（CI 重叠/不相交、CSV 元数据+往返、含逗号字段、含引号字段），103 项后端测试通过，ruff 通过。 |

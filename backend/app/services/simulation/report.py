@@ -36,12 +36,28 @@ def build_report(results: dict[str, object]) -> dict[str, object]:
     ranking.sort(key=lambda item: float(item["matched_rate"]), reverse=True)
     best = ranking[0] if ranking else None
 
-    if best and baseline_summary:
-        base_matched = baseline_summary.get("matched_rate", {}).get("mean", 0.0)
+    # When the best (non-baseline) scenario's 95% CI overlaps the baseline's, the
+    # difference is not significant and we must not recommend adopting it.
+    best_matched = baseline_summary.get("matched_rate", {})
+    base_matched = best_matched.get("mean", 0.0)
+    significant = False
+    if best and best["scenario"] != "baseline":
+        best_ci = scenarios.get(best["scenario"], {}).get("summary", {}).get("matched_rate", {})
+        base_ci = best_matched
+        best_low = float(best_ci.get("ci_low", base_matched))
+        best_high = float(best_ci.get("ci_high", base_matched))
+        base_low = float(base_ci.get("ci_low", base_matched))
+        base_high = float(base_ci.get("ci_high", base_matched))
+        overlap = best_low <= base_high and base_low <= best_high
+        significant = not overlap
         lift = float(best["matched_rate"]) - float(base_matched)
-        if best["scenario"] != "baseline":
+        if significant:
             findings.append(
                 f"{best['label']}使终点匹配达成率较基线提升 {lift * 100:.1f} 个百分点。"
+            )
+        else:
+            findings.append(
+                f"{best['label']}与基线的终点匹配达成率差异不显著（95% 置信区间重叠）。"
             )
 
     for scenario, payload in scenarios.items():
@@ -61,7 +77,10 @@ def build_report(results: dict[str, object]) -> dict[str, object]:
                 f"{label}终点就业准备达标率 {float(readiness['mean']) * 100:.1f}%。"
             )
 
-    recommendation = "建议优先采用" + (f"「{best['label']}」策略。" if best else "基线策略。")
+    if best and best["scenario"] != "baseline" and significant:
+        recommendation = f"建议优先采用「{best['label']}」策略。"
+    else:
+        recommendation = "各策略与基线差异不显著，建议结合其他证据审慎决策。"
 
     return {
         "ranking": ranking,

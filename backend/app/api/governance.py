@@ -386,11 +386,34 @@ def export_synthetic_dataset(
     cohort_size: int = Query(default=COHORT_DEFAULT, ge=COHORT_MIN, le=COHORT_MAX),
 ) -> PlainTextResponse:
     from app.services.simulation.cohort import generate_cohort
+    from app.services.simulation.engine import MODEL_VERSION
 
     agents = generate_cohort(cohort_size, seed)
-    header = "id,major,skills,projects,target_role,target_city,stage\n"
-    rows = [
-        ",".join(
+    content = _synthetic_csv_content(
+        agents, seed=seed, cohort_size=cohort_size, model_version=MODEL_VERSION
+    )
+    return PlainTextResponse(content=content, media_type="text/csv")
+
+
+def _synthetic_csv_content(
+    agents: list[object],
+    *,
+    seed: int,
+    cohort_size: int,
+    model_version: str,
+) -> str:
+    """Render the synthetic cohort as CSV with a metadata header row (AC-G05.1)."""
+    import csv
+    import io
+
+    buffer = io.StringIO()
+    writer = csv.writer(buffer)
+    writer.writerow(["# seed", seed, "cohort_size", cohort_size, "model_version", model_version])
+    writer.writerow(
+        ["id", "major", "skills", "projects", "target_role", "target_city", "stage"]
+    )
+    for agent in agents:
+        writer.writerow(
             [
                 agent.id,
                 agent.major,
@@ -401,7 +424,4 @@ def export_synthetic_dataset(
                 agent.stage.value,
             ]
         )
-        for agent in agents
-    ]
-    content = header + "\n".join(rows) + "\n"
-    return PlainTextResponse(content=content, media_type="text/csv")
+    return buffer.getvalue()
