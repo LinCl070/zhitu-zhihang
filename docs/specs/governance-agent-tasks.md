@@ -135,4 +135,4 @@
 | T-GOV-010 | 2026-10-16 | 676d237 | SimulationPanel/SimulationCharts/StrategyReport，SVG 带 title+图例，闭环接线完成。 |
 | T-GOV-011 | 2026-10-16 | 676d237 | InsightsPanel.tsx，live/synthetic 切换，合成数据标注。 |
 | T-GOV-012 | 2026-10-16 | 676d237 | 敏感性分析脚本+md、privacy 补充、方案书/报名表文案/视频脚本/README。数字来自脚本输出。 |
-| R-001 | 2026-10-16 | （待填） | 修复种子碰撞（字符串种子）、基线每周服务名单不同（按 run_seed+week 派生）、utilization=实际服务/可用会话（跳过 matched）、city_flex 生效（每周按概率看全城）、applying 投前 3 岗位、top_skill_gaps 补供给侧。新增 5 项单元测试（种子无碰撞/服务集合/utilization×2/city_flex），98 项后端测试通过，ruff 通过，默认 4 场景 8.4s ≤10s。修复前后 matched_rate：baseline 0.377→0.537，precision 0.427→0.541，job_push 0.529→0.569。 |
+| R-001 | 2026-10-16 | c6ca2aa | 修复种子碰撞（字符串种子）、基线每周服务名单不同（按 run_seed+week 派生）、utilization=实际服务/可用会话（跳过 matched）、city_flex 生效（每周按概率看全城）、applying 投前 3 岗位、top_skill_gaps 补供给侧。新增 5 项单元测试（种子无碰撞/服务集合/utilization×2/city_flex），98 项后端测试通过，ruff 通过，默认 4 场景 8.4s ≤10s。修复前后 matched_rate：baseline 0.377→0.537，precision 0.427→0.541，job_push 0.529→0.569。 |
