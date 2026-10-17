@@ -13,3 +13,5 @@ output/playwright/
 NUL
 .agents/
 ORIGINAL_REQUEST.md
+# Competition forms in the repository root contain personal details; keep them local.
+/*.docx
