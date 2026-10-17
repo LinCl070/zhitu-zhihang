@@ -1,0 +1,311 @@
+{"kind":"deck","id":"pr/29cfbg","name":"Deck"}
+{"kind":"layout","layoutId":"/ppt/slideMasters/slideMaster1.xml","name":"","type":"master","placeholders":[{"name":"title","type":"title","textPreview":"单击此处编辑母版标题样式"},{"name":"body","type":"body","textPreview":"单击此处编辑母版文本样式 | 第二级 | 第三级 | 第四级 | 第五级"},{"name":"dateTime","type":"dateTime","textPreview":"2026/9/14"},{"name":"footer","type":"footer"},{"name":"slideNumber","type":"slideNumber","textPreview":"‹#›"}]}
+{"kind":"layout","layoutId":"/ppt/slideLayouts/slideLayout1.xml","name":"标题幻灯片","type":"title","placeholders":[{"name":"title","type":"title","textPreview":"单击此处编辑母版标题样式"},{"name":"subtitle","type":"subtitle","textPreview":"单击此处编辑母版副标题样式"}]}
+{"kind":"layout","layoutId":"/ppt/slideLayouts/slideLayout2.xml","name":"标题和内容","type":"obj","placeholders":[{"name":"title","type":"title","textPreview":"单击此处编辑母版标题样式"},{"name":"2","textPreview":"单击此处编辑母版文本样式 | 第二级 | 第三级 | 第四级 | 第五级"}]}
+{"kind":"layout","layoutId":"/ppt/slideLayouts/slideLayout3.xml","name":"空白","type":"blank"}
+{"kind":"layout","layoutId":"/ppt/slideLayouts/slideLayout4.xml","name":"3_空白","type":"blank"}
+{"kind":"layout","layoutId":"/ppt/slideLayouts/slideLayout5.xml","name":"2_空白","type":"blank"}
+{"kind":"layout","layoutId":"/ppt/slideLayouts/slideLayout6.xml","name":"1_空白","type":"blank"}
+{"kind":"layout","layoutId":"/ppt/slideLayouts/slideLayout7.xml","name":"末尾幻灯片","placeholders":[{"name":"title","type":"title","textPreview":"单击此处编辑标题"},{"name":"body","type":"body","textPreview":"单击此处编辑母版文本样式"}]}
+{"kind":"slide","id":"sl/y90nupkv","slide":1,"title":"职途智航","textShapes":3}
+{"kind":"textbox","id":"sh/547294r6","slide":1,"name":"文本框 1","text":"职途智航","textPreview":"职途智航","textChars":4,"textLines":1,"bbox":[242,222.87,796.07,91.2]}
+{"kind":"textbox","id":"sh/k3yl0zql","slide":1,"name":"文本框 2","text":"高校就业择业规划智能体\n参赛团队：职途智航项目组","textPreview":"高校就业择业规划智能体 | 参赛团队：职途智航项目组","textChars":24,"textLines":2,"bbox":[250.8,444.13,795.33,78.6]}
+{"kind":"textbox","id":"sh/7qp4be9c","slide":1,"name":"文本框 3","text":"职途智航","textPreview":"职途智航","textChars":4,"textLines":1,"bbox":[1051.33,33.2,228.67,38.67]}
+{"kind":"notes","id":"nt/y90nupkv","slide":1,"text":"开场介绍项目名称和服务对象。"}
+{"kind":"slide","id":"sl/hwbqtkby","slide":2,"title":"CONTENTS","textShapes":14}
+{"kind":"textbox","id":"sh/c76hk361","slide":2,"name":"文本框 53","text":"CONTENTS","textPreview":"CONTENTS","textChars":8,"textLines":1,"bbox":[186.89,429.85,260.49,61.39]}
+{"kind":"textbox","id":"sh/w3a1wn65","slide":2,"name":"文本框 57","text":"目","textPreview":"目","textChars":1,"textLines":1,"bbox":[194.04,270.33,137.87,151.87]}
+{"kind":"textbox","id":"sh/jix0niho","slide":2,"name":"文本框 61","text":"录","textPreview":"录","textChars":1,"textLines":1,"bbox":[317.13,313.53,108.25,116.33]}
+{"kind":"textbox","id":"sh/p0vy54na","slide":2,"name":"序号","text":"01","textPreview":"01","textChars":2,"textLines":1,"bbox":[616.73,150.87,65.67,65.67]}
+{"kind":"textbox","id":"sh/4zmxwzmp","slide":2,"name":"项标题","text":"团队介绍","textPreview":"团队介绍","textChars":4,"textLines":1,"bbox":[724.23,164.29,396.33,48.79]}
+{"kind":"textbox","id":"sh/mlgvq147","slide":2,"name":"序号","text":"02","textPreview":"02","textChars":2,"textLines":1,"bbox":[616.73,246.87,65.67,65.67]}
+{"kind":"textbox","id":"sh/nmpcj6ls","slide":2,"name":"项标题","text":"作品介绍","textPreview":"作品介绍","textChars":4,"textLines":1,"bbox":[724.23,260.31,396.33,48.79]}
+{"kind":"textbox","id":"sh/onydsbmd","slide":2,"name":"序号","text":"03","textPreview":"03","textChars":2,"textLines":1,"bbox":[616.73,342.87,65.67,65.67]}
+{"kind":"textbox","id":"sh/9o7ulg3y","slide":2,"name":"项标题","text":"需求分析","textPreview":"需求分析","textChars":4,"textLines":1,"bbox":[724.23,356.26,396.33,48.79]}
+{"kind":"textbox","id":"sh/a9gvulkj","slide":2,"name":"序号","text":"04","textPreview":"04","textChars":2,"textLines":1,"bbox":[616.73,438.87,65.67,65.67]}
+{"kind":"textbox","id":"sh/wbidwb29","slide":2,"name":"序号","text":"05","textPreview":"05","textChars":2,"textLines":1,"bbox":[616.73,534.87,65.67,65.67]}
+{"kind":"textbox","id":"sh/xcrupg3u","slide":2,"name":"项标题","text":"设计开发","textPreview":"设计开发","textChars":4,"textLines":1,"bbox":[724.23,452.31,396.33,48.79]}
+{"kind":"textbox","id":"sh/je9crql0","slide":2,"name":"项标题","text":"应用效果","textPreview":"应用效果","textChars":4,"textLines":1,"bbox":[724.23,548.27,396.33,48.79]}
+{"kind":"textbox","id":"sh/b29kza94","slide":2,"name":"文本框 3","text":"职途智航","textPreview":"职途智航","textChars":4,"textLines":1,"bbox":[0,19.67,228.67,38.67]}
+{"kind":"notes","id":"nt/hwbqtkby","slide":2,"text":"说明本次汇报的五个部分。"}
+{"kind":"slide","id":"sl/ofy9wn61","slide":3,"title":"职途智航","textShapes":13}
+{"kind":"textbox","id":"sh/298ryl4v","slide":3,"name":"文本框 3","text":"职途智航","textPreview":"职途智航","textChars":4,"textLines":1,"bbox":[0,19.67,228.67,38.67]}
+{"kind":"shape","id":"sh/cza94vmx","slide":3,"name":"文本框 1","bbox":[63.87,156.47,455.47,203.53]}
+{"kind":"textbox","id":"sh/3ah8rqlg","slide":3,"text":"团队介绍","textPreview":"团队介绍","textChars":4,"textLines":1,"bbox":[64,96,940,54]}
+{"kind":"textbox","id":"sh/obq90bml","slide":3,"text":"PART 01","textPreview":"PART 01","textChars":7,"textLines":1,"bbox":[1045,103,165,32]}
+{"kind":"shape","id":"sh/pcjqtg36","slide":3,"bbox":[64,153,1148,0]}
+{"kind":"textbox","id":"sh/m5cra54z","slide":3,"text":"项目由程林独立完成开发，李耀老师提供就业指导与产品设计指导","textPreview":"项目由程林独立完成开发，李耀老师提供就业指导与产品设计指导","textChars":29,"textLines":1,"bbox":[66,176,1140,46]}
+{"kind":"textbox","id":"sh/n6ls3alk","slide":3,"text":"01","textPreview":"01","textChars":2,"textLines":1,"bbox":[168,260,76,76]}
+{"kind":"textbox","id":"sh/n2l4fq98","slide":3,"text":"程林","textPreview":"程林","textChars":2,"textLines":1,"bbox":[272,258,300,46]}
+{"kind":"textbox","id":"sh/m1c3mlsn","slide":3,"text":"队长 · 开发负责人","textPreview":"队长 · 开发负责人","textChars":10,"textLines":1,"bbox":[272,309,300,34]}
+{"kind":"textbox","id":"sh/943mhgre","slide":3,"text":"成都信息工程大学\n空间信息与数字技术 · 2024级\n负责需求梳理、前端、后端、数据库、FastGPT 接入与测试","textPreview":"成都信息工程大学 | 空间信息与数字技术 · 2024级 | 负责需求梳理、前端、后端、数据库、FastGPT 接入与测试","textChars":57,"textLines":3,"bbox":[168,380,448,138]}
+{"kind":"textbox","id":"sh/83ulovat","slide":3,"text":"02","textPreview":"02","textChars":2,"textLines":1,"bbox":[700,260,76,76]}
+{"kind":"textbox","id":"sh/v6l4jq94","slide":3,"text":"李耀","textPreview":"李耀","textChars":2,"textLines":1,"bbox":[804,258,300,46]}
+{"kind":"textbox","id":"sh/a5c3ql8z","slide":3,"text":"指导教师","textPreview":"指导教师","textChars":4,"textLines":1,"bbox":[804,309,300,34]}
+{"kind":"textbox","id":"sh/x8nml0ra","slide":3,"text":"成都信息工程大学\n就业指导与项目指导\n负责需求方向、业务边界和成果呈现指导","textPreview":"成都信息工程大学 | 就业指导与项目指导 | 负责需求方向、业务边界和成果呈现指导","textChars":37,"textLines":3,"bbox":[700,380,448,138]}
+{"kind":"textbox","id":"sh/w7ulsvqp","slide":3,"text":"分工特点：一人完成全栈开发，指导教师把关就业业务逻辑与展示表达","textPreview":"分工特点：一人完成全栈开发，指导教师把关就业业务逻辑与展示表达","textChars":31,"textLines":1,"bbox":[170,570,940,54]}
+{"kind":"notes","id":"nt/ofy9wn61","slide":3,"text":"团队采用职责分工方式展示，成员姓名可在提交前补充。"}
+{"kind":"slide","id":"sl/jyx0ra1s","slide":4,"title":"职途智航","textShapes":12}
+{"kind":"textbox","id":"sh/rm1k7yt4","slide":4,"name":"文本框 3","text":"职途智航","textPreview":"职途智航","textChars":4,"textLines":1,"bbox":[0,19.67,228.67,38.67]}
+{"kind":"shape","id":"sh/1cj2d8b6","slide":4,"name":"文本框 1","bbox":[63.87,156.47,455.47,203.53]}
+{"kind":"textbox","id":"sh/ql8jytsj","slide":4,"text":"作品介绍：职途智航","textPreview":"作品介绍：职途智航","textChars":9,"textLines":1,"bbox":[64,96,940,54]}
+{"kind":"textbox","id":"sh/doj29oba","slide":4,"text":"PART 02","textPreview":"PART 02","textChars":7,"textLines":1,"bbox":[1045,103,165,32]}
+{"kind":"shape","id":"sh/sna103ap","slide":4,"bbox":[64,153,1148,0]}
+{"kind":"textbox","id":"sh/3ihk3et8","slide":4,"text":"面向高校就业指导的智能规划与协同工作台","textPreview":"面向高校就业指导的智能规划与协同工作台","textChars":19,"textLines":1,"bbox":[70,176,520,72]}
+{"kind":"textbox","id":"sh/ih8ju9sn","slide":4,"text":"将职业画像、岗位匹配、能力缺口和行动计划串成持续更新的业务闭环\n用 FastGPT 回答职业发展与就业政策问题，保留来源和人工确认提示\n让就业指导教师与管理员在授权范围内参与指导和治理","textPreview":"将职业画像、岗位匹配、能力缺口和行动计划串成持续更新的业务闭环 | 用 FastGPT 回答职业发展与就业政策问题，保留来源和人工确认提示 | 让就业指导教师与管理员在授权范围内参与指导和治理","textChars":92,"textLines":3,"bbox":[74,264,510,220]}
+{"kind":"textbox","id":"sh/kbm987y5","slide":4,"text":"产品边界\n不自动投递，不替代教师，不承诺录用结果","textPreview":"产品边界 | 不自动投递，不替代教师，不承诺录用结果","textChars":24,"textLines":2,"bbox":[70,520,514,82]}
+{"kind":"textbox","id":"sh/5cva1cfq","slide":4,"text":"01  职业画像","textPreview":"01  职业画像","textChars":8,"textLines":1,"bbox":[680,190,210,74]}
+{"kind":"textbox","id":"sh/i94r6xgz","slide":4,"text":"02  岗位匹配","textPreview":"02  岗位匹配","textChars":8,"textLines":1,"bbox":[930,190,210,74]}
+{"kind":"shape","id":"sh/jadsz2xk","slide":4,"bbox":[890,227,40,0]}
+{"kind":"textbox","id":"sh/w72947yt","slide":4,"text":"03  能力缺口","textPreview":"03  能力缺口","textChars":8,"textLines":1,"bbox":[680,332,210,74]}
+{"kind":"shape","id":"sh/x8vaxsfe","slide":4,"bbox":[785,264,250,68]}
+{"kind":"textbox","id":"sh/a5kr2xg3","slide":4,"text":"04  行动计划","textPreview":"04  行动计划","textChars":8,"textLines":1,"bbox":[930,332,210,74]}
+{"kind":"shape","id":"sh/v6tsv2xo","slide":4,"bbox":[890,369,40,0]}
+{"kind":"textbox","id":"sh/g36tgryd","slide":4,"text":"05  智能咨询","textPreview":"05  智能咨询","textChars":8,"textLines":1,"bbox":[680,474,210,74]}
+{"kind":"shape","id":"sh/h4fa9wfy","slide":4,"bbox":[785,406,250,68]}
+{"kind":"textbox","id":"sh/p0batw72","slide":4,"text":"06  教师指导","textPreview":"06  教师指导","textChars":8,"textLines":1,"bbox":[930,474,210,74]}
+{"kind":"shape","id":"sh/oz29krqh","slide":4,"bbox":[0,0,0,0]}
+{"kind":"notes","id":"nt/jyx0ra1s","slide":4,"text":"用一句话说明项目定位，再介绍完整业务闭环和边界。"}
+{"kind":"slide","id":"sl/i107q5of","slide":5,"title":"职途智航","textShapes":10}
+{"kind":"textbox","id":"sh/z2tcnm5s","slide":5,"name":"文本框 3","text":"职途智航","textPreview":"职途智航","textChars":4,"textLines":1,"bbox":[0,19.67,228.67,38.67]}
+{"kind":"shape","id":"sh/dgbulwnm","slide":5,"name":"文本框 1","bbox":[63.87,156.47,455.47,203.53]}
+{"kind":"textbox","id":"sh/yhkbe1o7","slide":5,"text":"三类用户与核心功能","textPreview":"三类用户与核心功能","textChars":9,"textLines":1,"bbox":[64,96,940,54]}
+{"kind":"textbox","id":"sh/l4bupwny","slide":5,"text":"PART 02","textPreview":"PART 02","textChars":7,"textLines":1,"bbox":[1045,103,165,32]}
+{"kind":"shape","id":"sh/032tgr6d","slide":5,"bbox":[64,153,1148,0]}
+{"kind":"textbox","id":"sh/n6dcr65o","slide":5,"text":"学生","textPreview":"学生","textChars":2,"textLines":1,"bbox":[76,190,342,56]}
+{"kind":"textbox","id":"sh/m5kbi1oj","slide":5,"text":"建立职业画像\n查看岗位匹配与缺口\n生成阶段行动计划\n发起智能咨询","textPreview":"建立职业画像 | 查看岗位匹配与缺口 | 生成阶段行动计划 | 发起智能咨询","textChars":32,"textLines":4,"bbox":[76,260,342,250]}
+{"kind":"textbox","id":"sh/w32dkbuh","slide":5,"text":"就业指导教师","textPreview":"就业指导教师","textChars":6,"textLines":1,"bbox":[476,190,342,56]}
+{"kind":"textbox","id":"sh/x4vedgvm","slide":5,"text":"查看授权学生摘要\n跟踪计划执行状态\n提交专业指导意见\n保留人工判断","textPreview":"查看授权学生摘要 | 跟踪计划执行状态 | 提交专业指导意见 | 保留人工判断","textChars":33,"textLines":4,"bbox":[476,260,342,250]}
+{"kind":"textbox","id":"sh/ahkvi1cb","slide":5,"text":"就业管理员","textPreview":"就业管理员","textChars":5,"textLines":1,"bbox":[876,190,342,56]}
+{"kind":"textbox","id":"sh/v2twb6dw","slide":5,"text":"维护账号与师生授权\n治理岗位和知识资料\n查看脱敏审计事件\n管理系统边界","textPreview":"维护账号与师生授权 | 治理岗位和知识资料 | 查看脱敏审计事件 | 管理系统边界","textChars":35,"textLines":4,"bbox":[876,260,342,250]}
+{"kind":"textbox","id":"sh/k7mxovud","slide":5,"text":"同一套服务端权限模型约束数据可见范围，前端不能自行声明或提升角色","textPreview":"同一套服务端权限模型约束数据可见范围，前端不能自行声明或提升角色","textChars":32,"textLines":1,"bbox":[194,548,892,62]}
+{"kind":"notes","id":"nt/i107q5of","slide":5,"text":"强调三类角色共用一套服务端权限模型。"}
+{"kind":"slide","id":"sl/x8f69ofe","slide":6,"title":"职途智航","textShapes":19}
+{"kind":"textbox","id":"sh/87ipkzal","slide":6,"name":"文本框 3","text":"职途智航","textPreview":"职途智航","textChars":4,"textLines":1,"bbox":[0,19.67,228.67,38.67]}
+{"kind":"shape","id":"sh/yhg7epsj","slide":6,"name":"文本框 1","bbox":[63.87,156.47,455.47,203.53]}
+{"kind":"textbox","id":"sh/98rqt4r6","slide":6,"text":"需求分析","textPreview":"需求分析","textChars":4,"textLines":1,"bbox":[64,96,940,54]}
+{"kind":"textbox","id":"sh/ml07i9sv","slide":6,"text":"PART 03","textPreview":"PART 03","textChars":7,"textLines":1,"bbox":[1045,103,165,32]}
+{"kind":"shape","id":"sh/7m98ru9g","slide":6,"bbox":[64,153,1148,0]}
+{"kind":"textbox","id":"sh/oryp8fah","slide":6,"text":"高校就业指导痛点","textPreview":"高校就业指导痛点","textChars":8,"textLines":1,"bbox":[82,180,270,34]}
+{"kind":"textbox","id":"sh/pc76hkr2","slide":6,"text":"系统需求","textPreview":"系统需求","textChars":4,"textLines":1,"bbox":[506,180,270,34]}
+{"kind":"textbox","id":"sh/h4bupgn6","slide":6,"text":"可验证结果","textPreview":"可验证结果","textChars":5,"textLines":1,"bbox":[930,180,270,34]}
+{"kind":"textbox","id":"sh/w32twb6l","slide":6,"text":"目标模糊，材料零散","textPreview":"目标模糊，材料零散","textChars":9,"textLines":1,"bbox":[82,240,270,64]}
+{"kind":"textbox","id":"sh/v2tcn650","slide":6,"text":"结构化职业画像","textPreview":"结构化职业画像","textChars":7,"textLines":1,"bbox":[506,240,270,64]}
+{"kind":"textbox","id":"sh/u1kbu1ov","slide":6,"text":"形成可复用的学生档案","textPreview":"形成可复用的学生档案","textChars":10,"textLines":1,"bbox":[930,240,270,64]}
+{"kind":"shape","id":"sh/5svutgni","slide":6,"bbox":[352,272,154,0]}
+{"kind":"shape","id":"sh/47mt0b6x","slide":6,"bbox":[776,272,154,0]}
+{"kind":"textbox","id":"sh/j6dcr65c","slide":6,"text":"岗位推荐依据不透明","textPreview":"岗位推荐依据不透明","textChars":9,"textLines":1,"bbox":[82,328,270,64]}
+{"kind":"textbox","id":"sh/i54bylor","slide":6,"text":"固定规则评分与缺口解释","textPreview":"固定规则评分与缺口解释","textChars":11,"textLines":1,"bbox":[506,328,270,64]}
+{"kind":"textbox","id":"sh/twfux0ne","slide":6,"text":"相同输入得到稳定结果","textPreview":"相同输入得到稳定结果","textChars":10,"textLines":1,"bbox":[930,328,270,64]}
+{"kind":"shape","id":"sh/svmt4v6t","slide":6,"bbox":[352,360,154,0]}
+{"kind":"shape","id":"sh/cbe5g3ih","slide":6,"bbox":[776,360,154,0]}
+{"kind":"textbox","id":"sh/dcnm98zm","slide":6,"text":"政策与职业问题重复咨询","textPreview":"政策与职业问题重复咨询","textChars":11,"textLines":1,"bbox":[82,416,270,64]}
+{"kind":"textbox","id":"sh/qpwnet0b","slide":6,"text":"FastGPT 双路知识问答","textPreview":"FastGPT 双路知识问答","textChars":14,"textLines":1,"bbox":[506,416,270,64]}
+{"kind":"textbox","id":"sh/bq547yhw","slide":6,"text":"回答可保留来源与提示","textPreview":"回答可保留来源与提示","textChars":10,"textLines":1,"bbox":[930,416,270,64]}
+{"kind":"shape","id":"sh/0fy5k3id","slide":6,"bbox":[352,448,154,0]}
+{"kind":"shape","id":"sh/lg76d8zy","slide":6,"bbox":[776,448,154,0]}
+{"kind":"textbox","id":"sh/ydgnit07","slide":6,"text":"教师时间有限，协同边界不清","textPreview":"教师时间有限，协同边界不清","textChars":13,"textLines":1,"bbox":[82,504,270,64]}
+{"kind":"textbox","id":"sh/zep4byhs","slide":6,"text":"授权访问与指导意见闭环","textPreview":"授权访问与指导意见闭环","textChars":11,"textLines":1,"bbox":[506,504,270,64]}
+{"kind":"textbox","id":"sh/gju58ji9","slide":6,"text":"教师只看授权学生摘要","textPreview":"教师只看授权学生摘要","textChars":10,"textLines":1,"bbox":[930,504,270,64]}
+{"kind":"shape","id":"sh/1k3mhozu","slide":6,"bbox":[352,536,154,0]}
+{"kind":"shape","id":"sh/jet8nm1c","slide":6,"bbox":[776,536,154,0]}
+{"kind":"textbox","id":"sh/idk7ehkr","slide":6,"text":"优先满足可解释、可追溯、最小数据和人工协同四项约束","textPreview":"优先满足可解释、可追溯、最小数据和人工协同四项约束","textChars":25,"textLines":1,"bbox":[250,606,780,38]}
+{"kind":"notes","id":"nt/x8f69ofe","slide":6,"text":"从真实痛点出发，逐项对应系统需求和可验证结果。"}
+{"kind":"slide","id":"sl/gnmp4jqx","slide":7,"title":"职途智航","textShapes":20}
+{"kind":"textbox","id":"sh/ydkbm5sv","slide":7,"name":"文本框 3","text":"职途智航","textPreview":"职途智航","textChars":4,"textLines":1,"bbox":[0,19.67,228.67,38.67]}
+{"kind":"shape","id":"sh/cb2tkvap","slide":7,"name":"文本框 1","bbox":[63.87,156.47,455.47,203.53]}
+{"kind":"textbox","id":"sh/zedcfa9g","slide":7,"text":"业务流程","textPreview":"业务流程","textChars":4,"textLines":1,"bbox":[64,96,940,54]}
+{"kind":"textbox","id":"sh/kzmdova1","slide":7,"text":"PART 03","textPreview":"PART 03","textChars":7,"textLines":1,"bbox":[1045,103,165,32]}
+{"kind":"shape","id":"sh/l0vuh0rm","slide":7,"bbox":[64,153,1148,0]}
+{"kind":"shape","id":"sh/eh0ba1sr","slide":7,"bbox":[58,180,1164,142]}
+{"kind":"shape","id":"sh/fi9c369c","slide":7,"bbox":[58,342,1164,164]}
+{"kind":"shape","id":"sh/baxkjqlk","slide":7,"bbox":[58,526,1164,112]}
+{"kind":"textbox","id":"sh/a9ojq5kz","slide":7,"text":"学生","textPreview":"学生","textChars":2,"textLines":1,"bbox":[70,220,110,54]}
+{"kind":"textbox","id":"sh/xcz2l03q","slide":7,"text":"系统与\n智能体","textPreview":"系统与 | 智能体","textChars":7,"textLines":2,"bbox":[70,392,110,62]}
+{"kind":"textbox","id":"sh/cbq1sv25","slide":7,"text":"教师与\n管理员","textPreview":"教师与 | 管理员","textChars":7,"textLines":2,"bbox":[70,552,110,54]}
+{"kind":"textbox","id":"sh/n6x0fqlo","slide":7,"text":"注册登录","textPreview":"注册登录","textChars":4,"textLines":1,"bbox":[205,214,150,68]}
+{"kind":"textbox","id":"sh/25ojml43","slide":7,"text":"认证与角色校验","textPreview":"认证与角色校验","textChars":7,"textLines":1,"bbox":[205,389,150,68]}
+{"kind":"shape","id":"sh/p8fih03e","slide":7,"bbox":[280,282,0,107]}
+{"kind":"textbox","id":"sh/o761ov2t","slide":7,"text":"职业画像","textPreview":"职业画像","textChars":4,"textLines":1,"bbox":[400,214,150,68]}
+{"kind":"textbox","id":"sh/f2d0b6lc","slide":7,"text":"过滤有效岗位","textPreview":"过滤有效岗位","textChars":6,"textLines":1,"bbox":[400,389,150,68]}
+{"kind":"shape","id":"sh/eh4jil4r","slide":7,"bbox":[355,248,45,0]}
+{"kind":"shape","id":"sh/id4ju1oz","slide":7,"bbox":[355,423,45,0]}
+{"kind":"shape","id":"sh/jedkn654","slide":7,"bbox":[475,282,0,107]}
+{"kind":"textbox","id":"sh/4fm1wb6p","slide":7,"text":"查看匹配\n缺口与来源","textPreview":"查看匹配 | 缺口与来源","textChars":10,"textLines":2,"bbox":[595,214,150,68]}
+{"kind":"textbox","id":"sh/50v2pgna","slide":7,"text":"五维评分\n稳定排序","textPreview":"五维评分 | 稳定排序","textChars":9,"textLines":2,"bbox":[595,389,150,68]}
+{"kind":"shape","id":"sh/q143ylov","slide":7,"bbox":[550,248,45,0]}
+{"kind":"shape","id":"sh/r2dkrq5g","slide":7,"bbox":[550,423,45,0]}
+{"kind":"shape","id":"sh/s3ml0v61","slide":7,"bbox":[670,282,0,107]}
+{"kind":"textbox","id":"sh/d4f2t0nm","slide":7,"text":"生成行动计划","textPreview":"生成行动计划","textChars":6,"textLines":1,"bbox":[790,214,150,68]}
+{"kind":"textbox","id":"sh/e5o32lor","slide":7,"text":"生成阶段任务","textPreview":"生成阶段任务","textChars":6,"textLines":1,"bbox":[790,389,150,68]}
+{"kind":"shape","id":"sh/f6xkvq5c","slide":7,"bbox":[745,248,45,0]}
+{"kind":"shape","id":"sh/p0zmlk7u","slide":7,"bbox":[745,423,45,0]}
+{"kind":"shape","id":"sh/ozq5szq9","slide":7,"bbox":[865,282,0,107]}
+{"kind":"textbox","id":"sh/nyh4jupo","slide":7,"text":"咨询并更新","textPreview":"咨询并更新","textChars":5,"textLines":1,"bbox":[985,214,150,68]}
+{"kind":"textbox","id":"sh/2x8nqp83","slide":7,"text":"FastGPT 路由\n回答与来源","textPreview":"FastGPT 路由 | 回答与来源","textChars":16,"textLines":2,"bbox":[985,389,150,68]}
+{"kind":"shape","id":"sh/x4j6p47q","slide":7,"bbox":[940,248,45,0]}
+{"kind":"shape","id":"sh/c3a5wzq5","slide":7,"bbox":[940,423,45,0]}
+{"kind":"shape","id":"sh/b2h4nupk","slide":7,"bbox":[1060,282,0,107]}
+{"kind":"textbox","id":"sh/a18nup8z","slide":7,"text":"教师查看授权摘要\n提交指导意见","textPreview":"教师查看授权摘要 | 提交指导意见","textChars":15,"textLines":2,"bbox":[250,550,250,58]}
+{"kind":"textbox","id":"sh/lsj6t47m","slide":7,"text":"管理员维护账号、岗位\n知识资料与审计","textPreview":"管理员维护账号、岗位 | 知识资料与审计","textChars":18,"textLines":2,"bbox":[560,550,250,58]}
+{"kind":"textbox","id":"sh/kra50jqh","slide":7,"text":"学生依据意见\n调整行动计划","textPreview":"学生依据意见 | 调整行动计划","textChars":13,"textLines":2,"bbox":[870,550,250,58]}
+{"kind":"shape","id":"sh/wneps3ap","slide":7,"bbox":[500,579,60,0]}
+{"kind":"shape","id":"sh/honq18ru","slide":7,"bbox":[810,579,60,0]}
+{"kind":"textbox","id":"sh/ulc7qdsj","slide":7,"text":"规则负责评分与筛选，FastGPT 负责知识问答，教师负责专业确认","textPreview":"规则负责评分与筛选，FastGPT 负责知识问答，教师负责专业确认","textChars":33,"textLines":1,"bbox":[222,645,836,28]}
+{"kind":"notes","id":"nt/gnmp4jqx","slide":7,"text":"按学生主流程讲解，并说明教师与管理员如何进入闭环。"}
+{"kind":"slide","id":"sl/fu1gfa1s","slide":8,"title":"职途智航","textShapes":7}
+{"kind":"textbox","id":"sh/ri9g7uhw","slide":8,"name":"文本框 3","text":"职途智航","textPreview":"职途智航","textChars":4,"textLines":1,"bbox":[0,19.67,228.67,38.67]}
+{"kind":"shape","id":"sh/18byd4zy","slide":8,"name":"文本框 1","bbox":[63.87,156.47,455.47,203.53]}
+{"kind":"textbox","id":"sh/6h0fypgb","slide":8,"text":"系统总体架构与技术路线","textPreview":"系统总体架构与技术路线","textChars":11,"textLines":1,"bbox":[64,96,940,54]}
+{"kind":"textbox","id":"sh/tkby9kzm","slide":8,"text":"PART 04","textPreview":"PART 04","textChars":7,"textLines":1,"bbox":[1045,103,165,32]}
+{"kind":"shape","id":"sh/sjix0zy1","slide":8,"bbox":[64,153,1148,0]}
+{"kind":"textbox","id":"sh/id0fu50z","slide":8,"text":"React + TypeScript + Vite","textPreview":"React + TypeScript + Vite","textChars":25,"textLines":1,"bbox":[84,635,250,34]}
+{"kind":"textbox","id":"sh/o7ydoret","slide":8,"text":"FastAPI + SQLAlchemy","textPreview":"FastAPI + SQLAlchemy","textChars":20,"textLines":1,"bbox":[374,635,250,34]}
+{"kind":"textbox","id":"sh/98rehwve","slide":8,"text":"PostgreSQL + Alembic","textPreview":"PostgreSQL + Alembic","textChars":20,"textLines":1,"bbox":[664,635,250,34]}
+{"kind":"textbox","id":"sh/m5gvmhwn","slide":8,"text":"FastGPT + REST API","textPreview":"FastGPT + REST API","textChars":18,"textLines":1,"bbox":[954,635,250,34]}
+{"kind":"image","id":"im/ixcj6lgb","slide":8,"name":"","alt":"职途智航系统总体框架图","bbox":[45,166,1190,465]}
+{"kind":"notes","id":"nt/fu1gfa1s","slide":8,"text":"说明前后端分离架构、业务数据库和 FastGPT 的数据边界。"}
+{"kind":"slide","id":"sl/9jc7kc","slide":9,"title":"职途智航","textShapes":10}
+{"kind":"textbox","id":"sh/et0ja1kv","slide":9,"name":"文本框 3","text":"职途智航","textPreview":"职途智航","textChars":4,"textLines":1,"bbox":[0,19.67,228.67,38.67]}
+{"kind":"shape","id":"sh/8z21gb2x","slide":9,"name":"文本框 1","bbox":[63.87,156.47,455.47,203.53]}
+{"kind":"textbox","id":"sh/zu9kj61g","slide":9,"text":"智能体设计：职责分工与判断边界","textPreview":"智能体设计：职责分工与判断边界","textChars":15,"textLines":1,"bbox":[64,96,940,54]}
+{"kind":"textbox","id":"sh/0vi1cb2l","slide":9,"text":"PART 04","textPreview":"PART 04","textChars":7,"textLines":1,"bbox":[1045,103,165,32]}
+{"kind":"shape","id":"sh/1wr2lgj6","slide":9,"bbox":[64,153,1148,0]}
+{"kind":"textbox","id":"sh/qpgj61kj","slide":9,"text":"确定性规则\n岗位过滤、五维评分、稳定排序","textPreview":"确定性规则 | 岗位过滤、五维评分、稳定排序","textChars":20,"textLines":2,"bbox":[80,205,310,105]}
+{"kind":"textbox","id":"sh/rq9kfm14","slide":9,"text":"FastGPT\n职业发展与就业政策问答","textPreview":"FastGPT | 职业发展与就业政策问答","textChars":19,"textLines":2,"bbox":[485,205,310,105]}
+{"kind":"textbox","id":"sh/bidkri90","slide":9,"text":"就业指导教师\n复核个体情况并给出专业意见","textPreview":"就业指导教师 | 复核个体情况并给出专业意见","textChars":20,"textLines":2,"bbox":[890,205,310,105]}
+{"kind":"shape","id":"sh/qh4jyd8f","slide":9,"bbox":[390,257.5,95,0]}
+{"kind":"shape","id":"sh/dkf2t8r6","slide":9,"bbox":[795,257.5,95,0]}
+{"kind":"textbox","id":"sh/cj6l03ql","slide":9,"text":"保证推荐可解释","textPreview":"保证推荐可解释","textChars":7,"textLines":1,"bbox":[116,370,238,34]}
+{"kind":"textbox","id":"sh/z6xkvi9w","slide":9,"text":"提升咨询服务效率","textPreview":"提升咨询服务效率","textChars":8,"textLines":1,"bbox":[521,370,238,34]}
+{"kind":"textbox","id":"sh/ylo32d8b","slide":9,"text":"保留最终专业判断","textPreview":"保留最终专业判断","textChars":8,"textLines":1,"bbox":[926,370,238,34]}
+{"kind":"textbox","id":"sh/l8f2xs72","slide":9,"text":"最小数据原则\n前端仅提交问题与可控应用标识，FastGPT 不直接访问 PostgreSQL 业务数据库。API Key 保留在服务端，错误信息和原始上游响应不向前端透传。","textPreview":"最小数据原则 | 前端仅提交问题与可控应用标识，FastGPT 不直接访问 PostgreSQL 业务数据库。API Key 保留在服务端，错误信息和原始上游响应不向前端透传。","textChars":86,"textLines":2,"bbox":[140,455,1000,132]}
+{"kind":"notes","id":"nt/9jc7kc","slide":9,"text":"强调规则、模型、教师各自承担不同判断职责。"}
+{"kind":"slide","id":"sl/f6f8ra","slide":10,"title":"职途智航","textShapes":18}
+{"kind":"textbox","id":"sh/m5w3q5cb","slide":10,"name":"文本框 3","text":"职途智航","textPreview":"职途智航","textChars":4,"textLines":1,"bbox":[0,19.67,228.67,38.67]}
+{"kind":"shape","id":"sh/wvylwfad","slide":10,"name":"文本框 1","bbox":[63.87,156.47,455.47,203.53]}
+{"kind":"textbox","id":"sh/n65kzatw","slide":10,"text":"可解释岗位匹配模型","textPreview":"可解释岗位匹配模型","textChars":9,"textLines":1,"bbox":[64,96,940,54]}
+{"kind":"textbox","id":"sh/87ylsfah","slide":10,"text":"PART 04","textPreview":"PART 04","textChars":7,"textLines":1,"bbox":[1045,103,165,32]}
+{"kind":"shape","id":"sh/9s721kbm","slide":10,"bbox":[64,153,1148,0]}
+{"kind":"textbox","id":"sh/610329sf","slide":10,"text":"固定权重，总分 100 分","textPreview":"固定权重，总分 100 分","textChars":13,"textLines":1,"bbox":[72,176,540,52]}
+{"kind":"textbox","id":"sh/7294bet0","slide":10,"text":"技能","textPreview":"技能","textChars":2,"textLines":1,"bbox":[78,244,112,40]}
+{"kind":"shape","id":"sh/n6lgvuxo","slide":10,"bbox":[202,248,350,32]}
+{"kind":"shape","id":"sh/m5cf2pw3","slide":10,"bbox":[202,248,350,32]}
+{"kind":"textbox","id":"sh/983yx4fu","slide":10,"text":"50分","textPreview":"50分","textChars":3,"textLines":1,"bbox":[560,244,62,40]}
+{"kind":"textbox","id":"sh/87ux4ze9","slide":10,"text":"专业","textPreview":"专业","textChars":2,"textLines":1,"bbox":[78,311,112,40]}
+{"kind":"shape","id":"sh/vulgzexk","slide":10,"bbox":[202,315,350,32]}
+{"kind":"shape","id":"sh/a9cf69wz","slide":10,"bbox":[202,315,140,32]}
+{"kind":"textbox","id":"sh/xw3y1ofq","slide":10,"text":"20分","textPreview":"20分","textChars":3,"textLines":1,"bbox":[560,311,62,40]}
+{"kind":"textbox","id":"sh/wvux8je5","slide":10,"text":"项目","textPreview":"项目","textChars":2,"textLines":1,"bbox":[78,378,112,40]}
+{"kind":"shape","id":"sh/jy5g3exw","slide":10,"bbox":[202,382,350,32]}
+{"kind":"shape","id":"sh/ixwfa9wb","slide":10,"bbox":[202,382,105,32]}
+{"kind":"textbox","id":"sh/utgj2dgj","slide":10,"text":"15分","textPreview":"15分","textChars":3,"textLines":1,"bbox":[560,378,62,40]}
+{"kind":"textbox","id":"sh/fup0vih4","slide":10,"text":"目标岗位","textPreview":"目标岗位","textChars":4,"textLines":1,"bbox":[78,445,112,40]}
+{"kind":"shape","id":"sh/gvy14nyp","slide":10,"bbox":[202,449,350,32]}
+{"kind":"shape","id":"sh/hwrixszu","slide":10,"bbox":[202,449,70,32]}
+{"kind":"textbox","id":"sh/6pgzydg7","slide":10,"text":"10分","textPreview":"10分","textChars":3,"textLines":1,"bbox":[560,445,62,40]}
+{"kind":"textbox","id":"sh/7qp0rihs","slide":10,"text":"城市","textPreview":"城市","textChars":2,"textLines":1,"bbox":[78,512,112,40]}
+{"kind":"shape","id":"sh/sry10nyd","slide":10,"bbox":[202,516,350,32]}
+{"kind":"shape","id":"sh/ts7it8zy","slide":10,"bbox":[202,516,35,32]}
+{"kind":"textbox","id":"sh/ql0jaxgr","slide":10,"text":"5分","textPreview":"5分","textChars":2,"textLines":1,"bbox":[560,512,62,40]}
+{"kind":"textbox","id":"sh/bm9032hc","slide":10,"text":"进入评分前的硬性过滤","textPreview":"进入评分前的硬性过滤","textChars":10,"textLines":1,"bbox":[708,192,418,34]}
+{"kind":"textbox","id":"sh/lsfup0nq","slide":10,"text":"仅使用已发布且未过期岗位\n岗位必须具有有效来源或明确标识为演示数据\n相同分数采用固定次序，保证结果稳定","textPreview":"仅使用已发布且未过期岗位 | 岗位必须具有有效来源或明确标识为演示数据 | 相同分数采用固定次序，保证结果稳定","textChars":51,"textLines":3,"bbox":[704,248,426,180]}
+{"kind":"textbox","id":"sh/krmdgvm5","slide":10,"text":"结果解释","textPreview":"结果解释","textChars":4,"textLines":1,"bbox":[708,458,418,34]}
+{"kind":"textbox","id":"sh/zqdcnq5k","slide":10,"text":"同时返回分项得分、能力缺口和岗位来源。行动计划只基于真实缺口生成，不编造录用结论。","textPreview":"同时返回分项得分、能力缺口和岗位来源。行动计划只基于真实缺口生成，不编造录用结论。","textChars":41,"textLines":1,"bbox":[704,515,426,90]}
+{"kind":"notes","id":"nt/f6f8ra","slide":10,"text":"解释岗位匹配权重、硬性过滤和结果可解释性。"}
+{"kind":"slide","id":"sl/bv7gur","slide":11,"title":"职途智航","textShapes":14}
+{"kind":"textbox","id":"sh/cb65c3a1","slide":11,"name":"文本框 3","text":"职途智航","textPreview":"职途智航","textChars":4,"textLines":1,"bbox":[0,19.67,228.67,38.67]}
+{"kind":"shape","id":"sh/yd8neds7","slide":11,"name":"文本框 1","bbox":[63.87,156.47,455.47,203.53]}
+{"kind":"textbox","id":"sh/dcf658rm","slide":11,"text":"FastGPT 双路问答与安全降级","textPreview":"FastGPT 双路问答与安全降级","textChars":17,"textLines":1,"bbox":[64,96,940,54]}
+{"kind":"textbox","id":"sh/q9onatsv","slide":11,"text":"PART 04","textPreview":"PART 04","textChars":7,"textLines":1,"bbox":[1045,103,165,32]}
+{"kind":"shape","id":"sh/baxo3y9g","slide":11,"bbox":[64,153,1148,0]}
+{"kind":"textbox","id":"sh/w7apo7a5","slide":11,"text":"用户问题","textPreview":"用户问题","textChars":4,"textLines":1,"bbox":[70,205,210,82]}
+{"kind":"textbox","id":"sh/h8j6hcrq","slide":11,"text":"服务端路由","textPreview":"服务端路由","textChars":5,"textLines":1,"bbox":[360,205,250,82]}
+{"kind":"textbox","id":"sh/xcrypgbm","slide":11,"text":"职业发展应用","textPreview":"职业发展应用","textChars":6,"textLines":1,"bbox":[720,175,238,72]}
+{"kind":"textbox","id":"sh/wbixwbu1","slide":11,"text":"就业政策应用","textPreview":"就业政策应用","textChars":6,"textLines":1,"bbox":[720,270,238,72]}
+{"kind":"textbox","id":"sh/va9gn6tg","slide":11,"text":"文本回答","textPreview":"文本回答","textChars":4,"textLines":1,"bbox":[1030,205,180,82]}
+{"kind":"shape","id":"sh/a90fu1cb","slide":11,"bbox":[280,246,80,0]}
+{"kind":"shape","id":"sh/98rylwbq","slide":11,"bbox":[610,211,110,35]}
+{"kind":"shape","id":"sh/87yxsru5","slide":11,"bbox":[610,246,110,60]}
+{"kind":"shape","id":"sh/n6pgjmtk","slide":11,"bbox":[958,211,72,35]}
+{"kind":"shape","id":"sh/mlgfqhcz","slide":11,"bbox":[958,246,72,60]}
+{"kind":"textbox","id":"sh/t4byx0bu","slide":11,"text":"有结构化来源","textPreview":"有结构化来源","textChars":6,"textLines":1,"bbox":[112,408,252,34]}
+{"kind":"textbox","id":"sh/s32h4vu9","slide":11,"text":"显示完整回答与来源链接","textPreview":"显示完整回答与来源链接","textChars":11,"textLines":1,"bbox":[402,408,720,34]}
+{"kind":"textbox","id":"sh/czu9g3mx","slide":11,"text":"无结构化来源","textPreview":"无结构化来源","textChars":6,"textLines":1,"bbox":[112,480,252,34]}
+{"kind":"textbox","id":"sh/dk3apon2","slide":11,"text":"保留回答，同时提示人工确认","textPreview":"保留回答，同时提示人工确认","textChars":13,"textLines":1,"bbox":[402,480,720,34]}
+{"kind":"textbox","id":"sh/qxcret4r","slide":11,"text":"超时或响应异常","textPreview":"超时或响应异常","textChars":7,"textLines":1,"bbox":[112,552,252,34]}
+{"kind":"textbox","id":"sh/rylsny5c","slide":11,"text":"返回稳定降级提示，不暴露上游错误","textPreview":"返回稳定降级提示，不暴露上游错误","textChars":16,"textLines":1,"bbox":[402,552,720,34]}
+{"kind":"notes","id":"nt/bv7gur","slide":11,"text":"说明职业与政策双路问答，以及有来源、无来源和异常三种处理。"}
+{"kind":"slide","id":"sl/n4uq5b","slide":12,"title":"职途智航","textShapes":20}
+{"kind":"textbox","id":"sh/yp4vqhcf","slide":12,"name":"文本框 3","text":"职途智航","textPreview":"职途智航","textChars":4,"textLines":1,"bbox":[0,19.67,228.67,38.67]}
+{"kind":"shape","id":"sh/8v6dwbah","slide":12,"name":"文本框 1","bbox":[63.87,156.47,455.47,203.53]}
+{"kind":"textbox","id":"sh/zqdcjmt0","slide":12,"text":"数据模型与权限边界","textPreview":"数据模型与权限边界","textChars":9,"textLines":1,"bbox":[64,96,940,54]}
+{"kind":"textbox","id":"sh/krmdsrul","slide":12,"text":"PART 04","textPreview":"PART 04","textChars":7,"textLines":1,"bbox":[1045,103,165,32]}
+{"kind":"shape","id":"sh/lsfulwbq","slide":12,"bbox":[64,153,1148,0]}
+{"kind":"textbox","id":"sh/a14vmhc3","slide":12,"text":"\nPK id · username · role · status","textPreview":"| PK id · username · role · status","textChars":33,"textLines":2,"bbox":[478,174,324,76]}
+{"kind":"textbox","id":"sh/b2dcfmto","slide":12,"text":"users","textPreview":"users","textChars":5,"textLines":1,"bbox":[478,174,324,28]}
+{"kind":"textbox","id":"sh/3ux83ah4","slide":12,"text":"\nFK user_id · major · skills · target_role","textPreview":"| FK user_id · major · skills · target_role","textChars":42,"textLines":2,"bbox":[76,286,286,88]}
+{"kind":"textbox","id":"sh/2tora5gj","slide":12,"text":"career_profiles","textPreview":"career_profiles","textChars":15,"textLines":1,"bbox":[76,286,286,28]}
+{"kind":"textbox","id":"sh/pgfq5kzu","slide":12,"text":"\ntitle · required_skills · source · status","textPreview":"| title · required_skills · source · status","textChars":42,"textLines":2,"bbox":[76,465,286,88]}
+{"kind":"textbox","id":"sh/ov69cfyp","slide":12,"text":"job_postings","textPreview":"job_postings","textChars":12,"textLines":1,"bbox":[76,465,286,28]}
+{"kind":"textbox","id":"sh/bix87uh0","slide":12,"text":"\nFK profile_id · FK job_id · score · gaps","textPreview":"| FK profile_id · FK job_id · score · gaps","textChars":41,"textLines":2,"bbox":[496,312,286,96]}
+{"kind":"textbox","id":"sh/qhorepgf","slide":12,"text":"match_results","textPreview":"match_results","textChars":13,"textLines":1,"bbox":[496,312,286,28]}
+{"kind":"textbox","id":"sh/xkzq94z6","slide":12,"text":"\nFK student_id · FK match_id · tasks · status","textPreview":"| FK student_id · FK match_id · tasks · status","textChars":45,"textLines":2,"bbox":[496,486,286,88]}
+{"kind":"textbox","id":"sh/cjq9gzyl","slide":12,"text":"action_plans","textPreview":"action_plans","textChars":12,"textLines":1,"bbox":[496,486,286,28]}
+{"kind":"textbox","id":"sh/rmd8vqhw","slide":12,"text":"\nFK counselor_id · FK student_id · UNIQUE","textPreview":"| FK counselor_id · FK student_id · UNIQUE","textChars":41,"textLines":2,"bbox":[904,276,286,88]}
+{"kind":"textbox","id":"sh/6l472lgb","slide":12,"text":"counselor_student_access","textPreview":"counselor_student_access","textChars":24,"textLines":1,"bbox":[904,276,286,28]}
+{"kind":"textbox","id":"sh/uhsbat0z","slide":12,"text":"\nFK teacher_id · FK student_id · FK plan_id","textPreview":"| FK teacher_id · FK student_id · FK plan_id","textChars":43,"textLines":2,"bbox":[904,430,286,88]}
+{"kind":"textbox","id":"sh/vi1cjy1k","slide":12,"text":"teacher_advice","textPreview":"teacher_advice","textChars":14,"textLines":1,"bbox":[904,430,286,28]}
+{"kind":"textbox","id":"sh/wjutc3ip","slide":12,"text":"\nFK actor_id · action · resource · metadata","textPreview":"| FK actor_id · action · resource · metadata","textChars":43,"textLines":2,"bbox":[904,566,286,76]}
+{"kind":"textbox","id":"sh/hk3ul8ja","slide":12,"text":"audit_events","textPreview":"audit_events","textChars":12,"textLines":1,"bbox":[904,566,286,28]}
+{"kind":"shape","id":"sh/mdsb6t0n","slide":12,"bbox":[219,212,259,74]}
+{"kind":"shape","id":"sh/7e1cfy18","slide":12,"bbox":[362,330,134,30]}
+{"kind":"shape","id":"sh/8fat83it","slide":12,"bbox":[362,360,134,149]}
+{"kind":"shape","id":"sh/9gjuhoje","slide":12,"bbox":[639,408,0,78]}
+{"kind":"shape","id":"sh/yp8b290r","slide":12,"bbox":[802,212,102,108]}
+{"kind":"shape","id":"sh/zahsbe1c","slide":12,"bbox":[1047,364,0,66]}
+{"kind":"shape","id":"sh/147ehc3u","slide":12,"bbox":[782,474,122,56]}
+{"kind":"textbox","id":"sh/g3yx8r29","slide":12,"text":"核心业务数据留在 PostgreSQL。FastGPT 不直接读取画像、匹配结果或教师意见","textPreview":"核心业务数据留在 PostgreSQL。FastGPT 不直接读取画像、匹配结果或教师意见","textChars":45,"textLines":1,"bbox":[176,649,928,28]}
+{"kind":"notes","id":"nt/n4uq5b","slide":12,"text":"介绍核心实体和授权关系，强调最小数据原则。"}
+{"kind":"slide","id":"sl/wcecfa","slide":13,"title":"职途智航","textShapes":7}
+{"kind":"textbox","id":"sh/yh8n2lo7","slide":13,"name":"文本框 3","text":"职途智航","textPreview":"职途智航","textChars":4,"textLines":1,"bbox":[0,19.67,228.67,38.67]}
+{"kind":"shape","id":"sh/cfq50b61","slide":13,"name":"文本框 1","bbox":[63.87,156.47,455.47,203.53]}
+{"kind":"textbox","id":"sh/zihobqps","slide":13,"text":"应用效果：真实工作台界面","textPreview":"应用效果：真实工作台界面","textChars":12,"textLines":1,"bbox":[64,96,940,54]}
+{"kind":"textbox","id":"sh/0jq54v6d","slide":13,"text":"PART 05","textPreview":"PART 05","textChars":7,"textLines":1,"bbox":[1045,103,165,32]}
+{"kind":"shape","id":"sh/lkz6dg7i","slide":13,"bbox":[64,153,1148,0]}
+{"kind":"textbox","id":"sh/n61ofqpo","slide":13,"text":"账号登录","textPreview":"账号登录","textChars":4,"textLines":1,"bbox":[58,372,550,28]}
+{"kind":"textbox","id":"sh/6hwz2t8n","slide":13,"text":"学生账号注册","textPreview":"学生账号注册","textChars":6,"textLines":1,"bbox":[646,372,550,28]}
+{"kind":"textbox","id":"sh/sjeh436d","slide":13,"text":"管理员岗位资料台账","textPreview":"管理员岗位资料台账","textChars":9,"textLines":1,"bbox":[58,624,550,28]}
+{"kind":"textbox","id":"sh/itwzy98b","slide":13,"text":"学生端工作台","textPreview":"学生端工作台","textChars":6,"textLines":1,"bbox":[646,624,550,28]}
+{"kind":"image","id":"im/bqhkvuho","slide":13,"name":"","geometry":"roundRect","alt":"账号登录","bbox":[58,178,550,190]}
+{"kind":"image","id":"im/cn21kfah","slide":13,"name":"","geometry":"roundRect","alt":"学生账号注册","bbox":[646,178,550,190]}
+{"kind":"image","id":"im/ql0jipsr","slide":13,"name":"","geometry":"roundRect","alt":"管理员岗位资料台账","bbox":[58,430,550,190]}
+{"kind":"image","id":"im/0b21ozat","slide":13,"name":"","geometry":"roundRect","alt":"学生端工作台","bbox":[646,430,550,190]}
+{"kind":"notes","id":"nt/wcecfa","slide":13,"text":"展示真实工作台页面，说明三角色界面与治理能力。"}
+{"kind":"slide","id":"sl/bptpng","slide":14,"title":"职途智航","textShapes":18}
+{"kind":"textbox","id":"sh/03u1c369","slide":14,"name":"文本框 3","text":"职途智航","textPreview":"职途智航","textChars":4,"textLines":1,"bbox":[0,19.67,228.67,38.67]}
+{"kind":"shape","id":"sh/qdsj6to7","slide":14,"name":"文本框 1","bbox":[63.87,156.47,455.47,203.53]}
+{"kind":"textbox","id":"sh/143i587u","slide":14,"text":"测试结果与应用价值","textPreview":"测试结果与应用价值","textChars":9,"textLines":1,"bbox":[64,96,940,54]}
+{"kind":"textbox","id":"sh/e1cjato3","slide":14,"text":"PART 05","textPreview":"PART 05","textChars":7,"textLines":1,"bbox":[1045,103,165,32]}
+{"kind":"shape","id":"sh/z2l03ypo","slide":14,"bbox":[64,153,1148,0]}
+{"kind":"textbox","id":"sh/o7u1gn6l","slide":14,"text":"51 / 51","textPreview":"51 / 51","textChars":7,"textLines":1,"bbox":[72,188,250,84]}
+{"kind":"textbox","id":"sh/98329snq","slide":14,"text":"后端自动化测试通过","textPreview":"后端自动化测试通过","textChars":9,"textLines":1,"bbox":[72,279,250,44]}
+{"kind":"textbox","id":"sh/lkvyx0ze","slide":14,"text":"3 类角色","textPreview":"3 类角色","textChars":5,"textLines":1,"bbox":[366,188,250,84]}
+{"kind":"textbox","id":"sh/kjmx4vyt","slide":14,"text":"核心业务流程已验证","textPreview":"核心业务流程已验证","textChars":9,"textLines":1,"bbox":[366,279,250,44]}
+{"kind":"textbox","id":"sh/jidwvqho","slide":14,"text":"403","textPreview":"403","textChars":3,"textLines":1,"bbox":[660,188,250,84]}
+{"kind":"textbox","id":"sh/yh4f2lg3","slide":14,"text":"越权访问被服务端拒绝","textPreview":"越权访问被服务端拒绝","textChars":10,"textLines":1,"bbox":[660,279,250,44]}
+{"kind":"textbox","id":"sh/tofy10zq","slide":14,"text":"通过","textPreview":"通过","textChars":2,"textLines":1,"bbox":[954,188,250,84]}
+{"kind":"textbox","id":"sh/8n6x8vy5","slide":14,"text":"前端构建与静态检查","textPreview":"前端构建与静态检查","textChars":9,"textLines":1,"bbox":[954,279,250,44]}
+{"kind":"textbox","id":"sh/7mxgzqhk","slide":14,"text":"学生","textPreview":"学生","textChars":2,"textLines":1,"bbox":[118,382,160,34]}
+{"kind":"textbox","id":"sh/6l4f6lgz","slide":14,"text":"明确岗位方向和能力缺口，形成可执行计划","textPreview":"明确岗位方向和能力缺口，形成可执行计划","textChars":19,"textLines":1,"bbox":[316,382,826,34]}
+{"kind":"textbox","id":"sh/9sbe5wz6","slide":14,"text":"教师","textPreview":"教师","textChars":2,"textLines":1,"bbox":[118,464,160,34]}
+{"kind":"textbox","id":"sh/or2xwby1","slide":14,"text":"减少重复咨询，把时间用于个体问题和专业判断","textPreview":"减少重复咨询，把时间用于个体问题和专业判断","textChars":21,"textLines":1,"bbox":[316,464,826,34]}
+{"kind":"textbox","id":"sh/gv6xcb6h","slide":14,"text":"学校","textPreview":"学校","textChars":2,"textLines":1,"bbox":[118,546,160,34]}
+{"kind":"textbox","id":"sh/1wfylg72","slide":14,"text":"沉淀可追溯的就业指导流程、授权和审计记录","textPreview":"沉淀可追溯的就业指导流程、授权和审计记录","textChars":20,"textLines":1,"bbox":[316,546,826,34]}
+{"kind":"textbox","id":"sh/e9ofa1or","slide":14,"text":"说明：以上为本地测试与演示环境结果，外部 FastGPT 生产应用需在部署环境继续验收","textPreview":"说明：以上为本地测试与演示环境结果，外部 FastGPT 生产应用需在部署环境继续验收","textChars":43,"textLines":1,"bbox":[164,634,952,34]}
+{"kind":"notes","id":"nt/bptpng","slide":14,"text":"汇报本地测试证据和面向学生、教师、学校的应用价值。"}
+{"kind":"slide","id":"sl/udsvah03","slide":15,"title":"规则可解释  模型提效率  教师作确认","textShapes":3}
+{"kind":"textbox","id":"sh/nex4jq5k","slide":15,"name":"文本框 2","text":"规则可解释  模型提效率  教师作确认","textPreview":"规则可解释  模型提效率  教师作确认","textChars":19,"textLines":1,"bbox":[208.71,279.68,862.44,150.4]}
+{"kind":"textbox","id":"sh/9gzml0nq","slide":15,"name":"文本框 5","text":"THANK YOU\n","textPreview":"THANK YOU |","textChars":10,"textLines":2,"bbox":[337,422.73,605.93,125.87]}
+{"kind":"textbox","id":"sh/1cfmhgne","slide":15,"name":"文本框 1","text":"职途智航","textPreview":"职途智航","textChars":4,"textLines":1,"bbox":[1051.33,33.2,228.67,38.67]}
+{"kind":"notes","id":"nt/udsvah03","slide":15,"text":"结束语：以规则保证可解释，以模型提升服务效率，以教师保留最终专业判断。"}

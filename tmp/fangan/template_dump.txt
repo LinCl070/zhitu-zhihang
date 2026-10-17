@@ -1,0 +1,47 @@
+page 7560310 10692130 margins 1143000 1143000 914400 914400 sections 1
+0 'Title' None '' [] None
+1 'Normal' None '' [] None
+2 'Normal' CENTER (1) '中国仿真创新应用大赛' [('中国仿真创新应用大赛', 254000, '宋体', True)] None
+3 'Normal' CENTER (1) 'Xxxx赛道' [('Xxxx', 254000, '宋体', True), ('赛道', 254000, '宋体', True)] None
+4 'Normal' CENTER (1) 'Xxxx方向作品设计方案' [('Xxxx', 203200, '宋体', True), ('方向', 203200, '宋体', True), ('作品', 203200, '宋体', True), ('设计方案', 203200, '宋体', True)] None
+5 'Normal' CENTER (1) '' [] None
+6 'Normal' CENTER (1) '' [] None
+7 'Normal' CENTER (1) '' [] None
+8 'Normal' None '' [] None
+9 'Normal' None '项目名称：                                                ' [('项目名称：', 177800, '仿宋_GB2312', None), ('                                                ', 177800, '仿宋_GB2312', None)] 800100
+10 'Normal' None '申请人（主持人）：                              ' [('申请人（主持人）：', 177800, '仿宋_GB2312', None), ('                              ', 177800, '仿宋_GB2312', None)] 800100
+11 'Normal' None '所在单位：                                      ' [('所在', 177800, '仿宋_GB2312', None), ('单位', 177800, '仿宋_GB2312', None), ('：', 177800, '仿宋_GB2312', None), ('                                      ', 177800, '仿宋_GB2312', None)] 800100
+12 'Normal' None '联系电话：                                      ' [('联系电话：', 177800, '仿宋_GB2312', None), ('                                      ', 177800, '仿宋_GB2312', None)] 800100
+13 'Normal' CENTER (1) '' [] None
+14 'Normal' CENTER (1) '' [] None
+15 'Normal' None '' [] 355600
+16 'Normal' CENTER (1) '中国仿真创新应用大赛赛事组委会' [('中国仿真创新应用大赛赛事组委会', 177800, '仿宋_GB2312', None)] None
+17 'Normal' CENTER (1) '' [] 355600
+18 'Normal' None '摘要' [('摘要', 177800, '宋体', None)] None
+19 'Heading 1' None '引言' [('引言', 177800, '宋体', None)] None
+20 'Heading 1' None '研究背景及意义' [('研究背景及意义', 177800, '宋体', None)] None
+21 'Heading 1' None '研究内容与方案' [('研究内容与方案', 177800, '宋体', None)] None
+22 'Heading 1' None '特色与创新之处' [('特色与创新之处', 177800, '宋体', None)] None
+23 'Heading 1' None '总结' [('总结', 177800, '宋体', None)] None
+24 'Normal' None '' [] None
+25 'Normal' None '' [] None
+26 'Normal' None '' [] 304800
+27 'Normal' LEFT (0) '' [('', 152400, 'Times New Roman', None)] None
+28 'Heading 1' CENTER (1) '参考文献' [('参考文献', None, None, None)] None
+29 'Normal' None '' [] None
+30 'Normal' LEFT (0) '' [('', None, 'Times New Roman', None)] None
+31 'Normal' LEFT (0) '' [] None
+32 'Normal' None '' [] None
+tables 0
+styles used:
+  Normal 133350 等线 None
+  Heading 1 190500 Times New Roman True
+  Heading 2 152400 None True
+  Heading 3 177800 Times New Roman True
+  toc 3 None None None
+  toc 1 152400 Times New Roman True
+  toc 2 152400 宋体 None
+  Normal (Web) 152400 宋体 None
+  Title 203200 None True
+  TOC 标题1 203200 等线 Light False
+['[Content_Types].xml', '_rels/', '_rels/.rels', 'customXml/', 'customXml/_rels/', 'customXml/_rels/item1.xml.rels', 'customXml/item1.xml', 'customXml/itemProps1.xml', 'docProps/', 'docProps/app.xml', 'docProps/core.xml', 'docProps/custom.xml', 'word/', 'word/_rels/', 'word/_rels/document.xml.rels', 'word/_rels/header1.xml.rels', 'word/document.xml', 'word/fontTable.xml', 'word/header1.xml', 'word/media/', 'word/media/image1.png', 'word/numbering.xml', 'word/settings.xml', 'word/styles.xml', 'word/theme/', 'word/theme/theme1.xml']
