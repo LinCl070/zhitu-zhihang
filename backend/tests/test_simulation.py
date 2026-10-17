@@ -15,6 +15,7 @@ from app.services.simulation.engine import (
     SimulationParams,
     _agent_rng,
     _AgentState,
+    _city_rng,
 )
 from app.services.simulation.scoring import FastScorer
 
@@ -92,6 +93,13 @@ class EngineCorrectnessTests(unittest.TestCase):
                     sample = (rng.random(), rng.random(), rng.random())
                     self.assertNotIn(sample, streams)
                     streams.add(sample)
+
+    def test_city_stream_is_independent_of_action_stream(self) -> None:
+        for index in (0, 1, 299):
+            for week in (0, 5, 15):
+                self.assertNotEqual(
+                    _agent_rng(1, index, week).random(), _city_rng(1, index, week).random()
+                )
 
     def test_baseline_service_sets_differ_across_weeks(self) -> None:
         engine = SimulationEngine()

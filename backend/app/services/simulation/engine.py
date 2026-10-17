@@ -198,7 +198,7 @@ class SimulationEngine:
     @staticmethod
     def _city_open(state: _AgentState, run_seed: int, week: int) -> bool:
         """Whether the agent sees all cities this week (architecture 3.3)."""
-        rng = _agent_rng(run_seed, state.index, week)
+        rng = _city_rng(run_seed, state.index, week)
         return rng.random() < state.agent.city_flex
 
     def _measure(
@@ -442,6 +442,15 @@ def _agent_rng(run_seed: int, agent_index: int, week: int) -> Random:
     (run_seed, agent_index, week) triple maps to a unique seed.
     """
     return Random(run_seed * 1_000_000 + agent_index * 100 + week)
+
+
+def _city_rng(run_seed: int, agent_index: int, week: int) -> Random:
+    """Separate city-visibility stream so it is independent of the action stream.
+
+    Offset 500_000 keeps it clear of ``_agent_rng`` (< 100_000) and the baseline
+    shuffle (990_000 + week) within the same ``run_seed`` block.
+    """
+    return Random(run_seed * 1_000_000 + 500_000 + agent_index * 100 + week)
 
 
 def _mean_ci(samples: list[float]) -> dict[str, float]:
