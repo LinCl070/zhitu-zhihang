@@ -1,0 +1,1138 @@
+{
+  "model_version": "abm-1.0",
+  "seed": 1,
+  "base_params": {
+    "cohort_size": 300,
+    "weeks": 16,
+    "replications": 10,
+    "counselor_count": 4,
+    "sessions_per_week": 8,
+    "supply_ratio": 0.8,
+    "seed": 1
+  },
+  "base_point": {
+    "parameter": null,
+    "value": null,
+    "baseline_matched": {
+      "mean": 53.4,
+      "ci_low": 51.6,
+      "ci_high": 55.2
+    },
+    "precision_matched": {
+      "mean": 53.2,
+      "ci_low": 51.2,
+      "ci_high": 55.2
+    },
+    "lift_pp": -0.2,
+    "lift_significant": false,
+    "baseline_high_risk": {
+      "mean": 6.7,
+      "ci_low": 5.0,
+      "ci_high": 8.4
+    },
+    "precision_high_risk": {
+      "mean": 2.9,
+      "ci_low": 2.0,
+      "ci_high": 3.8
+    },
+    "high_risk_significant": true
+  },
+  "sweeps": {
+    "supply_ratio": [
+      {
+        "parameter": "supply_ratio",
+        "value": 0.2,
+        "baseline_matched": {
+          "mean": 18.9,
+          "ci_low": 18.4,
+          "ci_high": 19.3
+        },
+        "precision_matched": {
+          "mean": 18.9,
+          "ci_low": 18.5,
+          "ci_high": 19.4
+        },
+        "lift_pp": 0.1,
+        "lift_significant": false,
+        "baseline_high_risk": {
+          "mean": 7.4,
+          "ci_low": 5.7,
+          "ci_high": 9.1
+        },
+        "precision_high_risk": {
+          "mean": 2.9,
+          "ci_low": 2.0,
+          "ci_high": 3.8
+        },
+        "high_risk_significant": true
+      },
+      {
+        "parameter": "supply_ratio",
+        "value": 0.5,
+        "baseline_matched": {
+          "mean": 41.9,
+          "ci_low": 41.1,
+          "ci_high": 42.7
+        },
+        "precision_matched": {
+          "mean": 41.9,
+          "ci_low": 40.9,
+          "ci_high": 42.9
+        },
+        "lift_pp": 0.1,
+        "lift_significant": false,
+        "baseline_high_risk": {
+          "mean": 7.1,
+          "ci_low": 5.3,
+          "ci_high": 8.9
+        },
+        "precision_high_risk": {
+          "mean": 2.9,
+          "ci_low": 2.0,
+          "ci_high": 3.8
+        },
+        "high_risk_significant": true
+      },
+      {
+        "parameter": "supply_ratio",
+        "value": 0.8,
+        "baseline_matched": {
+          "mean": 53.4,
+          "ci_low": 51.6,
+          "ci_high": 55.2
+        },
+        "precision_matched": {
+          "mean": 53.2,
+          "ci_low": 51.2,
+          "ci_high": 55.2
+        },
+        "lift_pp": -0.2,
+        "lift_significant": false,
+        "baseline_high_risk": {
+          "mean": 6.7,
+          "ci_low": 5.0,
+          "ci_high": 8.4
+        },
+        "precision_high_risk": {
+          "mean": 2.9,
+          "ci_low": 2.0,
+          "ci_high": 3.8
+        },
+        "high_risk_significant": true
+      },
+      {
+        "parameter": "supply_ratio",
+        "value": 1.2,
+        "baseline_matched": {
+          "mean": 60.8,
+          "ci_low": 59.2,
+          "ci_high": 62.4
+        },
+        "precision_matched": {
+          "mean": 60.6,
+          "ci_low": 58.7,
+          "ci_high": 62.4
+        },
+        "lift_pp": -0.3,
+        "lift_significant": false,
+        "baseline_high_risk": {
+          "mean": 6.6,
+          "ci_low": 5.0,
+          "ci_high": 8.2
+        },
+        "precision_high_risk": {
+          "mean": 2.9,
+          "ci_low": 2.0,
+          "ci_high": 3.8
+        },
+        "high_risk_significant": true
+      }
+    ],
+    "counselor_count": [
+      {
+        "parameter": "counselor_count",
+        "value": 0,
+        "baseline_matched": {
+          "mean": 46.9,
+          "ci_low": 45.0,
+          "ci_high": 48.7
+        },
+        "precision_matched": {
+          "mean": 46.9,
+          "ci_low": 45.0,
+          "ci_high": 48.7
+        },
+        "lift_pp": 0.0,
+        "lift_significant": false,
+        "baseline_high_risk": {
+          "mean": 18,
+          "ci_low": 16.0,
+          "ci_high": 20.0
+        },
+        "precision_high_risk": {
+          "mean": 18,
+          "ci_low": 16.0,
+          "ci_high": 20.0
+        },
+        "high_risk_significant": false
+      },
+      {
+        "parameter": "counselor_count",
+        "value": 2,
+        "baseline_matched": {
+          "mean": 50.7,
+          "ci_low": 49.0,
+          "ci_high": 52.5
+        },
+        "precision_matched": {
+          "mean": 50.8,
+          "ci_low": 48.9,
+          "ci_high": 52.7
+        },
+        "lift_pp": 0.1,
+        "lift_significant": false,
+        "baseline_high_risk": {
+          "mean": 10,
+          "ci_low": 8.0,
+          "ci_high": 12.0
+        },
+        "precision_high_risk": {
+          "mean": 4,
+          "ci_low": 2.8,
+          "ci_high": 5.2
+        },
+        "high_risk_significant": true
+      },
+      {
+        "parameter": "counselor_count",
+        "value": 4,
+        "baseline_matched": {
+          "mean": 53.4,
+          "ci_low": 51.6,
+          "ci_high": 55.2
+        },
+        "precision_matched": {
+          "mean": 53.2,
+          "ci_low": 51.2,
+          "ci_high": 55.2
+        },
+        "lift_pp": -0.2,
+        "lift_significant": false,
+        "baseline_high_risk": {
+          "mean": 6.7,
+          "ci_low": 5.0,
+          "ci_high": 8.4
+        },
+        "precision_high_risk": {
+          "mean": 2.9,
+          "ci_low": 2.0,
+          "ci_high": 3.8
+        },
+        "high_risk_significant": true
+      },
+      {
+        "parameter": "counselor_count",
+        "value": 8,
+        "baseline_matched": {
+          "mean": 55.5,
+          "ci_low": 54.0,
+          "ci_high": 57.1
+        },
+        "precision_matched": {
+          "mean": 56.1,
+          "ci_low": 54.6,
+          "ci_high": 57.7
+        },
+        "lift_pp": 0.6,
+        "lift_significant": false,
+        "baseline_high_risk": {
+          "mean": 4.5,
+          "ci_low": 2.9,
+          "ci_high": 6.1
+        },
+        "precision_high_risk": {
+          "mean": 2.4,
+          "ci_low": 1.7,
+          "ci_high": 3.1
+        },
+        "high_risk_significant": false
+      }
+    ],
+    "learning_rate": [
+      {
+        "parameter": "learning_rate",
+        "value": 0.15,
+        "baseline_matched": {
+          "mean": 46.7,
+          "ci_low": 45.3,
+          "ci_high": 48.1
+        },
+        "precision_matched": {
+          "mean": 46.5,
+          "ci_low": 44.8,
+          "ci_high": 48.2
+        },
+        "lift_pp": -0.2,
+        "lift_significant": false,
+        "baseline_high_risk": {
+          "mean": 15.1,
+          "ci_low": 13.2,
+          "ci_high": 17.0
+        },
+        "precision_high_risk": {
+          "mean": 9.9,
+          "ci_low": 8.8,
+          "ci_high": 11.0
+        },
+        "high_risk_significant": true
+      },
+      {
+        "parameter": "learning_rate",
+        "value": 0.3,
+        "baseline_matched": {
+          "mean": 53.7,
+          "ci_low": 52.5,
+          "ci_high": 54.9
+        },
+        "precision_matched": {
+          "mean": 54.6,
+          "ci_low": 53.3,
+          "ci_high": 55.9
+        },
+        "lift_pp": 0.9,
+        "lift_significant": false,
+        "baseline_high_risk": {
+          "mean": 4.6,
+          "ci_low": 3.5,
+          "ci_high": 5.7
+        },
+        "precision_high_risk": {
+          "mean": 1.3,
+          "ci_low": 0.6,
+          "ci_high": 2.0
+        },
+        "high_risk_significant": true
+      },
+      {
+        "parameter": "learning_rate",
+        "value": 0.45,
+        "baseline_matched": {
+          "mean": 57.1,
+          "ci_low": 55.8,
+          "ci_high": 58.4
+        },
+        "precision_matched": {
+          "mean": 58.2,
+          "ci_low": 57.0,
+          "ci_high": 59.3
+        },
+        "lift_pp": 1.1,
+        "lift_significant": false,
+        "baseline_high_risk": {
+          "mean": 1.8,
+          "ci_low": 0.8,
+          "ci_high": 2.8
+        },
+        "precision_high_risk": {
+          "mean": 0,
+          "ci_low": 0.0,
+          "ci_high": 0.0
+        },
+        "high_risk_significant": true
+      }
+    ]
+  },
+  "four_scenarios": {
+    "baseline": {
+      "label": "现状基线",
+      "matched": {
+        "mean": 53.4,
+        "ci_low": 51.6,
+        "ci_high": 55.2
+      },
+      "readiness": {
+        "mean": 68.5,
+        "ci_low": 66.2,
+        "ci_high": 70.8
+      },
+      "high_risk": {
+        "mean": 6.7,
+        "ci_low": 5.0,
+        "ci_high": 8.4
+      },
+      "avg_gap": {
+        "mean": 1.1,
+        "ci_low": 1.1,
+        "ci_high": 1.2
+      },
+      "matched_lift_pp": 0.0,
+      "matched_significant": false,
+      "high_risk_significant": false,
+      "top_skill_gaps": [
+        {
+          "skill": "物联网",
+          "demand": 72,
+          "supply": 51.6,
+          "gap": 20.4
+        },
+        {
+          "skill": "Git",
+          "demand": 32,
+          "supply": 29.1,
+          "gap": 2.9
+        },
+        {
+          "skill": "SQL",
+          "demand": 80,
+          "supply": 77.7,
+          "gap": 2.3
+        },
+        {
+          "skill": "JavaScript",
+          "demand": 168,
+          "supply": 171.5,
+          "gap": -3.5
+        },
+        {
+          "skill": "Docker",
+          "demand": 24,
+          "supply": 31.4,
+          "gap": -7.4
+        }
+      ],
+      "weekly": [
+        {
+          "week": 0,
+          "readiness_rate": 0.32733333333333337,
+          "matched_rate": 0.0,
+          "high_risk_count": 71,
+          "avg_gap": 2.1136666666666666,
+          "counselor_utilization": 0.0
+        },
+        {
+          "week": 1,
+          "readiness_rate": 0.3416666666666667,
+          "matched_rate": 0.027,
+          "high_risk_count": 53,
+          "avg_gap": 2.046666666666667,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 2,
+          "readiness_rate": 0.36333333333333334,
+          "matched_rate": 0.09166666666666667,
+          "high_risk_count": 40,
+          "avg_gap": 1.9673333333333334,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 3,
+          "readiness_rate": 0.392,
+          "matched_rate": 0.14866666666666667,
+          "high_risk_count": 28,
+          "avg_gap": 1.887,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 4,
+          "readiness_rate": 0.4236666666666667,
+          "matched_rate": 0.20633333333333334,
+          "high_risk_count": 21,
+          "avg_gap": 1.799,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 5,
+          "readiness_rate": 0.452,
+          "matched_rate": 0.26266666666666666,
+          "high_risk_count": 15,
+          "avg_gap": 1.72,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 6,
+          "readiness_rate": 0.4786666666666667,
+          "matched_rate": 0.30433333333333334,
+          "high_risk_count": 11,
+          "avg_gap": 1.65,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 7,
+          "readiness_rate": 0.5056666666666667,
+          "matched_rate": 0.3423333333333333,
+          "high_risk_count": 8,
+          "avg_gap": 1.5833333333333333,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 8,
+          "readiness_rate": 0.5346666666666666,
+          "matched_rate": 0.376,
+          "high_risk_count": 6,
+          "avg_gap": 1.5010000000000001,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 9,
+          "readiness_rate": 0.5586666666666666,
+          "matched_rate": 0.4033333333333333,
+          "high_risk_count": 4,
+          "avg_gap": 1.434,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 10,
+          "readiness_rate": 0.583,
+          "matched_rate": 0.42966666666666664,
+          "high_risk_count": 3,
+          "avg_gap": 1.3766666666666667,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 11,
+          "readiness_rate": 0.6043333333333333,
+          "matched_rate": 0.4533333333333333,
+          "high_risk_count": 3,
+          "avg_gap": 1.3236666666666668,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 12,
+          "readiness_rate": 0.627,
+          "matched_rate": 0.473,
+          "high_risk_count": 2,
+          "avg_gap": 1.2683333333333333,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 13,
+          "readiness_rate": 0.6483333333333333,
+          "matched_rate": 0.48933333333333334,
+          "high_risk_count": 1,
+          "avg_gap": 1.222,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 14,
+          "readiness_rate": 0.664,
+          "matched_rate": 0.508,
+          "high_risk_count": 9,
+          "avg_gap": 1.182,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 15,
+          "readiness_rate": 0.6786666666666666,
+          "matched_rate": 0.522,
+          "high_risk_count": 8,
+          "avg_gap": 1.1533333333333333,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 16,
+          "readiness_rate": 0.6853333333333333,
+          "matched_rate": 0.534,
+          "high_risk_count": 7,
+          "avg_gap": 1.1263333333333332,
+          "counselor_utilization": 1.0
+        }
+      ]
+    },
+    "skill_training": {
+      "label": "技能补强培训",
+      "matched": {
+        "mean": 55.5,
+        "ci_low": 53.6,
+        "ci_high": 57.4
+      },
+      "readiness": {
+        "mean": 73.2,
+        "ci_low": 71.3,
+        "ci_high": 75.1
+      },
+      "high_risk": {
+        "mean": 2.6,
+        "ci_low": 1.4,
+        "ci_high": 3.8
+      },
+      "avg_gap": {
+        "mean": 1.0,
+        "ci_low": 0.9,
+        "ci_high": 1.0
+      },
+      "matched_lift_pp": 2.1,
+      "matched_significant": false,
+      "high_risk_significant": true,
+      "top_skill_gaps": [
+        {
+          "skill": "物联网",
+          "demand": 72,
+          "supply": 53.4,
+          "gap": 18.6
+        },
+        {
+          "skill": "Git",
+          "demand": 32,
+          "supply": 30.3,
+          "gap": 1.7
+        },
+        {
+          "skill": "SQL",
+          "demand": 80,
+          "supply": 80.7,
+          "gap": -0.7
+        },
+        {
+          "skill": "Docker",
+          "demand": 24,
+          "supply": 32.1,
+          "gap": -8.1
+        },
+        {
+          "skill": "网络基础",
+          "demand": 16,
+          "supply": 27.5,
+          "gap": -11.5
+        }
+      ],
+      "weekly": [
+        {
+          "week": 0,
+          "readiness_rate": 0.32733333333333337,
+          "matched_rate": 0.0,
+          "high_risk_count": 71,
+          "avg_gap": 2.1136666666666666,
+          "counselor_utilization": 0.0
+        },
+        {
+          "week": 1,
+          "readiness_rate": 0.3443333333333333,
+          "matched_rate": 0.027,
+          "high_risk_count": 53,
+          "avg_gap": 2.0313333333333334,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 2,
+          "readiness_rate": 0.373,
+          "matched_rate": 0.09166666666666667,
+          "high_risk_count": 40,
+          "avg_gap": 1.9296666666666666,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 3,
+          "readiness_rate": 0.405,
+          "matched_rate": 0.14966666666666667,
+          "high_risk_count": 28,
+          "avg_gap": 1.833,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 4,
+          "readiness_rate": 0.44133333333333336,
+          "matched_rate": 0.21133333333333332,
+          "high_risk_count": 21,
+          "avg_gap": 1.7253333333333334,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 5,
+          "readiness_rate": 0.4776666666666667,
+          "matched_rate": 0.272,
+          "high_risk_count": 15,
+          "avg_gap": 1.624,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 6,
+          "readiness_rate": 0.5113333333333333,
+          "matched_rate": 0.317,
+          "high_risk_count": 11,
+          "avg_gap": 1.5266666666666666,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 7,
+          "readiness_rate": 0.5436666666666666,
+          "matched_rate": 0.3616666666666667,
+          "high_risk_count": 8,
+          "avg_gap": 1.4376666666666666,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 8,
+          "readiness_rate": 0.5753333333333334,
+          "matched_rate": 0.399,
+          "high_risk_count": 6,
+          "avg_gap": 1.3463333333333334,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 9,
+          "readiness_rate": 0.6036666666666667,
+          "matched_rate": 0.42733333333333334,
+          "high_risk_count": 4,
+          "avg_gap": 1.272,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 10,
+          "readiness_rate": 0.6286666666666667,
+          "matched_rate": 0.45233333333333337,
+          "high_risk_count": 3,
+          "avg_gap": 1.208,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 11,
+          "readiness_rate": 0.6513333333333333,
+          "matched_rate": 0.47833333333333333,
+          "high_risk_count": 3,
+          "avg_gap": 1.1563333333333334,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 12,
+          "readiness_rate": 0.673,
+          "matched_rate": 0.5,
+          "high_risk_count": 2,
+          "avg_gap": 1.1086666666666667,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 13,
+          "readiness_rate": 0.6953333333333334,
+          "matched_rate": 0.5146666666666666,
+          "high_risk_count": 1,
+          "avg_gap": 1.0643333333333334,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 14,
+          "readiness_rate": 0.7083333333333334,
+          "matched_rate": 0.5306666666666666,
+          "high_risk_count": 4,
+          "avg_gap": 1.0323333333333333,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 15,
+          "readiness_rate": 0.7223333333333334,
+          "matched_rate": 0.544,
+          "high_risk_count": 3,
+          "avg_gap": 1.0046666666666666,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 16,
+          "readiness_rate": 0.732,
+          "matched_rate": 0.555,
+          "high_risk_count": 3,
+          "avg_gap": 0.9833333333333334,
+          "counselor_utilization": 1.0
+        }
+      ]
+    },
+    "precision_coaching": {
+      "label": "精准帮扶",
+      "matched": {
+        "mean": 53.2,
+        "ci_low": 51.2,
+        "ci_high": 55.2
+      },
+      "readiness": {
+        "mean": 70.7,
+        "ci_low": 68.5,
+        "ci_high": 72.9
+      },
+      "high_risk": {
+        "mean": 2.9,
+        "ci_low": 2.0,
+        "ci_high": 3.8
+      },
+      "avg_gap": {
+        "mean": 1.1,
+        "ci_low": 1.0,
+        "ci_high": 1.1
+      },
+      "matched_lift_pp": -0.2,
+      "matched_significant": false,
+      "high_risk_significant": true,
+      "top_skill_gaps": [
+        {
+          "skill": "物联网",
+          "demand": 72,
+          "supply": 52.1,
+          "gap": 19.9
+        },
+        {
+          "skill": "Git",
+          "demand": 32,
+          "supply": 29.3,
+          "gap": 2.7
+        },
+        {
+          "skill": "SQL",
+          "demand": 80,
+          "supply": 79.4,
+          "gap": 0.6
+        },
+        {
+          "skill": "JavaScript",
+          "demand": 168,
+          "supply": 175.4,
+          "gap": -7.4
+        },
+        {
+          "skill": "Docker",
+          "demand": 24,
+          "supply": 31.8,
+          "gap": -7.8
+        }
+      ],
+      "weekly": [
+        {
+          "week": 0,
+          "readiness_rate": 0.32733333333333337,
+          "matched_rate": 0.0,
+          "high_risk_count": 71,
+          "avg_gap": 2.1136666666666666,
+          "counselor_utilization": 0.0
+        },
+        {
+          "week": 1,
+          "readiness_rate": 0.345,
+          "matched_rate": 0.026000000000000002,
+          "high_risk_count": 32,
+          "avg_gap": 2.0353333333333334,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 2,
+          "readiness_rate": 0.37133333333333335,
+          "matched_rate": 0.077,
+          "high_risk_count": 2,
+          "avg_gap": 1.935,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 3,
+          "readiness_rate": 0.4026666666666667,
+          "matched_rate": 0.12933333333333333,
+          "high_risk_count": 0,
+          "avg_gap": 1.8246666666666667,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 4,
+          "readiness_rate": 0.442,
+          "matched_rate": 0.186,
+          "high_risk_count": 0,
+          "avg_gap": 1.714,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 5,
+          "readiness_rate": 0.4766666666666667,
+          "matched_rate": 0.23766666666666666,
+          "high_risk_count": 0,
+          "avg_gap": 1.6143333333333334,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 6,
+          "readiness_rate": 0.508,
+          "matched_rate": 0.2856666666666667,
+          "high_risk_count": 0,
+          "avg_gap": 1.534,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 7,
+          "readiness_rate": 0.5346666666666666,
+          "matched_rate": 0.3313333333333333,
+          "high_risk_count": 0,
+          "avg_gap": 1.4596666666666667,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 8,
+          "readiness_rate": 0.5656666666666667,
+          "matched_rate": 0.367,
+          "high_risk_count": 0,
+          "avg_gap": 1.3836666666666666,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 9,
+          "readiness_rate": 0.5926666666666667,
+          "matched_rate": 0.39766666666666667,
+          "high_risk_count": 0,
+          "avg_gap": 1.3146666666666667,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 10,
+          "readiness_rate": 0.612,
+          "matched_rate": 0.42866666666666664,
+          "high_risk_count": 0,
+          "avg_gap": 1.2606666666666666,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 11,
+          "readiness_rate": 0.629,
+          "matched_rate": 0.451,
+          "high_risk_count": 0,
+          "avg_gap": 1.2223333333333333,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 12,
+          "readiness_rate": 0.6516666666666666,
+          "matched_rate": 0.473,
+          "high_risk_count": 0,
+          "avg_gap": 1.1736666666666666,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 13,
+          "readiness_rate": 0.6726666666666666,
+          "matched_rate": 0.4886666666666667,
+          "high_risk_count": 0,
+          "avg_gap": 1.1303333333333334,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 14,
+          "readiness_rate": 0.6853333333333333,
+          "matched_rate": 0.5056666666666667,
+          "high_risk_count": 4,
+          "avg_gap": 1.0993333333333333,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 15,
+          "readiness_rate": 0.6983333333333334,
+          "matched_rate": 0.5203333333333333,
+          "high_risk_count": 3,
+          "avg_gap": 1.0746666666666667,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 16,
+          "readiness_rate": 0.707,
+          "matched_rate": 0.5316666666666666,
+          "high_risk_count": 3,
+          "avg_gap": 1.0533333333333332,
+          "counselor_utilization": 1.0
+        }
+      ]
+    },
+    "job_push": {
+      "label": "岗位精准推送",
+      "matched": {
+        "mean": 56.7,
+        "ci_low": 55.4,
+        "ci_high": 58.0
+      },
+      "readiness": {
+        "mean": 82.2,
+        "ci_low": 80.8,
+        "ci_high": 83.6
+      },
+      "high_risk": {
+        "mean": 3.6,
+        "ci_low": 2.5,
+        "ci_high": 4.7
+      },
+      "avg_gap": {
+        "mean": 1.0,
+        "ci_low": 1.0,
+        "ci_high": 1.1
+      },
+      "matched_lift_pp": 3.3,
+      "matched_significant": true,
+      "high_risk_significant": true,
+      "top_skill_gaps": [
+        {
+          "skill": "物联网",
+          "demand": 72,
+          "supply": 45.5,
+          "gap": 26.5
+        },
+        {
+          "skill": "JavaScript",
+          "demand": 168,
+          "supply": 150.4,
+          "gap": 17.6
+        },
+        {
+          "skill": "SQL",
+          "demand": 80,
+          "supply": 73.4,
+          "gap": 6.6
+        },
+        {
+          "skill": "Git",
+          "demand": 32,
+          "supply": 26,
+          "gap": 6.0
+        },
+        {
+          "skill": "Docker",
+          "demand": 24,
+          "supply": 28.6,
+          "gap": -4.6
+        }
+      ],
+      "weekly": [
+        {
+          "week": 0,
+          "readiness_rate": 0.504,
+          "matched_rate": 0.0,
+          "high_risk_count": 50,
+          "avg_gap": 1.706,
+          "counselor_utilization": 0.0
+        },
+        {
+          "week": 1,
+          "readiness_rate": 0.5193333333333333,
+          "matched_rate": 0.043000000000000003,
+          "high_risk_count": 38,
+          "avg_gap": 1.6476666666666666,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 2,
+          "readiness_rate": 0.5413333333333333,
+          "matched_rate": 0.151,
+          "high_risk_count": 29,
+          "avg_gap": 1.5826666666666667,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 3,
+          "readiness_rate": 0.5706666666666667,
+          "matched_rate": 0.23933333333333334,
+          "high_risk_count": 20,
+          "avg_gap": 1.5223333333333333,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 4,
+          "readiness_rate": 0.5976666666666667,
+          "matched_rate": 0.31133333333333335,
+          "high_risk_count": 15,
+          "avg_gap": 1.4626666666666668,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 5,
+          "readiness_rate": 0.6233333333333333,
+          "matched_rate": 0.36233333333333334,
+          "high_risk_count": 10,
+          "avg_gap": 1.4046666666666667,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 6,
+          "readiness_rate": 0.6486666666666667,
+          "matched_rate": 0.4023333333333333,
+          "high_risk_count": 7,
+          "avg_gap": 1.3476666666666666,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 7,
+          "readiness_rate": 0.6773333333333333,
+          "matched_rate": 0.434,
+          "high_risk_count": 5,
+          "avg_gap": 1.296,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 8,
+          "readiness_rate": 0.7036666666666667,
+          "matched_rate": 0.4603333333333333,
+          "high_risk_count": 4,
+          "avg_gap": 1.2413333333333334,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 9,
+          "readiness_rate": 0.7246666666666667,
+          "matched_rate": 0.483,
+          "high_risk_count": 3,
+          "avg_gap": 1.1996666666666667,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 10,
+          "readiness_rate": 0.7426666666666667,
+          "matched_rate": 0.5016666666666667,
+          "high_risk_count": 2,
+          "avg_gap": 1.1673333333333333,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 11,
+          "readiness_rate": 0.7576666666666667,
+          "matched_rate": 0.519,
+          "high_risk_count": 2,
+          "avg_gap": 1.1373333333333333,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 12,
+          "readiness_rate": 0.7746666666666666,
+          "matched_rate": 0.5313333333333333,
+          "high_risk_count": 1,
+          "avg_gap": 1.107,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 13,
+          "readiness_rate": 0.7923333333333333,
+          "matched_rate": 0.5406666666666666,
+          "high_risk_count": 1,
+          "avg_gap": 1.0763333333333334,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 14,
+          "readiness_rate": 0.8073333333333333,
+          "matched_rate": 0.5516666666666666,
+          "high_risk_count": 5,
+          "avg_gap": 1.0493333333333332,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 15,
+          "readiness_rate": 0.8173333333333334,
+          "matched_rate": 0.5606666666666666,
+          "high_risk_count": 4,
+          "avg_gap": 1.032,
+          "counselor_utilization": 1.0
+        },
+        {
+          "week": 16,
+          "readiness_rate": 0.8216666666666667,
+          "matched_rate": 0.5673333333333334,
+          "high_risk_count": 4,
+          "avg_gap": 1.0190000000000001,
+          "counselor_utilization": 1.0
+        }
+      ]
+    }
+  },
+  "four_scenarios_elapsed_s": 5.8,
+  "total_elapsed_s": 37.1,
+  "conclusions": [
+    "- 岗位供给比例从 0.2 变化到 1.2 时，基线终点匹配达成率由 18.9% 变为 60.8%（单调上升）。精准帮扶相对基线的匹配达成率差值为 +0.1 / +0.1 / -0.2 / -0.3 个百分点，各取值下置信区间均重叠，差异不显著，不据此判断趋势。高风险人数方面，精准帮扶在 4/4 个取值下显著低于基线。",
+    "- 教师数量从 0 变化到 8 时，基线终点匹配达成率由 46.9% 变为 55.5%（单调上升）。精准帮扶相对基线的匹配达成率差值为 +0.0 / +0.1 / -0.2 / +0.6 个百分点，各取值下置信区间均重叠，差异不显著，不据此判断趋势。高风险人数方面，精准帮扶在 2/4 个取值下显著低于基线。",
+    "- 学习率从 0.15 变化到 0.45 时，基线终点匹配达成率由 46.7% 变为 57.1%（单调上升）。精准帮扶相对基线的匹配达成率差值为 -0.2 / +0.9 / +1.1 个百分点，各取值下置信区间均重叠，差异不显著，不据此判断趋势。高风险人数方面，精准帮扶在 3/3 个取值下显著低于基线。"
+  ]
+}
