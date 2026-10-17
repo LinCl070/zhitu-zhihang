@@ -22,7 +22,9 @@ export function InsightsPanel({ token }: { token: string }) {
   const [insights, setInsights] = useState<InsightsResponse | null>(null)
   const [loading, setLoading] = useState(true)
 
-  const load = useCallback(async () => {
+  // Each request only applies its result if it is still the latest one, so a slow
+  // live response cannot overwrite the synthetic view after the user switches source.
+  const load = useCallback(async (isCurrent: () => boolean) => {
     setLoading(true)
     try {
       const payload = await api.readAdminInsights(
@@ -31,16 +33,20 @@ export function InsightsPanel({ token }: { token: string }) {
         applied.seed,
         applied.cohortSize
       )
-      setInsights(payload)
+      if (isCurrent()) setInsights(payload)
     } catch (error) {
-      showToast('读取群体画像失败', getErrorMessage(error), 'warning')
+      if (isCurrent()) showToast('读取群体画像失败', getErrorMessage(error), 'warning')
     } finally {
-      setLoading(false)
+      if (isCurrent()) setLoading(false)
     }
   }, [token, applied, showToast])
 
   useEffect(() => {
-    void load()
+    let current = true
+    void load(() => current)
+    return () => {
+      current = false
+    }
   }, [load])
 
   const applySource = (next: 'live' | 'synthetic') => {
